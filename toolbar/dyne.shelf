@@ -1,0 +1,1608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="dyne" label="Dyne">
+    <memberTool name="connect_output"/>
+    <memberTool name="add null"/>
+    <memberTool name="attribwrangle"/>
+    <memberTool name="attribwrangle0"/>
+    <memberTool name="attribwrangle1"/>
+    <memberTool name="attribwrangle2"/>
+    <memberTool name="attribwrangle3"/>
+    <memberTool name="attribwrangle4"/>
+    <memberTool name="redshift::TextureSampler_nodes_script"/>
+  </toolshelf>
+
+  <tool name="connect_output" label="Connect Output" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import shaderoutput
+shaderoutput.connect()]]></script>
+  </tool>
+
+  <tool name="add null" label="add null" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[selection = hou.selectedNodes()
+
+if len(selection) != 0:
+    selected = selection[0]
+    parent = selected.parent().path() + '/'
+    selNodeName = selected.name()
+    selNodePos = selected.position()  
+    
+    node = hou.node('/%s' %parent).createNode('null')
+    
+### Setting node position ###
+    node.setPosition(hou.Vector2(selNodePos[0], selNodePos[1]-1))
+    node.setInput(0, selected)
+    selected.setSelected(False)
+    node.setSelected(True)
+    
+### Setting render and display flags for respective contexts ###
+    try:
+        node.setDisplayFlag(True)
+        node.setRenderFlag(True)
+    except:
+        node.setDisplayFlag(True)]]></script>
+  </tool>
+
+  <tool name="attribwrangle" label="pscale_multiplier" icon="SOP_attribwrangle">
+    <helpURL>operator:Sop/attribwrangle</helpURL>
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextOpType>Sop/attribwrangle</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('attribwrangle'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_pscale_multiplier (Sop/attribwrangle)
+set _obj_geo1_pscale_multiplier = `run("opadd -e -n -v attribwrangle pscale_multiplier")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_pscale_multiplier
+opspareds '    group {         name    "folder1"         label   "Code"          parm {             name    "group"             baseparm             label   "Group"             export  none             bindselector uvselect "Modify Points"                 "Select the points to affect and press Enter to complete."                 0 1 0xffffffff 0 grouptype 0         }         parm {             name    "grouptype"             baseparm             label   "Group Type"             export  none         }         parm {             name    "class"             baseparm             label   "Run Over"             export  none         }         parm {             name    "vex_numcount"             baseparm             label   "Number Count"             export  none         }         parm {             name    "vex_threadjobsize"             baseparm             label   "Thread Job Size"             export  none         }         parm {             name    "snippet"             baseparm             label   "VEXpression"             export  all         }         parm {             name    "exportlist"             baseparm             label   "Attributes to Create"             export  none         }         parm {             name    "vex_strict"             baseparm             label   "Enforce Prototypes"             export  none         }     }      group {         name    "folder1_1"         label   "Bindings"          parm {             name    "autobind"             baseparm             label   "Autobind by Name"             export  none         }         multiparm {             name    "bindings"             label    "Number of Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindname#"                 baseparm                 label   "Attribute Name"                 export  none             }             parm {                 name    "bindparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "groupautobind"             baseparm             label   "Autobind Groups by Name"             export  none         }         multiparm {             name    "groupbindings"             label    "Group Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindgroupname#"                 baseparm                 label   "Group Name"                 export  none             }             parm {                 name    "bindgroupparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "vex_cwdpath"             baseparm             label   "Evaluation Node Path"             export  none         }         parm {             name    "vex_outputmask"             baseparm             label   "Export Parameters"             export  none         }         parm {             name    "vex_updatenmls"             baseparm             label   "Update Normals If Displaced"             export  none         }         parm {             name    "vex_matchattrib"             baseparm             label   "Attribute to Match"             export  none         }         parm {             name    "vex_inplace"             baseparm             label   "Compute Results In Place"             export  none         }         parm {             name    "vex_selectiongroup"             baseparm             label   "Output Selection Group"             export  none         }         parm {             name    "vex_precision"             baseparm             label   "VEX Precision"             export  none         }     }      parm {         name    "Multiplier"         label   "Multiplier"         type    float         default { "0" }         range   { 0 1 }     } ' $_obj_geo1_pscale_multiplier
+opparm $_obj_geo1_pscale_multiplier  bindings ( 0 ) groupbindings ( 0 )
+opparm $_obj_geo1_pscale_multiplier snippet ( '@pscale *= chf("Multiplier");' ) Multiplier ( 1 )
+opcolor -c 1 0.52899998426437378 0.62400001287460327 $_obj_geo1_pscale_multiplier
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_geo1_pscale_multiplier
+opexprlanguage -s hscript $_obj_geo1_pscale_multiplier
+opuserdata -n '___Version___' -v '' $_obj_geo1_pscale_multiplier
+opset -p on $_obj_geo1_pscale_multiplier
+
+opcf $arg1
+opwire -n $_obj_geo1_pointwrangle1 -0 $_obj_geo1_pscale_multiplier
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_pscale_multiplier
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_pscale_multiplier
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="attribwrangle0" label="pscale_remap" icon="SOP_attribwrangle">
+    <helpURL>operator:Sop/attribwrangle</helpURL>
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextOpType>Sop/attribwrangle</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('attribwrangle'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_pscale_remap (Sop/attribwrangle)
+set _obj_geo1_pscale_remap = `run("opadd -e -n -v attribwrangle pscale_remap")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_pscale_remap
+opspareds '    group {         name    "folder1"         label   "Code"          parm {             name    "group"             baseparm             label   "Group"             export  none             bindselector uvselect "Modify Points"                 "Select the points to affect and press Enter to complete."                 0 1 0xffffffff 0 grouptype 0         }         parm {             name    "grouptype"             baseparm             label   "Group Type"             export  none         }         parm {             name    "class"             baseparm             label   "Run Over"             export  none         }         parm {             name    "vex_numcount"             baseparm             label   "Number Count"             export  none         }         parm {             name    "vex_threadjobsize"             baseparm             label   "Thread Job Size"             export  none         }         parm {             name    "snippet"             baseparm             label   "VEXpression"             export  all         }         parm {             name    "exportlist"             baseparm             label   "Attributes to Create"             export  none         }         parm {             name    "vex_strict"             baseparm             label   "Enforce Prototypes"             export  none         }     }      group {         name    "folder1_1"         label   "Bindings"          parm {             name    "autobind"             baseparm             label   "Autobind by Name"             export  none         }         multiparm {             name    "bindings"             label    "Number of Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindname#"                 baseparm                 label   "Attribute Name"                 export  none             }             parm {                 name    "bindparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "groupautobind"             baseparm             label   "Autobind Groups by Name"             export  none         }         multiparm {             name    "groupbindings"             label    "Group Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindgroupname#"                 baseparm                 label   "Group Name"                 export  none             }             parm {                 name    "bindgroupparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "vex_cwdpath"             baseparm             label   "Evaluation Node Path"             export  none         }         parm {             name    "vex_outputmask"             baseparm             label   "Export Parameters"             export  none         }         parm {             name    "vex_updatenmls"             baseparm             label   "Update Normals If Displaced"             export  none         }         parm {             name    "vex_matchattrib"             baseparm             label   "Attribute to Match"             export  none         }         parm {             name    "vex_inplace"             baseparm             label   "Compute Results In Place"             export  none         }         parm {             name    "vex_selectiongroup"             baseparm             label   "Output Selection Group"             export  none         }         parm {             name    "vex_precision"             baseparm             label   "VEX Precision"             export  none         }     }      parm {         name    "Remap"         label   "Remap"         type    ramp_flt         default { "2" }         range   { 1! 10 }     } ' $_obj_geo1_pscale_remap
+opparm $_obj_geo1_pscale_remap  bindings ( 0 ) groupbindings ( 0 ) Remap ( 2 )
+opparm $_obj_geo1_pscale_remap snippet ( '@pscale = chramp("Remap", @pscale);' ) Remap2pos ( 1 ) Remap2value ( 1 )
+opcolor -c 1 0.52899998426437378 0.62400001287460327 $_obj_geo1_pscale_remap
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_geo1_pscale_remap
+opexprlanguage -s hscript $_obj_geo1_pscale_remap
+opuserdata -n '___Version___' -v '' $_obj_geo1_pscale_remap
+opset -p on $_obj_geo1_pscale_remap
+
+opcf $arg1
+opwire -n $_obj_geo1_pointwrangle1 -0 $_obj_geo1_pscale_remap
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_pscale_remap
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_pscale_remap
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="attribwrangle1" label="v_multiplier" icon="SOP_attribwrangle">
+    <helpURL>operator:Sop/attribwrangle</helpURL>
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextOpType>Sop/attribwrangle</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('attribwrangle'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_v_multiplier (Sop/attribwrangle)
+set _obj_geo1_v_multiplier = `run("opadd -e -n -v attribwrangle v_multiplier")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_v_multiplier
+opspareds '    group {         name    "folder1"         label   "Code"          parm {             name    "group"             baseparm             label   "Group"             export  none             bindselector uvselect "Modify Points"                 "Select the points to affect and press Enter to complete."                 0 1 0xffffffff 0 grouptype 0         }         parm {             name    "grouptype"             baseparm             label   "Group Type"             export  none         }         parm {             name    "class"             baseparm             label   "Run Over"             export  none         }         parm {             name    "vex_numcount"             baseparm             label   "Number Count"             export  none         }         parm {             name    "vex_threadjobsize"             baseparm             label   "Thread Job Size"             export  none         }         parm {             name    "snippet"             baseparm             label   "VEXpression"             export  all         }         parm {             name    "exportlist"             baseparm             label   "Attributes to Create"             export  none         }         parm {             name    "vex_strict"             baseparm             label   "Enforce Prototypes"             export  none         }     }      group {         name    "folder1_1"         label   "Bindings"          parm {             name    "autobind"             baseparm             label   "Autobind by Name"             export  none         }         multiparm {             name    "bindings"             label    "Number of Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindname#"                 baseparm                 label   "Attribute Name"                 export  none             }             parm {                 name    "bindparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "groupautobind"             baseparm             label   "Autobind Groups by Name"             export  none         }         multiparm {             name    "groupbindings"             label    "Group Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindgroupname#"                 baseparm                 label   "Group Name"                 export  none             }             parm {                 name    "bindgroupparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "vex_cwdpath"             baseparm             label   "Evaluation Node Path"             export  none         }         parm {             name    "vex_outputmask"             baseparm             label   "Export Parameters"             export  none         }         parm {             name    "vex_updatenmls"             baseparm             label   "Update Normals If Displaced"             export  none         }         parm {             name    "vex_matchattrib"             baseparm             label   "Attribute to Match"             export  none         }         parm {             name    "vex_inplace"             baseparm             label   "Compute Results In Place"             export  none         }         parm {             name    "vex_selectiongroup"             baseparm             label   "Output Selection Group"             export  none         }         parm {             name    "vex_precision"             baseparm             label   "VEX Precision"             export  none         }     }      parm {         name    "Multiplier"         label   "Multiplier"         type    float         default { "0" }         range   { 0 1 }     } ' $_obj_geo1_v_multiplier
+opparm $_obj_geo1_v_multiplier  bindings ( 0 ) groupbindings ( 0 )
+opparm $_obj_geo1_v_multiplier snippet ( '@v *= chf("Multiplier");' ) Multiplier ( 1 )
+opcolor -c 1 0.52899998426437378 0.62400001287460327 $_obj_geo1_v_multiplier
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_geo1_v_multiplier
+opexprlanguage -s hscript $_obj_geo1_v_multiplier
+opuserdata -n '___Version___' -v '' $_obj_geo1_v_multiplier
+opset -p on $_obj_geo1_v_multiplier
+
+opcf $arg1
+opwire -n $_obj_geo1_pointwrangle1 -0 $_obj_geo1_v_multiplier
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_v_multiplier
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_v_multiplier
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="attribwrangle2" label="v_remap" icon="SOP_attribwrangle">
+    <helpURL>operator:Sop/attribwrangle</helpURL>
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextOpType>Sop/attribwrangle</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('attribwrangle'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_v_remap (Sop/attribwrangle)
+set _obj_geo1_v_remap = `run("opadd -e -n -v attribwrangle v_remap")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_v_remap
+opspareds '    group {         name    "folder1"         label   "Code"          parm {             name    "group"             baseparm             label   "Group"             export  none             bindselector uvselect "Modify Points"                 "Select the points to affect and press Enter to complete."                 0 1 0xffffffff 0 grouptype 0         }         parm {             name    "grouptype"             baseparm             label   "Group Type"             export  none         }         parm {             name    "class"             baseparm             label   "Run Over"             export  none         }         parm {             name    "vex_numcount"             baseparm             label   "Number Count"             export  none         }         parm {             name    "vex_threadjobsize"             baseparm             label   "Thread Job Size"             export  none         }         parm {             name    "snippet"             baseparm             label   "VEXpression"             export  all         }         parm {             name    "exportlist"             baseparm             label   "Attributes to Create"             export  none         }         parm {             name    "vex_strict"             baseparm             label   "Enforce Prototypes"             export  none         }     }      group {         name    "folder1_1"         label   "Bindings"          parm {             name    "autobind"             baseparm             label   "Autobind by Name"             export  none         }         multiparm {             name    "bindings"             label    "Number of Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindname#"                 baseparm                 label   "Attribute Name"                 export  none             }             parm {                 name    "bindparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "groupautobind"             baseparm             label   "Autobind Groups by Name"             export  none         }         multiparm {             name    "groupbindings"             label    "Group Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindgroupname#"                 baseparm                 label   "Group Name"                 export  none             }             parm {                 name    "bindgroupparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "vex_cwdpath"             baseparm             label   "Evaluation Node Path"             export  none         }         parm {             name    "vex_outputmask"             baseparm             label   "Export Parameters"             export  none         }         parm {             name    "vex_updatenmls"             baseparm             label   "Update Normals If Displaced"             export  none         }         parm {             name    "vex_matchattrib"             baseparm             label   "Attribute to Match"             export  none         }         parm {             name    "vex_inplace"             baseparm             label   "Compute Results In Place"             export  none         }         parm {             name    "vex_selectiongroup"             baseparm             label   "Output Selection Group"             export  none         }         parm {             name    "vex_precision"             baseparm             label   "VEX Precision"             export  none         }     }      parm {         name    "Remap"         label   "Remap"         type    ramp_flt         default { "2" }         range   { 1! 10 }     } ' $_obj_geo1_v_remap
+opparm $_obj_geo1_v_remap  bindings ( 0 ) groupbindings ( 0 ) Remap ( 2 )
+opparm $_obj_geo1_v_remap snippet ( '@v = chramp("Remap", @v);' ) Remap2pos ( 1 ) Remap2value ( 1 )
+opcolor -c 1 0.52899998426437378 0.62400001287460327 $_obj_geo1_v_remap
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_geo1_v_remap
+opexprlanguage -s hscript $_obj_geo1_v_remap
+opuserdata -n '___Version___' -v '' $_obj_geo1_v_remap
+opset -p on $_obj_geo1_v_remap
+
+opcf $arg1
+opwire -n $_obj_geo1_pointwrangle1 -0 $_obj_geo1_v_remap
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_v_remap
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_v_remap
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="attribwrangle3" label="rs_point_instance" icon="SOP_attribwrangle">
+    <helpURL>operator:Sop/attribwrangle</helpURL>
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextOpType>Sop/attribwrangle</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('attribwrangle'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_rs_point_instance (Sop/attribwrangle)
+set _obj_geo1_rs_point_instance = `run("opadd -e -n -v attribwrangle rs_point_instance")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_rs_point_instance
+opspareds '    group {         name    "folder1"         label   "Code"          parm {             name    "group"             baseparm             label   "Group"             export  none             bindselector uvselect "Modify Points"                 "Select the points to affect and press Enter to complete."                 0 1 0xffffffff 0 grouptype 0         }         parm {             name    "grouptype"             baseparm             label   "Group Type"             export  none         }         parm {             name    "class"             baseparm             label   "Run Over"             export  none         }         parm {             name    "vex_numcount"             baseparm             label   "Number Count"             export  none         }         parm {             name    "vex_threadjobsize"             baseparm             label   "Thread Job Size"             export  none         }         parm {             name    "snippet"             baseparm             label   "VEXpression"             export  all         }         parm {             name    "exportlist"             baseparm             label   "Attributes to Create"             export  none         }         parm {             name    "vex_strict"             baseparm             label   "Enforce Prototypes"             export  none         }     }      group {         name    "folder1_1"         label   "Bindings"          parm {             name    "autobind"             baseparm             label   "Autobind by Name"             export  none         }         multiparm {             name    "bindings"             label    "Number of Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindname#"                 baseparm                 label   "Attribute Name"                 export  none             }             parm {                 name    "bindparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "groupautobind"             baseparm             label   "Autobind Groups by Name"             export  none         }         multiparm {             name    "groupbindings"             label    "Group Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindgroupname#"                 baseparm                 label   "Group Name"                 export  none             }             parm {                 name    "bindgroupparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "vex_cwdpath"             baseparm             label   "Evaluation Node Path"             export  none         }         parm {             name    "vex_outputmask"             baseparm             label   "Export Parameters"             export  none         }         parm {             name    "vex_updatenmls"             baseparm             label   "Update Normals If Displaced"             export  none         }         parm {             name    "vex_matchattrib"             baseparm             label   "Attribute to Match"             export  none         }         parm {             name    "vex_inplace"             baseparm             label   "Compute Results In Place"             export  none         }         parm {             name    "vex_selectiongroup"             baseparm             label   "Output Selection Group"             export  none         }         parm {             name    "vex_precision"             baseparm             label   "VEX Precision"             export  none         }     }      parm {         name    "instance_path"         label   "Instance Path"         type    oppath         default { "" }         parmtag { "oprelative" "." }         parmtag { "script_callback_language" "python" }     } ' $_obj_geo1_rs_point_instance
+opparm $_obj_geo1_rs_point_instance  bindings ( 0 ) groupbindings ( 0 )
+opparm $_obj_geo1_rs_point_instance snippet ( 's@instance = ch("instance_path");' )
+opcolor -c 1 0.52899998426437378 0.62400001287460327 $_obj_geo1_rs_point_instance
+opset -d on -r on -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_geo1_rs_point_instance
+opexprlanguage -s hscript $_obj_geo1_rs_point_instance
+opuserdata -n '___Version___' -v '' $_obj_geo1_rs_point_instance
+opset -p on $_obj_geo1_rs_point_instance
+
+opcf $arg1
+opwire -n $_obj_geo1_pointwrangle1 -0 $_obj_geo1_rs_point_instance
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_rs_point_instance
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_rs_point_instance
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="attribwrangle4" label="rs_point_random_instances" icon="SOP_attribwrangle">
+    <helpURL>operator:Sop/attribwrangle</helpURL>
+    <toolMenuContext name="viewer">
+      <contextNetType>SOP</contextNetType>
+    </toolMenuContext>
+    <toolMenuContext name="network">
+      <contextOpType>Sop/attribwrangle</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('attribwrangle'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_rs_point_random_instances (Sop/attribwrangle)
+set _obj_geo1_rs_point_random_instances = `run("opadd -e -n -v attribwrangle rs_point_random_instances")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_rs_point_random_instances
+opspareds '    group {         name    "folder1"         label   "Code"          parm {             name    "group"             baseparm             label   "Group"             export  none             bindselector uvselect "Modify Points"                 "Select the points to affect and press Enter to complete."                 0 1 0xffffffff 0 grouptype 0         }         parm {             name    "grouptype"             baseparm             label   "Group Type"             export  none         }         parm {             name    "class"             baseparm             label   "Run Over"             export  none         }         parm {             name    "vex_numcount"             baseparm             label   "Number Count"             export  none         }         parm {             name    "vex_threadjobsize"             baseparm             label   "Thread Job Size"             export  none         }         parm {             name    "snippet"             baseparm             label   "VEXpression"             export  all         }         parm {             name    "exportlist"             baseparm             label   "Attributes to Create"             export  none         }         parm {             name    "vex_strict"             baseparm             label   "Enforce Prototypes"             export  none         }     }      group {         name    "folder1_1"         label   "Bindings"          parm {             name    "autobind"             baseparm             label   "Autobind by Name"             export  none         }         multiparm {             name    "bindings"             label    "Number of Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindname#"                 baseparm                 label   "Attribute Name"                 export  none             }             parm {                 name    "bindparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "groupautobind"             baseparm             label   "Autobind Groups by Name"             export  none         }         multiparm {             name    "groupbindings"             label    "Group Bindings"             baseparm             default 0             parmtag { "autoscope" "0000000000000000" }             parmtag { "multistartoffset" "1" }              parm {                 name    "bindgroupname#"                 baseparm                 label   "Group Name"                 export  none             }             parm {                 name    "bindgroupparm#"                 baseparm                 label   "VEX Parameter"                 export  none             }         }          parm {             name    "vex_cwdpath"             baseparm             label   "Evaluation Node Path"             export  none         }         parm {             name    "vex_outputmask"             baseparm             label   "Export Parameters"             export  none         }         parm {             name    "vex_updatenmls"             baseparm             label   "Update Normals If Displaced"             export  none         }         parm {             name    "vex_matchattrib"             baseparm             label   "Attribute to Match"             export  none         }         parm {             name    "vex_inplace"             baseparm             label   "Compute Results In Place"             export  none         }         parm {             name    "vex_selectiongroup"             baseparm             label   "Output Selection Group"             export  none         }         parm {             name    "vex_precision"             baseparm             label   "VEX Precision"             export  none         }     }      parm {         name    "instances_path"         label   "Instances Path"         type    oppath         default { "" }         parmtag { "oprelative" "." }         parmtag { "script_callback_language" "python" }     }     parm {         name    "instance_note"         label   "Note"         type    label         default { "path without instance number." }     }     parm {         name    "instances_amount"         label   "Instances Amount"         type    integer         default { "0" }         range   { 0 10 }     }     parm {         name    "Seed"         label   "Seed"         type    float         default { "0" }         range   { 0 1 }     } ' $_obj_geo1_rs_point_random_instances
+opparm $_obj_geo1_rs_point_random_instances  bindings ( 0 ) groupbindings ( 0 )
+opparm $_obj_geo1_rs_point_random_instances snippet ( 'int rnum = ceil(rand(@ptnum + chf("Seed")) * chi("instances_amount"));\n\ns@instance = ch("instances_path") + itoa(rnum);' )
+opcolor -c 1 0.52899998426437378 0.62400001287460327 $_obj_geo1_rs_point_random_instances
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_geo1_rs_point_random_instances
+opexprlanguage -s hscript $_obj_geo1_rs_point_random_instances
+opuserdata -n '___Version___' -v '' $_obj_geo1_rs_point_random_instances
+opset -p on $_obj_geo1_rs_point_random_instances
+
+opcf $arg1
+opwire -n $_obj_geo1_pointwrangle1 -0 $_obj_geo1_rs_point_random_instances
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_rs_point_random_instances
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_rs_point_random_instances
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="redshift::TextureSampler_nodes_script" label="RS PBR Base" icon="MISC_generic">
+    <toolMenuContext name="network">
+      <contextOpType>redshift::Vop/TextureSampler</contextOpType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne</toolSubmenu>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if kwargs.has_key("outputnodename") and kwargs.has_key("inputindex"):
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if kwargs.has_key("inputnodename") and kwargs.has_key("outputindex"):
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if kwargs.has_key("autoplace"):
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if kwargs.has_key("shiftclick") and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if kwargs.has_key("nodepositionx") and             kwargs.has_key("nodepositiony"):
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if kwargs.has_key("node_bbox"):
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if not child_type.has_key('redshift::BumpMap'):
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Albedo (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Albedo = `run("opadd -e -n -v redshift::TextureSampler Albedo")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_mat_redshift_vopnet1_Albedo
+opspareds '    group {         name    "RS_shaderNodeMainSwitcher4"         label   "General"          groupsimple {             name    "Image_1"             label   "Image"             grouptag { "group_type" "simple" }              parm {                 name    "tex0"                 baseparm                 label   "Filename"                 export  none             }             parm {                 name    "tex0_layername"                 baseparm                 label   "Layer Name"                 export  none             }             groupsimple {                 name    "Gamma_Override_2"                 label   "Gamma Override"                 grouptag { "group_type" "simple" }                  parm {                     name    "tex0_gammaoverride"                     baseparm                     label   "Enable"                     export  none                 }                 parm {                     name    "tex0_srgb"                     baseparm                     label   "sRGB"                     export  none                 }                 parm {                     name    "tex0_gamma"                     baseparm                     label   "Gamma"                     export  none                 }             }          }          groupsimple {             name    "UV_3"             label   "UV"             grouptag { "group_type" "simple" }              parm {                 name    "tspace_id"                 baseparm                 label   "UV Channel"                 export  none             }             parm {                 name    "mirrorU"                 baseparm                 label   "Mirror U"                 export  none             }             parm {                 name    "mirrorV"                 baseparm                 label   "Mirror V"                 export  none             }             parm {                 name    "wrapU"                 baseparm                 label   "Wrap U"                 export  none             }             parm {                 name    "wrapV"                 baseparm                 label   "Wrap V"                 export  none             }             groupsimple {                 name    "Remap_4"                 label   "Remap"                 grouptag { "group_type" "simple" }                  parm {                     name    "scale"                     baseparm                     label   "Scale"                     export  none                 }                 parm {                     name    "offset"                     baseparm                     label   "Offset"                     export  none                 }                 parm {                     name    "rotate"                     baseparm                     label   "Rotate"                     export  none                 }             }          }      }      group {         name    "RS_shaderNodeMainSwitcher4_1"         label   "Adjust"          parm {             name    "color_multiplier"             baseparm             label   "Color Multiplier"             export  none         }         parm {             name    "color_offset"             baseparm             label   "Color Offset"             export  none         }         parm {             name    "alpha_multiplier"             baseparm             label   "Alpha Multiplier"             export  none         }         parm {             name    "alpha_offset"             baseparm             label   "Alpha Offset"             export  none         }         parm {             name    "alpha_is_luminance"             baseparm             label   "Alpha Is Luminance"             export  none         }         parm {             name    "invalid_color"             baseparm             label   "Default/Invalid Color"             export  none         }     }      group {         name    "RS_shaderNodeMainSwitcher4_2"         label   "Advanced"          parm {             name    "filter_enable_type"             baseparm             label   "Filter Enable"             export  none         }         parm {             name    "filter_bicubic"             baseparm             label   "Bicubic Filtering"             export  none         }         parm {             name    "prefer_sharp"             baseparm             label   "Prefer Sharp Filtering"             export  none         }         parm {             name    "mip_bias"             baseparm             label   "Mip Bias"             export  none         }     }      group {         name    "RS_shaderNodeMainSwitcher4_3"         label   "ProACES"         invisibletab          parm {             name    "proaces_orig"             label   "Original"             type    string             default { "" }         }         parm {             name    "proaces_auto"             label   "Auto Manage"             type    toggle             default { "1" }         }     }  ' $_mat_redshift_vopnet1_Albedo
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Albedo proaces_orig ( 'Y:/My Drive/Dyne - LLL/Dyne_LLL_2020/Houly 20 - Carlos Dordelly/03_Assets/15_Textures/rock_cliffs_tkegdgjfw/tkegdgjfw_4K_Albedo.jpg' ) proaces_auto ( off )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Albedo
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -Y on -L off -M off -H on -E off $_mat_redshift_vopnet1_Albedo
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Albedo
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Albedo
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Albedo
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Albedo
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Albedo
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Albedo
+opset -p on $_mat_redshift_vopnet1_Albedo
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Displacement (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Displacement = `run("opadd -e -n -v redshift::TextureSampler Displacement")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -24.70008` $_mat_redshift_vopnet1_Displacement
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_Displacement scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_Displacement/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_Displacement scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_Displacement/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_Displacement offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_Displacement/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_Displacement offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_Displacement/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_Displacement rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_Displacement/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Displacement tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Displacement
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Displacement
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Displacement
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Displacement
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Displacement
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Displacement
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Displacement
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Displacement
+opset -p on $_mat_redshift_vopnet1_Displacement
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_white_offset (redshift::Vop/RSMathAdd)
+set _mat_redshift_vopnet1_white_offset = `run("opadd -e -n -v redshift::RSMathAdd white_offset")`
+oplocate -x `$arg2 + 6.6433` -y `$arg3 + -3.8179600000000002` $_mat_redshift_vopnet1_white_offset
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_white_offset
+opexprlanguage -s hscript $_mat_redshift_vopnet1_white_offset
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_white_offset
+opset -p on $_mat_redshift_vopnet1_white_offset
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar2 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar2 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar2")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + -3.8179600000000002` $_mat_redshift_vopnet1_TriPlanar2
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar2
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar2
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar2
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar2
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar2
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar2
+opset -p on $_mat_redshift_vopnet1_TriPlanar2
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Specular (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Specular = `run("opadd -e -n -v redshift::TextureSampler Specular")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -8.6166900000000002` $_mat_redshift_vopnet1_Specular
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_Specular scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_Specular/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_Specular scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_Specular/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_Specular offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_Specular/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_Specular offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_Specular/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_Specular rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_Specular/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Specular tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Specular
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Specular
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Specular
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Specular
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Specular
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Specular
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Specular
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Specular
+opset -p on $_mat_redshift_vopnet1_Specular
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar6 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar6 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar6")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + -18.008780000000002` $_mat_redshift_vopnet1_TriPlanar6
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_TriPlanar6
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar6
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar6
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar6
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar6
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar6
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar6
+opset -p on $_mat_redshift_vopnet1_TriPlanar6
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Material1 (redshift::Vop/Material)
+set _mat_redshift_vopnet1_Material1 = `run("opadd -e -n -v redshift::Material Material1")`
+oplocate -x `$arg2 + 20.608180000000001` -y `$arg3 + -5.8586860000000005` $_mat_redshift_vopnet1_Material1
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Material1 diffuse_weight ( 0.80000000000000004 ) refl_brdf ( 1 ) refl_ior ( 1.5600000000000001 )
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Material1
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Material1
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Material1
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Material1
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Material1
+opuserdata -n '__inputgroup_Coating' -v 'collapsed' $_mat_redshift_vopnet1_Material1
+opuserdata -n '__inputgroup_Optimizations' -v 'collapsed' $_mat_redshift_vopnet1_Material1
+opuserdata -n '__inputgroup_Sub-Surface Multiple Scattering' -v 'collapsed' $_mat_redshift_vopnet1_Material1
+opset -p on $_mat_redshift_vopnet1_Material1
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_RoundCorners1 (redshift::Vop/RoundCorners)
+set _mat_redshift_vopnet1_RoundCorners1 = `run("opadd -e -n -v redshift::RoundCorners RoundCorners1")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -14.2788` $_mat_redshift_vopnet1_RoundCorners1
+opparm -V 18.0.532 $_mat_redshift_vopnet1_RoundCorners1 radius ( 0.001 ) numSamples ( 12 )
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_RoundCorners1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_RoundCorners1
+opexprlanguage -s hscript $_mat_redshift_vopnet1_RoundCorners1
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_RoundCorners1
+opset -p on $_mat_redshift_vopnet1_RoundCorners1
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Cavity (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Cavity = `run("opadd -e -n -v redshift::TextureSampler Cavity")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -5.3479650000000003` $_mat_redshift_vopnet1_Cavity
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_Cavity scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_Cavity/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_Cavity scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_Cavity/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_Cavity offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_Cavity/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_Cavity offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_Cavity/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_Cavity rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_Cavity/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Cavity tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Cavity
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Cavity
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Cavity
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Cavity
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Cavity
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Cavity
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Cavity
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Cavity
+opset -p on $_mat_redshift_vopnet1_Cavity
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_albedo_mult_AO (redshift::Vop/RSMathMulVector)
+set _mat_redshift_vopnet1_albedo_mult_AO = `run("opadd -e -n -v redshift::RSMathMulVector albedo_mult_AO")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -1.4710400000000003` $_mat_redshift_vopnet1_albedo_mult_AO
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_albedo_mult_AO
+opexprlanguage -s hscript $_mat_redshift_vopnet1_albedo_mult_AO
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_albedo_mult_AO
+opset -p on $_mat_redshift_vopnet1_albedo_mult_AO
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar8 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar8 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar8")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + -8.6166900000000002` $_mat_redshift_vopnet1_TriPlanar8
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar8
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar8
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar8
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar8
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar8
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar8
+opset -p on $_mat_redshift_vopnet1_TriPlanar8
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar5 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar5 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar5")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + -15.91968` $_mat_redshift_vopnet1_TriPlanar5
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_TriPlanar5
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar5
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar5
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar5
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar5
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar5
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar5
+opset -p on $_mat_redshift_vopnet1_TriPlanar5
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_BumpMap1 (redshift::Vop/BumpMap)
+set _mat_redshift_vopnet1_BumpMap1 = `run("opadd -e -n -v redshift::BumpMap BumpMap1")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -15.91968` $_mat_redshift_vopnet1_BumpMap1
+opparm -V 18.0.532 $_mat_redshift_vopnet1_BumpMap1 scale ( 0.074999999999999997 )
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_BumpMap1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_BumpMap1
+opexprlanguage -s hscript $_mat_redshift_vopnet1_BumpMap1
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_BumpMap1
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_BumpMap1
+opuserdata -n '__inputgroup_Remap' -v 'collapsed' $_mat_redshift_vopnet1_BumpMap1
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_BumpMap1
+opset -p on $_mat_redshift_vopnet1_BumpMap1
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Bump (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Bump = `run("opadd -e -n -v redshift::TextureSampler Bump")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -15.91968` $_mat_redshift_vopnet1_Bump
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_Bump scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_Bump/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_Bump scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_Bump/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_Bump offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_Bump/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_Bump offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_Bump/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_Bump rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_Bump/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Bump tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Bump
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Bump
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Bump
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Bump
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Bump
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Bump
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Bump
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Bump
+opset -p on $_mat_redshift_vopnet1_Bump
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_rough_remap (redshift::Vop/RSRamp)
+set _mat_redshift_vopnet1_rough_remap = `run("opadd -e -n -v redshift::RSRamp rough_remap")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -10.618580000000001` $_mat_redshift_vopnet1_rough_remap
+opparm $_mat_redshift_vopnet1_rough_remap  ramp ( 2 )
+opparm -V 18.0.532 $_mat_redshift_vopnet1_rough_remap ramp1pos ( 0.3977055549621582 ) ramp1c ( 0.02 0.02 0.02 ) ramp2pos ( 1 ) ramp2c ( 0.75999999046325684 0.75999999046325684 0.75999999046325684 )
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_rough_remap
+opexprlanguage -s hscript $_mat_redshift_vopnet1_rough_remap
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_rough_remap
+opset -p on $_mat_redshift_vopnet1_rough_remap
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Roughness (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Roughness = `run("opadd -e -n -v redshift::TextureSampler Roughness")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -10.618580000000001` $_mat_redshift_vopnet1_Roughness
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_Roughness scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_Roughness/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_Roughness scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_Roughness/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_Roughness offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_Roughness/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_Roughness offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_Roughness/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_Roughness rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_Roughness/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Roughness tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Roughness
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Roughness
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Roughness
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Roughness
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Roughness
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Roughness
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Roughness
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Roughness
+opset -p on $_mat_redshift_vopnet1_Roughness
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_RSColorCorrection (redshift::Vop/RSColorCorrection)
+set _mat_redshift_vopnet1_RSColorCorrection = `run("opadd -e -n -v redshift::RSColorCorrection RSColorCorrection")`
+oplocate -x `$arg2 + 13.832439999999998` -y `$arg3 + -3.8179600000000002` $_mat_redshift_vopnet1_RSColorCorrection
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_RSColorCorrection
+opexprlanguage -s hscript $_mat_redshift_vopnet1_RSColorCorrection
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_RSColorCorrection
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_RSColorCorrection
+opset -p on $_mat_redshift_vopnet1_RSColorCorrection
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar4 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar4 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar4")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + -10.618580000000001` $_mat_redshift_vopnet1_TriPlanar4
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar4
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar4
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar4
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar4
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar4
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar4
+opset -p on $_mat_redshift_vopnet1_TriPlanar4
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_BumpBlender1 (redshift::Vop/BumpBlender)
+set _mat_redshift_vopnet1_BumpBlender1 = `run("opadd -e -n -v redshift::BumpBlender BumpBlender1")`
+oplocate -x `$arg2 + 13.832439999999998` -y `$arg3 + -14.2788` $_mat_redshift_vopnet1_BumpBlender1
+opparm -V 18.0.532 $_mat_redshift_vopnet1_BumpBlender1 additive ( on ) bumpWeight0 ( 1 ) bumpWeight1 ( 1 )
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_BumpBlender1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_BumpBlender1
+opexprlanguage -s hscript $_mat_redshift_vopnet1_BumpBlender1
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_BumpBlender1
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_BumpBlender1
+opuserdata -n '__inputgroup_Base' -v 'collapsed' $_mat_redshift_vopnet1_BumpBlender1
+opuserdata -n '__inputgroup_Layer 0' -v 'collapsed' $_mat_redshift_vopnet1_BumpBlender1
+opuserdata -n '__inputgroup_Layer 1' -v 'collapsed' $_mat_redshift_vopnet1_BumpBlender1
+opuserdata -n '__inputgroup_Layer 2' -v 'collapsed' $_mat_redshift_vopnet1_BumpBlender1
+opset -p on $_mat_redshift_vopnet1_BumpBlender1
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_AO (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_AO = `run("opadd -e -n -v redshift::TextureSampler AO")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -3.8179600000000002` $_mat_redshift_vopnet1_AO
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_AO scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_AO/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_AO scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_AO/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_AO offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_AO/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_AO offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_AO/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_AO rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_AO/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_AO tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_AO
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_AO
+opexprlanguage -s hscript $_mat_redshift_vopnet1_AO
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_AO
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_AO
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_AO
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_AO
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_AO
+opset -p on $_mat_redshift_vopnet1_AO
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Displacement1 (redshift::Vop/Displacement)
+set _mat_redshift_vopnet1_Displacement1 = `run("opadd -e -n -v redshift::Displacement Displacement1")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -24.70008` $_mat_redshift_vopnet1_Displacement1
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Displacement1 scale ( 0.10000000000000001 )
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_Displacement1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Displacement1
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Displacement1
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Displacement1
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Displacement1
+opuserdata -n '__inputgroup_Change Range' -v 'collapsed' $_mat_redshift_vopnet1_Displacement1
+opuserdata -n '__inputgroup_Tangents' -v 'collapsed' $_mat_redshift_vopnet1_Displacement1
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_Displacement1
+opset -p on $_mat_redshift_vopnet1_Displacement1
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_Normal (redshift::Vop/TextureSampler)
+set _mat_redshift_vopnet1_Normal = `run("opadd -e -n -v redshift::TextureSampler Normal")`
+oplocate -x `$arg2 + 0` -y `$arg3 + -18.008780000000002` $_mat_redshift_vopnet1_Normal
+chblockbegin
+chadd -t 0 0 $_mat_redshift_vopnet1_Normal scale1
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale1")' $_mat_redshift_vopnet1_Normal/scale1
+chadd -t 0 0 $_mat_redshift_vopnet1_Normal scale2
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/scale2")' $_mat_redshift_vopnet1_Normal/scale2
+chadd -t 0 0 $_mat_redshift_vopnet1_Normal offset1
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset1")' $_mat_redshift_vopnet1_Normal/offset1
+chadd -t 0 0 $_mat_redshift_vopnet1_Normal offset2
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/offset2")' $_mat_redshift_vopnet1_Normal/offset2
+chadd -t 0 0 $_mat_redshift_vopnet1_Normal rotate
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("../Albedo/rotate")' $_mat_redshift_vopnet1_Normal/rotate
+chblockend
+opparm -V 18.0.532 $_mat_redshift_vopnet1_Normal tex0_gammaoverride ( on ) scale ( scale1 scale2 ) offset ( offset1 offset2 ) rotate ( rotate )
+opcolor -c 1 0.97600001096725464 0.66600000858306885 $_mat_redshift_vopnet1_Normal
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_Normal
+opexprlanguage -s hscript $_mat_redshift_vopnet1_Normal
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_Normal
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_Normal
+opuserdata -n '__inputgroup_Adjust' -v 'collapsed' $_mat_redshift_vopnet1_Normal
+opuserdata -n '__inputgroup_Advanced' -v 'collapsed' $_mat_redshift_vopnet1_Normal
+opuserdata -n '__inputgroup_General' -v 'collapsed' $_mat_redshift_vopnet1_Normal
+opset -p on $_mat_redshift_vopnet1_Normal
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_WireFrame (redshift::Vop/WireFrame)
+set _mat_redshift_vopnet1_WireFrame = `run("opadd -e -n -v redshift::WireFrame WireFrame")`
+oplocate -x `$arg2 + 20.608180000000001` -y `$arg3 + -14.42517` $_mat_redshift_vopnet1_WireFrame
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_WireFrame
+opexprlanguage -s hscript $_mat_redshift_vopnet1_WireFrame
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_WireFrame
+opset -p on $_mat_redshift_vopnet1_WireFrame
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar3 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar3 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar3")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + -5.3479650000000003` $_mat_redshift_vopnet1_TriPlanar3
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar3
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar3
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar3
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar3
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar3
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar3
+opset -p on $_mat_redshift_vopnet1_TriPlanar3
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_spec_remap (redshift::Vop/RSRamp)
+set _mat_redshift_vopnet1_spec_remap = `run("opadd -e -n -v redshift::RSRamp spec_remap")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -8.6166900000000002` $_mat_redshift_vopnet1_spec_remap
+opparm $_mat_redshift_vopnet1_spec_remap  ramp ( 2 )
+opparm -V 18.0.532 $_mat_redshift_vopnet1_spec_remap ramp1pos ( 0.3977055549621582 ) ramp1c ( 0.02 0.02 0.02 ) ramp2pos ( 1 ) ramp2c ( 0.75999999046325684 0.75999999046325684 0.75999999046325684 )
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_spec_remap
+opexprlanguage -s hscript $_mat_redshift_vopnet1_spec_remap
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_spec_remap
+opset -p on $_mat_redshift_vopnet1_spec_remap
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar7 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar7 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar7")`
+oplocate -x `$arg2 + 4.5425000000000004` -y `$arg3 + -24.735880000000002` $_mat_redshift_vopnet1_TriPlanar7
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_TriPlanar7
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar7
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar7
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar7
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar7
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar7
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar7
+opset -p on $_mat_redshift_vopnet1_TriPlanar7
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_TriPlanar1 (redshift::Vop/TriPlanar)
+set _mat_redshift_vopnet1_TriPlanar1 = `run("opadd -e -n -v redshift::TriPlanar TriPlanar1")`
+oplocate -x `$arg2 + 4.4577999999999989` -y `$arg3 + 0` $_mat_redshift_vopnet1_TriPlanar1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_TriPlanar1
+opexprlanguage -s hscript $_mat_redshift_vopnet1_TriPlanar1
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_TriPlanar1
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar1
+opuserdata -n '__inputgroup_Coordinates' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar1
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_TriPlanar1
+opset -p on $_mat_redshift_vopnet1_TriPlanar1
+opcf $arg1
+
+# Node $_mat_redshift_vopnet1_BumpMap2 (redshift::Vop/BumpMap)
+set _mat_redshift_vopnet1_BumpMap2 = `run("opadd -e -n -v redshift::BumpMap BumpMap2")`
+oplocate -x `$arg2 + 9.2330999999999985` -y `$arg3 + -18.008780000000002` $_mat_redshift_vopnet1_BumpMap2
+opparm -V 18.0.532 $_mat_redshift_vopnet1_BumpMap2 inputType ( 1 )
+opcolor -c 0.45100000500679016 0.36899998784065247 0.79600000381469727 $_mat_redshift_vopnet1_BumpMap2
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off -L off -M off -H on -E off $_mat_redshift_vopnet1_BumpMap2
+opexprlanguage -s hscript $_mat_redshift_vopnet1_BumpMap2
+opuserdata -n '___Version___' -v '18.0.532' $_mat_redshift_vopnet1_BumpMap2
+opuserdata -n '__inputgroup_' -v 'collapsed' $_mat_redshift_vopnet1_BumpMap2
+opuserdata -n '__inputgroup_Remap' -v 'collapsed' $_mat_redshift_vopnet1_BumpMap2
+opuserdata -n '__inputgroup_Texture' -v 'collapsed' $_mat_redshift_vopnet1_BumpMap2
+opset -p on $_mat_redshift_vopnet1_BumpMap2
+
+opcf $arg1
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar2 -0 $_mat_redshift_vopnet1_white_offset
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_AO -0 $_mat_redshift_vopnet1_TriPlanar2
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Normal -0 $_mat_redshift_vopnet1_TriPlanar6
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_RSColorCorrection -0 $_mat_redshift_vopnet1_Material1
+opwire -n $_mat_redshift_vopnet1_spec_remap -6 $_mat_redshift_vopnet1_Material1
+opwire -n $_mat_redshift_vopnet1_rough_remap -7 $_mat_redshift_vopnet1_Material1
+opwire -n $_mat_redshift_vopnet1_BumpBlender1 -49 $_mat_redshift_vopnet1_Material1
+opcf $arg1
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar1 -0 $_mat_redshift_vopnet1_albedo_mult_AO
+opwire -n $_mat_redshift_vopnet1_white_offset -1 $_mat_redshift_vopnet1_albedo_mult_AO
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Specular -0 $_mat_redshift_vopnet1_TriPlanar8
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Bump -0 $_mat_redshift_vopnet1_TriPlanar5
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar5 -0 $_mat_redshift_vopnet1_BumpMap1
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar4 -0 $_mat_redshift_vopnet1_rough_remap
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_albedo_mult_AO -0 $_mat_redshift_vopnet1_RSColorCorrection
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Roughness -0 $_mat_redshift_vopnet1_TriPlanar4
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_RoundCorners1 -0 $_mat_redshift_vopnet1_BumpBlender1
+opwire -n $_mat_redshift_vopnet1_BumpMap1 -1 $_mat_redshift_vopnet1_BumpBlender1
+opwire -n $_mat_redshift_vopnet1_BumpMap2 -3 $_mat_redshift_vopnet1_BumpBlender1
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar7 -0 $_mat_redshift_vopnet1_Displacement1
+opcf $arg1
+opcf $arg1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Cavity -0 $_mat_redshift_vopnet1_TriPlanar3
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar8 -0 $_mat_redshift_vopnet1_spec_remap
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Displacement -0 $_mat_redshift_vopnet1_TriPlanar7
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_Albedo -0 $_mat_redshift_vopnet1_TriPlanar1
+opcf $arg1
+opwire -n $_mat_redshift_vopnet1_TriPlanar6 -0 $_mat_redshift_vopnet1_BumpMap2
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_mat_redshift_vopnet1_Material1
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_mat_redshift_vopnet1_Albedo
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+</shelfDocument>

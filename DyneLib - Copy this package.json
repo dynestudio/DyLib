@@ -1,0 +1,6 @@
+{
+    "env":[
+		{"DYNE" : ".. custom path../DyLib"},
+		{"HOUDINI_PATH" : "$DYNE"}
+	]
+}

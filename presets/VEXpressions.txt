@@ -1,0 +1,29 @@
+attribwrangle/snippet
+   dy_pscale_multiplier
+   @pscale *= chf("Multiplier");
+
+attribwrangle/snippet
+   dy_pscale_remap
+   @pscale = chramp("Remap", @pscale);
+
+attribwrangle/snippet
+   dy_pscale_remap
+   @pscale = chramp("Remap", @pscale);
+
+attribwrangle/snippet
+   dy_v_multiplier
+   @v *= chf("Multiplier");
+
+attribwrangle/snippet
+   dy_v_remap
+   @v = chramp("Remap", @v);
+
+attribwrangle/snippet
+   dy_rs_point_instance
+   s@instance = ch("instance_path");
+
+attribwrangle/snippet
+   dy_rs_point_random_instances
+   int rnum = ceil(rand(@ptnum + chf("Seed")) * chi("instances_amount"));
+
+   s@instance = ch("instances_path") + itoa(rnum);

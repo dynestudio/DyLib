@@ -5,7 +5,8 @@ You will find otls, shelf and redshift tools.
 
 ## Tools Highlights:
 
-You can see almost all tools with previews here: https://www.notion.so/dyne/DyLib-a9698031d1124aeeb53ede64949d9f6b
+You can see almost all tools with previews here:  
+https://www.notion.so/dyne/DyLib-a9698031d1124aeeb53ede64949d9f6b
 
 ## Installation:
 Download and extract the repository. Move as desired.

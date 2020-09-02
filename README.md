@@ -5,12 +5,12 @@ You will find otls, shelf and redshift tools.
 
 ## Tools Highlights:
 
-You can see almost all tools with previews here:  
+You can see almost all tools working with previews here: 
 http://bit.ly/DyLib
 
 ## Installation:
-Download and extract the repository. Move as desired.
-Append the path of the DyLib.json file and copy it to your Houdini package folder.
+Download and extract the repository. Move to your desired folder.  
+Append the folder path in the DyLib.json file and copy it to your Houdini package folder.
 
 ## Other
 

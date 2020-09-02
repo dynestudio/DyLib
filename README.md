@@ -30,9 +30,9 @@ Our tools are free and open source, we hope that you can find it useful or that 
 
 ## Visit Us
 [dyne.studio](http://dyne.studio/)   
-[facebook](https://www.facebook.com/dyne.estudio/)   
-[instagram](https://www.instagram.com/dyne.estudio/)   
+[facebook](https://www.facebook.com/dyne.studio/)   
+[instagram](https://www.instagram.com/dyne.studio/)   
 [vimeo](https://vimeo.com/dynestudio)   
-[twitter](https://twitter.com/dynestudio)
+[twitter](https://twitter.com/dyne_studio)
 
 Dyne Ltda.

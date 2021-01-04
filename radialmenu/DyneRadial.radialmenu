@@ -1,0 +1,20 @@
+[
+	"fileversion","18.0.566",
+	"name","DyneRadial",
+	"categories","Custom",
+	"submenu",["submenu",
+		"label","DyneRadial",
+		"top_left",["script",
+			"label","add null",
+			"icon","PLASMA_App",
+			"script","radialmenu.runShelfTool(kwargs, 'add null')",
+			"shortcut",""
+		],
+		"left",["script",
+			"label","Add Transform",
+			"icon","PLASMA_App",
+			"script","radialmenu.runShelfTool(kwargs, 'add transform')",
+			"shortcut",""
+		]
+	]
+]

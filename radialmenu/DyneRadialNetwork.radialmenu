@@ -1,0 +1,226 @@
+{
+	"fileversion":"18.5.351",
+	"name":"DyneRadialNetwork",
+	"categories":"Standard",
+	"pane":"network",
+	"label":"DyneRadialNetwork",
+	"type":"submenu",
+	"items":{
+		"0":{
+			"label":"Null",
+			"type":"script_action",
+			"icon":"SOP_null",
+			"script":"radialmenu.runShelfTool(kwargs, 'sop_null')"
+		},
+		"1":{
+			"label":"Transform",
+			"type":"script_action",
+			"icon":"SOP_xform",
+			"script":"radialmenu.runShelfTool(kwargs, 'sop_xform')"
+		},
+		"2":{
+			"label":"Attribute Wrangle",
+			"type":"script_action",
+			"icon":"SOP_attribwrangle",
+			"script":"radialmenu.runShelfTool(kwargs, 'sop_attribwrangle')"
+		},
+		"3":{
+			"label":"ae Spring Solver",
+			"type":"script_action",
+			"icon":"opdef:/ae::Sop/SpringSolver::1?IconSVG",
+			"script":"radialmenu.runShelfTool(kwargs, 'ae::sop_SpringSolver::1')"
+		},
+		"4":{
+			"label":"MOPs",
+			"type":"submenu",
+			"items":{
+				"1":{
+					"label":"MOPs Apply Attributes",
+					"type":"script_action",
+					"icon":"opdef:/MOPS::Sop/Apply_Attributes::1.5?IconSVG",
+					"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Apply_Attributes::1.5')"
+				},
+				"2":{
+					"label":"MOPs Extract Attributes",
+					"type":"script_action",
+					"icon":"opdef:/MOPS::Sop/Extract_Attributes::1.0?IconSVG",
+					"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Extract_Attributes::1.0')"
+				},
+				"3":{
+					"label":"Falloffs",
+					"type":"submenu",
+					"items":{
+						"0":{
+							"label":"MOPs Noise Falloff",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Noise_Falloff::1.4?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Noise_Falloff::1.4')"
+						},
+						"1":{
+							"label":"MOPs Plain Falloff",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Plain_Falloff::1.0?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Plain_Falloff::1.0')"
+						},
+						"2":{
+							"label":"MOPs Combine Falloffs",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Combine_Falloffs::1.1?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Combine_Falloffs::1.1')"
+						},
+						"3":{
+							"label":"MOPs Remap Falloff",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Remap_Falloff::1.0?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Remap_Falloff::1.0')"
+						},
+						"4":{
+							"label":"MOPs Shape Falloff",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Shape_Falloff::1.5?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Shape_Falloff::1.5')"
+						},
+						"5":{
+							"label":"MOPs Object Falloff",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Object_Falloff::1.5?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Object_Falloff::1.5')"
+						},
+						"6":{
+							"label":"MOPs Spread Falloff",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/MOPs_Spread_Falloff::1.5?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_MOPs_Spread_Falloff::1.5')"
+						}
+					}
+				},
+				"4":{
+					"label":"Modifiers",
+					"type":"submenu",
+					"items":{
+						"1":{
+							"label":"MOPs Delay",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/delay::1.0?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_delay::1.0')"
+						},
+						"2":{
+							"label":"MOPs Move Along Mesh",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/MOPs_Move_Along_Mesh::1.2?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_MOPs_Move_Along_Mesh::1.2')"
+						},
+						"3":{
+							"label":"MOPs Move Along Spline",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/move_along_spline::1.5?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_move_along_spline::1.5')"
+						},
+						"4":{
+							"label":"MOPs Noise Modifier",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Noise_Modifier::1.2?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Noise_Modifier::1.2')"
+						},
+						"5":{
+							"label":"MOPs Randomize",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Randomize::1.1?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Randomize::1.1')"
+						},
+						"6":{
+							"label":"MOPs Spring Modifier",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Spring_Modifier::1.0?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Spring_Modifier::1.0')"
+						},
+						"7":{
+							"label":"MOPs Transform Modifier",
+							"type":"script_action",
+							"icon":"opdef:/MOPS::Sop/Transform_Modifier::1.1?IconSVG",
+							"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Transform_Modifier::1.1')"
+						}
+					}
+				},
+				"5":{
+					"label":"MOPs Instancer",
+					"type":"script_action",
+					"icon":"opdef:/MOPS::Sop/Instancer::1.4?IconSVG",
+					"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Instancer::1.4')"
+				},
+				"6":{
+					"label":"MOPs Explode",
+					"type":"script_action",
+					"icon":"opdef:/MOPS::Sop/Explode::1.2?IconSVG",
+					"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_Explode::1.2')"
+				},
+				"7":{
+					"label":"MOPs Convert",
+					"type":"script_action",
+					"icon":"opdef:/MOPS::Sop/MOPS_Convert::1.0?mops_misc_05.svg",
+					"script":"radialmenu.runShelfTool(kwargs, 'MOPS::sop_MOPS_Convert::1.1')"
+				}
+			}
+		},
+		"5":{
+			"label":"VDB SDF",
+			"type":"submenu",
+			"items":{
+				"0":{
+					"label":"VDB from Polygons",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_vdbfrompolygons')"
+				},
+				"2":{
+					"label":"Convert VDB",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_convertvdb')"
+				},
+				"3":{
+					"label":"VDB Combine",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_vdbcombine')"
+				},
+				"4":{
+					"label":"VDB Clip",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_vdbclip')"
+				},
+				"5":{
+					"label":"VDB Reshape SDF",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_vdbreshapesdf')"
+				},
+				"6":{
+					"label":"VDB Smooth SDF",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_vdbsmoothsdf')"
+				},
+				"7":{
+					"label":"VDB from Particles",
+					"type":"script_action",
+					"icon":"SOP_OpenVDB",
+					"script":"radialmenu.runShelfTool(kwargs, 'sop_vdbfromparticles')"
+				}
+			}
+		},
+		"6":{
+			"label":"Normal",
+			"type":"script_action",
+			"icon":"SOP_normal",
+			"script":"radialmenu.runShelfTool(kwargs, 'sop_normal')"
+		},
+		"7":{
+			"label":"Group Create",
+			"type":"script_action",
+			"icon":"SOP_groupcreate",
+			"script":"radialmenu.runShelfTool(kwargs, 'sop_groupcreate')"
+		}
+	}
+}

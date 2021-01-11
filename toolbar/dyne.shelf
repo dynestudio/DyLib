@@ -15,6 +15,7 @@
     <memberTool name="dy RS Point Instance"/>
     <memberTool name="dy RS Point Random Instances"/>
     <memberTool name="redshift::TextureSampler_nodes_script"/>
+    <memberTool name="geo"/>
   </toolshelf>
 
   <tool name="connect_output" label="Connect Output" icon="PLASMA_App">
@@ -201,7 +202,7 @@ hou.hscript(h_preamble + h_extra_args + h_cmd)
 ]]></script>
   </tool>
 
-  <tool name="redshift::TextureSampler_nodes_script" label="RS PBR Base" icon="MISC_generic">
+  <tool name="redshift::TextureSampler_nodes_script" label="dy RS PBR Base" icon="opdef:/Vop/rs_ogl_material?IconSVG">
     <toolMenuContext name="network">
       <contextOpType>redshift::Vop/TextureSampler</contextOpType>
     </toolMenuContext>

@@ -1,5 +1,5 @@
 # DyLib
-Side FX Houdini's Dyne Studio custom library.
+Side FX Houdini's (Indie) Dyne Studio custom library.
 
 You will find otls, shelf and redshift tools.
 

@@ -17,6 +17,7 @@
     <memberTool name="dy RS Light Instances Attrs"/>
     <memberTool name="redshift::TextureSampler_nodes_script"/>
     <memberTool name="dy Object Merge"/>
+    <memberTool name="preset brutal de nulls"/>
   </toolshelf>
 
   <tool name="connect_output" label="Connect Output" icon="PLASMA_App">

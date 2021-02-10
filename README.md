@@ -12,6 +12,10 @@ http://bit.ly/DyLib
 Download and extract the repository. Move to your desired folder.  
 Append the folder path in the DyLib.json file and copy it to your Houdini package folder.
 
+## DyLib Plus:
+
+We have some paid tools in our gumroad profile: https://gumroad.com/dynestudio
+
 ## Other
 
 The structure of this library is based on the AeLib and qLib Houdini library:  

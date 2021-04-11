@@ -1,0 +1,13 @@
+#DyLib
+
+attribwrangle/snippet
+    [DyLib] Random vector attribute on each point
+    // Random vector attribute on each point
+	float main_seed = chf("main_seed");
+	float r = rand(@ptnum + 123 + main_seed);
+	float g = rand(@ptnum + 456 + main_seed);
+	float b = rand(@ptnum + 789 + main_seed);
+
+	v@rand = set(r,g,b);
+
+

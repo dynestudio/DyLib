@@ -6,7 +6,6 @@
  a single file. -->
 
   <toolshelf name="dyne" label="Dyne">
-    <memberTool name="connect_output"/>
     <memberTool name="add null"/>
     <memberTool name="add transform"/>
     <memberTool name="dy Pscale Multiplier"/>
@@ -18,11 +17,6 @@
     <memberTool name="redshift::TextureSampler_nodes_script"/>
     <memberTool name="dy Object Merge"/>
   </toolshelf>
-
-  <tool name="connect_output" label="Connect Output" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import shaderoutput
-shaderoutput.connect()]]></script>
-  </tool>
 
   <tool name="add null" label="add null" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[selection = hou.selectedNodes()

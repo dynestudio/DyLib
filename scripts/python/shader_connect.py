@@ -1,9 +1,7 @@
 import hou
 
 # pendings:
-# support for other render engines (arnold, octane, vray, 3delight, mantra?, karma?, renderman?)
-# support for connection type (displacement, volume)
-# output material.inputNames()
+# support for other render engines (arnold, octane, vray, 3delight, renderman, mantra?, karma?)
 
 def find_output_mat(parent, vop_builder_name, material_output_name):
     out_node = None
@@ -41,6 +39,24 @@ def output_connection_type(output_connections):
 
     return out
 
+def input_type(node, mat_builder):
+    index = 0
+
+    n_type = node.type().name()
+
+    if "Displacement" in n_type:
+        if mat_builder == "redshift_vopnet":
+            index = 1
+        elif mat_builder == "rs_usd_material_builder":
+            index = 1
+    elif "Volume" in n_type:
+        if mat_builder == "redshift_vopnet":
+            index = 4
+        elif mat_builder == "rs_usd_material_builder":
+            index = 4
+
+    return index
+
 def shader_out():
     # get selected node
     nodes = hou.selectedNodes()
@@ -48,9 +64,9 @@ def shader_out():
         exit()
 
     # base parms
-    node = nodes[0] ; out_node = None
-    index = 0 ; mat_index = 0
+    node = nodes[0] ; out_node = None ; index = 0
     mat_builder = node.parent().type().name()
+    mat_index = input_type(node, mat_builder)
 
     # work only inside VOP nodes
     if node.type().category().name() == "Vop":
@@ -78,4 +94,5 @@ def shader_out():
 
         # connect node to output
         if out_node:
+            print (out_node.inputNames())
             out_node.setInput(mat_index, node, index)

@@ -1863,7 +1863,7 @@ hou.hscript(h_preamble + h_extra_args + h_cmd)
   </tool>
 
   <tool name="shader_out" label="Shader Connect OUT" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import shader_connect_output as connect
+    <script scriptType="python"><![CDATA[import shader_connect as connect
 
 connect.shader_out()]]></script>
   </tool>

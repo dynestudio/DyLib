@@ -1,3 +1,4 @@
+from types import LambdaType
 import hou
 
 # pendings:
@@ -19,41 +20,95 @@ def find_output_mat(parent, vop_builder_name, material_output_name):
 def render_material_out(mat_builder, parent):
     out_node = None
     # iterate between render engines
+
+    # ---------------------------------------------------------------------------------------
+
+    # redshift
     if mat_builder == "redshift_vopnet":
         out_node = find_output_mat(parent, mat_builder, "redshift_material")
     elif mat_builder == "rs_usd_material_builder":
         out_node = find_output_mat(parent, mat_builder, "redshift_usd_material")
 
+    # arnold
+    elif mat_builder == "arnold_materialbuilder":
+        out_node = find_output_mat(parent, mat_builder, "arnold_material")
+
+    # octane
+    elif mat_builder == "octane_vopnet":
+        out_node = find_output_mat(parent, mat_builder, "octane_material")
+
+    # 3delight
+    elif mat_builder == "3Delight::dlMaterialBuilder":
+        out_node = find_output_mat(parent, mat_builder, "3Delight::dlTerminal")
+
+    # vray
+    elif mat_builder == "vray_vop_material":
+        out_node = find_output_mat(parent, mat_builder, "vray_material_output")
+
+    # renderman
+    elif mat_builder == "pxrmaterialbuilder":
+        out_node = find_output_mat(parent, mat_builder, "collect")
+
+    # ---------------------------------------------------------------------------------------
+
     return out_node
 
 def output_connection_type(output_connections):
     out = None
+    # supported render engines
+    engines = ["redshift_material",
+                "redshift_usd_material",
+                "arnold_material",
+                "octane_material",
+                "3Delight::dlTerminal",
+                "vray_material_output",
+                "collect"]
+
     for o in output_connections:
-        # iterate between render engines
-        if o.outputNode().type().name() == "redshift_material":
-            out = o
-        elif o.outputNode().type().name() == "redshift_usd_material":
+        if o.outputNode().type().name() in engines:
             out = o
         if out:
             break
 
     return out
 
-def input_type(node, mat_builder):
+def input_type(node, out_node, mat_builder):
     index = 0
+    # selected node type
+    n_type = node.type().name().upper()
+    # inputs from output node
+    out_input_types = out_node.inputNames()
 
-    n_type = node.type().name()
+    for t in out_input_types:
+        input_name = t.upper()
+        print (input_name)
+        print (n_type)
+        
+        # generic inputs
+        if "Displacement".upper() in n_type:
+            if "Displacement".upper() in input_name:
+                index = out_input_types.index(t) ; break
+        elif "Volume".upper() in n_type:
+            if "Volume".upper() in input_name:
+                index = out_input_types.index(t) ; break
 
-    if "Displacement" in n_type:
-        if mat_builder == "redshift_vopnet":
-            index = 1
-        elif mat_builder == "rs_usd_material_builder":
-            index = 1
-    elif "Volume" in n_type:
-        if mat_builder == "redshift_vopnet":
-            index = 4
-        elif mat_builder == "rs_usd_material_builder":
-            index = 4
+        # octane inputs
+        elif "Med".upper() in n_type:
+            print ("1")
+            if "medium".upper() in input_name:
+                print ("2")
+                index = out_input_types.index(t) ; break
+
+        # vray inputs
+        elif "Displace".upper() in n_type:
+            if "Surface".upper() in input_name:
+                index = out_input_types.index(t) ; break
+        elif "VRayNodePhxShaderFoam".upper() in n_type:
+            if "Volume".upper() in input_name:
+                index = out_input_types.index(t) ; break
+        elif "VRayNodePhxShaderSim".upper() in n_type:
+            if "Volume".upper() in input_name:
+                index = out_input_types.index(t) ; break
 
     return index
 
@@ -66,8 +121,7 @@ def shader_out():
     # base parms
     node = nodes[0] ; out_node = None ; index = 0
     mat_builder = node.parent().type().name()
-    mat_index = input_type(node, mat_builder)
-
+    
     # work only inside VOP nodes
     if node.type().category().name() == "Vop":
         # define output parms
@@ -93,6 +147,7 @@ def shader_out():
             out_node = render_material_out(mat_builder, node.parent())
 
         # connect node to output
-        if out_node:
-            print (out_node.inputNames())
-            out_node.setInput(mat_index, node, index)
+        if node.outputConnectors():
+            if out_node:
+                mat_index = input_type(node, out_node, mat_builder)
+                out_node.setInput(mat_index, node, index)

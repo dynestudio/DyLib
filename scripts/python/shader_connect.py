@@ -1,8 +1,6 @@
-from types import LambdaType
 import hou
 
-# pendings:
-# support for other render engines (arnold, octane, vray, 3delight, renderman, mantra?, karma?)
+# supported render engines: redshift, octane, arnold, 3delight, vray, renderman
 
 def find_output_mat(parent, vop_builder_name, material_output_name):
     out_node = None
@@ -26,12 +24,22 @@ def render_material_out(mat_builder, parent):
     # redshift
     if mat_builder == "redshift_vopnet":
         out_node = find_output_mat(parent, mat_builder, "redshift_material")
+        if not out_node:
+            out_node = find_output_mat(parent, mat_builder, "redshift_light_shader")
     elif mat_builder == "rs_usd_material_builder":
         out_node = find_output_mat(parent, mat_builder, "redshift_usd_material")
+        if not out_node:
+            out_node = find_output_mat(parent, mat_builder, "redshift_usd_light_shader")
 
     # arnold
     elif mat_builder == "arnold_materialbuilder":
         out_node = find_output_mat(parent, mat_builder, "arnold_material")
+        if not out_node:
+            out_node = find_output_mat(parent, mat_builder, "arnold_light")
+    elif mat_builder == "arnold_vopnet":
+        out_node = find_output_mat(parent, mat_builder, "arnold_material")
+        if not out_node:
+            out_node = find_output_mat(parent, mat_builder, "arnold_light")
 
     # octane
     elif mat_builder == "octane_vopnet":
@@ -81,33 +89,44 @@ def input_type(node, out_node, mat_builder):
 
     for t in out_input_types:
         input_name = t.upper()
-        print (input_name)
-        print (n_type)
-        
+        # octane inputs
+        if mat_builder == "octane_vopnet":
+            if "Med".upper() in n_type:
+                if "medium".upper() in input_name:
+                    index = out_input_types.index(t) ; break
+
+        # vray inputs
+        if mat_builder == "vray_vop_material":
+            if "Displace".upper() in n_type:
+                if "Surface".upper() in input_name:
+                    index = out_input_types.index(t) ; break
+            elif "VRayNodePhxShaderFoam".upper() in n_type:
+                if "Volume".upper() in input_name:
+                    index = out_input_types.index(t) ; break
+            elif "VRayNodePhxShaderSim".upper() in n_type:
+                if "Volume".upper() in input_name:
+                    index = out_input_types.index(t) ; break
+            elif "VRayNodeBRDFScatterVolume".upper() in n_type:
+                index = 0 ; break
+
+        # arnold inputs
+        if mat_builder == "arnold_vopnet":
+            if "light".upper() in n_type:
+                index = 1 ; break
+            elif "gobo".upper() in n_type:
+                index = 1 ; break
+            elif "barndoor".upper() in n_type:
+                index = 1 ; break
+
         # generic inputs
-        if "Displacement".upper() in n_type:
+        elif "Displacement".upper() in n_type:
             if "Displacement".upper() in input_name:
                 index = out_input_types.index(t) ; break
         elif "Volume".upper() in n_type:
             if "Volume".upper() in input_name:
                 index = out_input_types.index(t) ; break
-
-        # octane inputs
-        elif "Med".upper() in n_type:
-            print ("1")
-            if "medium".upper() in input_name:
-                print ("2")
-                index = out_input_types.index(t) ; break
-
-        # vray inputs
-        elif "Displace".upper() in n_type:
-            if "Surface".upper() in input_name:
-                index = out_input_types.index(t) ; break
-        elif "VRayNodePhxShaderFoam".upper() in n_type:
-            if "Volume".upper() in input_name:
-                index = out_input_types.index(t) ; break
-        elif "VRayNodePhxShaderSim".upper() in n_type:
-            if "Volume".upper() in input_name:
+        elif "Environment".upper() in n_type:
+            if "Environment".upper() in input_name:
                 index = out_input_types.index(t) ; break
 
     return index

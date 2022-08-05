@@ -8,6 +8,7 @@
   <toolshelf name="dyne" label="Dyne">
     <memberTool name="add null"/>
     <memberTool name="add transform"/>
+    <memberTool name="shader_out"/>
     <memberTool name="dy Pscale Multiplier"/>
     <memberTool name="dy Pscale Remap"/>
     <memberTool name="attribwrangle1"/>
@@ -16,7 +17,6 @@
     <memberTool name="dy RS Light Instances Attrs"/>
     <memberTool name="redshift::TextureSampler_nodes_script"/>
     <memberTool name="dy Object Merge"/>
-    <memberTool name="shader_out"/>
   </toolshelf>
 
   <tool name="add null" label="add null" icon="PLASMA_App">
@@ -1862,7 +1862,7 @@ hou.hscript(h_preamble + h_extra_args + h_cmd)
 ]]></script>
   </tool>
 
-  <tool name="shader_out" label="Shader Connect OUT" icon="PLASMA_App">
+  <tool name="shader_out" label="Shader Connect" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import shader_connect as connect
 
 connect.shader_out()]]></script>

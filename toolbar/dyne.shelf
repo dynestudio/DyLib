@@ -6,9 +6,9 @@
  a single file. -->
 
   <toolshelf name="dyne" label="Dyne">
-    <memberTool name="add null"/>
+    <memberTool name="add_null"/>
     <memberTool name="add transform"/>
-    <memberTool name="geo_container"/>
+    <memberTool name="new_geo"/>
     <memberTool name="shader_out"/>
     <memberTool name="save_incremental"/>
     <memberTool name="dy Pscale Multiplier"/>
@@ -20,31 +20,6 @@
     <memberTool name="redshift::TextureSampler_nodes_script"/>
     <memberTool name="dy Object Merge"/>
   </toolshelf>
-
-  <tool name="add null" label="add null" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[selection = hou.selectedNodes()
-
-if len(selection) != 0:
-    selected = selection[0]
-    parent = selected.parent().path() + '/'
-    selNodeName = selected.name()
-    selNodePos = selected.position()  
-    
-    node = hou.node('/%s' %parent).createNode('null')
-    
-### Setting node position ###
-    node.setPosition(hou.Vector2(selNodePos[0], selNodePos[1]-1))
-    node.setInput(0, selected)
-    selected.setSelected(False)
-    node.setSelected(True)
-    
-### Setting render and display flags for respective contexts ###
-    try:
-        node.setDisplayFlag(True)
-        node.setRenderFlag(True)
-    except:
-        node.setDisplayFlag(True)]]></script>
-  </tool>
 
   <tool name="attribwrangle1" label="dy V Multiplier" icon="SOP_attribwrangle">
     <helpURL>operator:Sop/attribwrangle</helpURL>
@@ -1874,7 +1849,32 @@ shader_connect.shader_out()]]></script>
     <script scriptType="python"><![CDATA[hou.hipFile.saveAndIncrementFileName()]]></script>
   </tool>
 
-  <tool name="geo_container" label="Geometry Container" icon="PLASMA_App">
+  <tool name="new_geo" label="New Geometry" icon="OBJ_geo">
     <script scriptType="python"><![CDATA[]]></script>
+  </tool>
+
+  <tool name="add_null" label="Add Null" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[selection = hou.selectedNodes()
+
+if len(selection) != 0:
+    selected = selection[0]
+    parent = selected.parent().path() + '/'
+    selNodeName = selected.name()
+    selNodePos = selected.position()  
+    
+    node = hou.node('/%s' %parent).createNode('null')
+    
+### Setting node position ###
+    node.setPosition(hou.Vector2(selNodePos[0], selNodePos[1]-1))
+    node.setInput(0, selected)
+    selected.setSelected(False)
+    node.setSelected(True)
+    
+### Setting render and display flags for respective contexts ###
+    try:
+        node.setDisplayFlag(True)
+        node.setRenderFlag(True)
+    except:
+        node.setDisplayFlag(True)]]></script>
   </tool>
 </shelfDocument>

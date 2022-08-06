@@ -8,7 +8,9 @@
   <toolshelf name="dyne" label="Dyne">
     <memberTool name="add null"/>
     <memberTool name="add transform"/>
+    <memberTool name="geo_container"/>
     <memberTool name="shader_out"/>
+    <memberTool name="save_incremental"/>
     <memberTool name="dy Pscale Multiplier"/>
     <memberTool name="dy Pscale Remap"/>
     <memberTool name="attribwrangle1"/>
@@ -1862,9 +1864,17 @@ hou.hscript(h_preamble + h_extra_args + h_cmd)
 ]]></script>
   </tool>
 
-  <tool name="shader_out" label="Shader Connect" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import shader_connect as connect
+  <tool name="shader_out" label="Shader Connect" icon="hicon:/SVGIcons.index?NETVIEW_material_flag.svg">
+    <script scriptType="python"><![CDATA[import shader_connect
 
-connect.shader_out()]]></script>
+shader_connect.shader_out()]]></script>
+  </tool>
+
+  <tool name="save_incremental" label="Save Incremental" icon="hicon:/SVGIcons.index?MISC_python.svg">
+    <script scriptType="python"><![CDATA[hou.hipFile.saveAndIncrementFileName()]]></script>
+  </tool>
+
+  <tool name="geo_container" label="Geometry Container" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[]]></script>
   </tool>
 </shelfDocument>

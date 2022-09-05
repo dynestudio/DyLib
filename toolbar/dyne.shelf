@@ -6,15 +6,14 @@
  a single file. -->
 
   <toolshelf name="dyne" label="Dyne">
-    <memberTool name="add_null"/>
-    <memberTool name="add transform"/>
-    <memberTool name="dy_new_geo"/>
     <memberTool name="dy_shader_out"/>
     <memberTool name="dy_save_incremental"/>
+    <memberTool name="dy_new_geo"/>
+    <memberTool name="dy_obj_merge"/>
     <memberTool name="dy_change_color"/>
     <memberTool name="dy_default_color"/>
-    <memberTool name="dy_obj_merge"/>
     <memberTool name="redshift::TextureSampler_nodes_script"/>
+    <memberTool name="dy_rs_pbr_base"/>
     <memberTool name="dy Pscale Multiplier"/>
     <memberTool name="dy Pscale Remap"/>
     <memberTool name="attribwrangle1"/>
@@ -810,31 +809,6 @@ opcf $saved_path
 '''
 hou.hscript(h_preamble + h_extra_args + h_cmd)
 ]]></script>
-  </tool>
-
-  <tool name="add transform" label="Add Transform" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[selection = hou.selectedNodes()
-
-if len(selection) != 0:
-    selected = selection[0]
-    parent = selected.parent().path() + '/'
-    selNodeName = selected.name()
-    selNodePos = selected.position()  
-    
-    node = hou.node('/%s' %parent).createNode('xform')
-    
-### Setting node position ###
-    node.setPosition(hou.Vector2(selNodePos[0], selNodePos[1]-1))
-    node.setInput(0, selected)
-    selected.setSelected(False)
-    node.setSelected(True)
-    
-### Setting render and display flags for respective contexts ###
-    try:
-        node.setDisplayFlag(True)
-        node.setRenderFlag(True)
-    except:
-        node.setDisplayFlag(True)]]></script>
   </tool>
 
   <tool name="dy Pscale Multiplier" label="dy Pscale Multiplier" icon="SOP_attribwrangle">
@@ -1652,31 +1626,6 @@ hou.hscript(h_preamble + h_extra_args + h_cmd)
 ]]></script>
   </tool>
 
-  <tool name="add_null" label="Add Null" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[selection = hou.selectedNodes()
-
-if len(selection) != 0:
-    selected = selection[0]
-    parent = selected.parent().path() + '/'
-    selNodeName = selected.name()
-    selNodePos = selected.position()  
-    
-    node = hou.node('/%s' %parent).createNode('null')
-    
-### Setting node position ###
-    node.setPosition(hou.Vector2(selNodePos[0], selNodePos[1]-1))
-    node.setInput(0, selected)
-    selected.setSelected(False)
-    node.setSelected(True)
-    
-### Setting render and display flags for respective contexts ###
-    try:
-        node.setDisplayFlag(True)
-        node.setRenderFlag(True)
-    except:
-        node.setDisplayFlag(True)]]></script>
-  </tool>
-
   <tool name="dy_save_incremental" label="Save Incremental" icon="hicon:/SVGIcons.index?MISC_python.svg">
     <script scriptType="python"><![CDATA[hou.hipFile.saveAndIncrementFileName()]]></script>
   </tool>
@@ -1742,6 +1691,7 @@ dylib.default_color()]]></script>
   <tool name="dy_obj_merge" label="dy Object Merge" icon="SOP_object_merge">
     <toolMenuContext name="network">
       <contextNetType>OBJ</contextNetType>
+      <contextNetType>LOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
     <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
@@ -1750,5 +1700,9 @@ dylib.dy_obj_merge()]]></script>
     <keywordList>
       <keyword>obj merge</keyword>
     </keywordList>
+  </tool>
+
+  <tool name="dy_rs_pbr_base" label="dy RS PBR Base 2" icon="opdef:/Vop/rs_ogl_material?IconSVG">
+    <script scriptType="python"><![CDATA[]]></script>
   </tool>
 </shelfDocument>

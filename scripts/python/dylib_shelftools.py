@@ -24,8 +24,7 @@ def default_color():
             col = node.type().defaultColor()
             node.setColor(col)
 
-def new_geo():
-    # check network editor
+def current_context():
     network_editor = None
     for pane in hou.ui.paneTabs():
         if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
@@ -33,71 +32,97 @@ def new_geo():
             
     if network_editor:
         network_node = network_editor.pwd()
-        
-        if network_node.type().name() == "obj":
-            node = network_node.createNode('geo')
-            node.moveToGoodPosition()
-            return node
+    else:
+        network_node = None
+
+    return network_node
+
+def new_geo():
+    network_node = current_context()
+    
+    # obj context
+    if network_node.type().name() == "obj":
+        node = network_node.createNode('geo')
+        node.moveToGoodPosition()
+        return node
+
+    # stage context
+    elif network_node.type().name() == "stage":
+        node = network_node.createNode('sopcreate')
+        node.parm("asreference").set(1)
+        node.moveToGoodPosition()
+        return node
 
 def dy_obj_merge():
-    # create container
-    node = new_geo()
-    if not node:
-        exit()
-
-    node.setName("obj_merge", True)
-    
-    # add custom parms
-    parm_group = node.parmTemplateGroup()
-    folder = False
-
-    if not folder:
-        merge_path = hou.StringParmTemplate('objpath1', 'Object Path', 1, string_type = hou.stringParmType.NodeReference)
-        items = ["none", "local", "object"]
-        labels = ["None", "Into This Object", "Into Specified Object"]
-        xform_menu = hou.MenuParmTemplate('xformtype', 'Transform', items, labels, 2)
-        sep = hou.SeparatorParmTemplate("merge_sep")
-
-        parm_group.insertBefore('stdswitcher4', merge_path)
-        parm_group.insertAfter('objpath1', xform_menu)
-        parm_group.insertAfter("xformtype", sep)
+    # current context type
+    network_node = current_context()
+    if network_node.type().name() == "stage":
+        node = network_node.createNode('sopimport')
+        node.parm("asreference").set(1)
+        node.moveToGoodPosition()
+        return node
 
     else:
-        # create folder with multiple parameters at once
-        items = ["none", "local", "object"]
-        labels = ["None", "Into This Object", "Into Specified Object"]
-        f = hou.FolderParmTemplate(
-            "dy_obj_merge",
-            "Object Merge",
-            #folder_type=hou.folderType.Simple,
-            parm_templates=[
-                hou.StringParmTemplate('objpath1', 'Object Path', 1, string_type = hou.stringParmType.NodeReference),
-                hou.MenuParmTemplate('xformtype', 'Transform', items, labels, 2)
-            ]
-        )
+        # create container
+        node = new_geo()
+        if not node:
+            exit()
 
-        parm_group.insertBefore('stdswitcher4', f)
+        node.setName("obj_merge", True)
+        
+        # add custom parms
+        parm_group = node.parmTemplateGroup()
+        folder = False
 
-    # add parms
-    node.setParmTemplateGroup(parm_group)
+        if not folder:
+            merge_path = hou.StringParmTemplate('objpath1', 'Object Path', 1, string_type = hou.stringParmType.NodeReference)
+            items = ["none", "local", "object"]
+            labels = ["None", "Into This Object", "Into Specified Object"]
+            xform_menu = hou.MenuParmTemplate('xformtype', 'Transform', items, labels, 2)
+            sep = hou.SeparatorParmTemplate("merge_sep")
 
-    # child nodes
-    obj_merge = node.createNode("object_merge")
-    obj_merge.setName("get_obj", True)
-    null = node.createNode("null")
-    null.setName("OUT", True)
-    out = node.createNode("output")
-    out.setGenericFlag(hou.nodeFlag.Render, 1)
-    out.setGenericFlag(hou.nodeFlag.Visible, 1)
+            parm_group.insertBefore('stdswitcher4', merge_path)
+            parm_group.insertAfter('objpath1', xform_menu)
+            parm_group.insertAfter("xformtype", sep)
 
-    # child connections
-    null.setNextInput(obj_merge)
-    out.setNextInput(null)
+        else:
+            # create folder with multiple parameters at once
+            items = ["none", "local", "object"]
+            labels = ["None", "Into This Object", "Into Specified Object"]
+            f = hou.FolderParmTemplate(
+                "dy_obj_merge",
+                "Object Merge",
+                #folder_type=hou.folderType.Simple,
+                parm_templates=[
+                    hou.StringParmTemplate('objpath1', 'Object Path', 1, string_type = hou.stringParmType.NodeReference),
+                    hou.MenuParmTemplate('xformtype', 'Transform', items, labels, 2)
+                ]
+            )
 
-    # child positions
-    null.setPosition([0,-7])
-    out.setPosition([0,-9])
+            parm_group.insertBefore('stdswitcher4', f)
 
-    # make link expressions
-    obj_merge.parm("objpath1").setExpression("chsop('../objpath1')", hou.exprLanguage.Hscript)
-    obj_merge.parm("xformtype").setExpression("ch('../xformtype')", hou.exprLanguage.Hscript)
+        # add parms
+        node.setParmTemplateGroup(parm_group)
+
+        # child nodes
+        obj_merge = node.createNode("object_merge")
+        obj_merge.setName("get_obj", True)
+        null = node.createNode("null")
+        null.setName("OUT", True)
+        out = node.createNode("output")
+        out.setGenericFlag(hou.nodeFlag.Render, 1)
+        out.setGenericFlag(hou.nodeFlag.Visible, 1)
+
+        # child connections
+        null.setNextInput(obj_merge)
+        out.setNextInput(null)
+
+        # child positions
+        null.setPosition([0,-7])
+        out.setPosition([0,-9])
+
+        # make link expressions
+        obj_merge.parm("objpath1").setExpression("chsop('../objpath1')", hou.exprLanguage.Hscript)
+        obj_merge.parm("xformtype").setExpression("ch('../xformtype')", hou.exprLanguage.Hscript)
+
+        return node

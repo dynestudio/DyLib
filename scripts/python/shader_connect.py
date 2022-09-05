@@ -73,10 +73,11 @@ def output_connection_type(output_connections):
                 "collect"]
 
     for o in output_connections:
-        if o.outputNode().type().name() in engines:
-            out = o
-        if out:
-            break
+        if o.outputNode():
+            if o.outputNode().type().name() in engines:
+                out = o
+            if out:
+                break
 
     return out
 

@@ -11,6 +11,7 @@
     <memberTool name="new_geo"/>
     <memberTool name="shader_out"/>
     <memberTool name="save_incremental"/>
+    <memberTool name="change_color"/>
     <memberTool name="dy Pscale Multiplier"/>
     <memberTool name="dy Pscale Remap"/>
     <memberTool name="attribwrangle1"/>
@@ -1876,5 +1877,24 @@ if len(selection) != 0:
         node.setRenderFlag(True)
     except:
         node.setDisplayFlag(True)]]></script>
+  </tool>
+
+  <tool name="change_color" label="Change Node Color" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
+    <script scriptType="python"><![CDATA[def handleColorChange(color, alpha):
+
+    nodes = hou.selectedNodes()
+    if nodes:
+        for node in nodes:
+            # apply selected color
+            node.setColor(color)
+            
+    # original feedback example
+    #print ("Current color in editor:", color, ", alpha=", alpha)
+
+# open color editor
+hou.ui.openColorEditor(handleColorChange)
+
+# alternative function
+# hou.ui.selectColor(initial_color = None) - return hou.Color or None]]></script>
   </tool>
 </shelfDocument>

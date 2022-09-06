@@ -1,13 +1,130 @@
-#DyLib
+#
+#       @file       VEXpressions.txt
+#       @author     cdordelly
+#
+#       @since      2022-09-05
+#
+#       @brief      VEXpression presets for wrangler nodes.
+#
+#
 
 attribwrangle/snippet
-    [DyLib] Random vector attribute on each point
-    // Random vector attribute on each point
-	float main_seed = chf("main_seed");
-	float r = rand(@ptnum + 123 + main_seed);
-	float g = rand(@ptnum + 456 + main_seed);
-	float b = rand(@ptnum + 789 + main_seed);
+    [DyLib] Instance point attribute
+    // create the UI parameter to set the instance path
+    s@instance = chsop("instance_path");
 
-	v@rand = set(r,g,b);
+attribwrangle/snippet
+    [DyLib] Instance point attribute (random)
+    // create the UI parameter to set the instance path
+    string instance_pattern = chsop("instances_path")[:-1];
+    int rnum = int(ceil(rand(@ptnum + chf("Seed")) * chi("instances_amount")));
+    s@instance = instance_pattern + itoa(rnum);
 
+attribwrangle/snippet
+    [DyLib] Basic random float and vector attributes
+    float seed = chf("seed");
+    f@rand_f = rand(@ptnum + seed);
 
+    float rand_r = rand(@rand_f + seed + 147);
+    float rand_g = rand(@rand_f + seed + 258);
+    float rand_b = rand(@rand_f + seed + 369);
+
+    v@rand_v = set(rand_r, rand_g, rand_b);
+
+attribwrangle/snippet
+    [DyLib] RS light - instance attributes
+    //light_color (float 3)
+    //light_temperature (float)
+    //light_intensity (float)
+    //The point orientation attributes, for example “N”, can be used to align the directional lights.
+
+    v@light_color = v@rand_v;
+    f@light_intensity = fit01(f@rand_f, chf("intensity_min"), chf("intensity_max"));
+
+attribwrangle/snippet
+    [DyLib] Vector remap
+    // @v is loaded by default, you can change it for your desire vector attribute
+	// initial params
+    vector vn = normalize(v@v);
+    float
+        len = length(v@v),
+        mult = chf("multiplier"),
+        x = vn[0],
+        y = vn[1],
+        z = vn[2];
+
+    // initialize invert multiplier
+    int
+        inv_x = 1,
+        inv_y = 1,
+        inv_z = 1;
+
+    //temporally turn positive values below 0
+    if (vn[0] < 0) {
+        x = abs(x);
+        inv_x = -1;
+    }
+    if (vn[1] < 0) {
+        y = abs(y);
+        inv_y = -1;
+    }
+    if (vn[2] < 0) {
+        z = abs(z);
+        inv_z = -1;
+    }
+
+    // do remap
+    float
+        remap_x = chramp("remap", x) * inv_x,
+        remap_y = chramp("remap", y) * inv_y,
+        remap_z = chramp("remap", z) * inv_z;
+
+    // build remaped vector
+    vector remap = set( remap_x, remap_y, remap_z ) * len * mult;
+
+    // out velocity remaped
+    v@v = remap;
+
+attribwrangle/snippet
+    [DyLib] Vector remap (remap each component separately)
+    // @v is loaded by default, you can change it for your desire vector attribute
+	// initial params
+    vector vn = normalize(v@v);
+    float
+        len = length(v@v),
+        mult = chf("multiplier"),
+        x = vn[0],
+        y = vn[1],
+        z = vn[2];
+
+    // initialize invert multiplier
+    int
+        inv_x = 1,
+        inv_y = 1,
+        inv_z = 1;
+
+    //temporally turn positive values below 0
+    if (vn[0] < 0) {
+        x = abs(x);
+        inv_x = -1;
+    }
+    if (vn[1] < 0) {
+        y = abs(y);
+        inv_y = -1;
+    }
+    if (vn[2] < 0) {
+        z = abs(z);
+        inv_z = -1;
+    }
+
+    // do remap
+    float
+        remap_x = chramp("remap_x", x) * inv_x,
+        remap_y = chramp("remap_y", y) * inv_y,
+        remap_z = chramp("remap_z", z) * inv_z;
+
+    // build remaped vector
+    vector remap = set( remap_x, remap_y, remap_z ) * len * mult;
+
+    // out velocity remaped
+    v@v = remap;

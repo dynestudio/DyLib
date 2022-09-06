@@ -126,3 +126,83 @@ def dy_obj_merge():
         obj_merge.parm("xformtype").setExpression("ch('../xformtype')", hou.exprLanguage.Hscript)
 
         return node
+
+def rslight_instances_attrs():
+    # current context type
+    network_node = current_context()
+    if not network_node.type().name() == "geo":
+        exit()
+
+    # create nodes
+    obj_merge = network_node.createNode('object_merge')
+    obj_merge.setName("get_points", True)
+
+    attr_del = network_node.createNode('attribdelete')
+    attr_del.setName("clean_attrs", True)
+
+    attr_adj_float = network_node.createNode('attribadjustfloat')
+    attr_adj_float.setName("vary_intensity", True)
+
+    attr_adj_color = network_node.createNode('attribadjustcolor')
+    attr_adj_color.setName("vary_color", True)
+
+    pwrangler = network_node.createNode('attribwrangle')
+    pwrangler.setName("assign_RS_lights_attrs", True)
+
+    null = network_node.createNode('null')
+    null.setName("OUT_points_2_RS_lights_instances", True)
+
+    # nodes connections
+    attr_del.setNextInput(obj_merge)
+    attr_adj_float.setNextInput(attr_del)
+    attr_adj_color.setNextInput(attr_adj_float)
+    pwrangler.setNextInput(attr_adj_color)
+    null.setNextInput(pwrangler)
+
+    # nodes parameters
+    pink         = hou.Color((1, 0.529, 0.624))
+    yellow_light = hou.Color((1, 0.976, 0.666))
+
+    # attribute delete
+    attr_del.parm("ptdel").set("*")
+    attr_del.parm("vtxdel").set("*")
+    attr_del.parm("primdel").set("*")
+    attr_del.parm("dtldel").set("*")
+    attr_del.setGenericFlag(hou.nodeFlag.Bypass, 1)
+
+    # attr adjust float
+    attr_adj_float.parm("attrib").set("rand_f")
+    attr_adj_float.parm("valuetype").set(1)
+
+    # attr adjust vector
+    attr_adj_color.parm("attrib").set("rand_v")
+    attr_adj_color.parm("valuetype").set(1)
+
+    # point wrangler
+    pwrangler.setColor(pink)
+    code = '''//light_color (float 3)
+//light_temperature (float)
+//light_intensity (float)
+//The point orientation attributes, for example “N”, can be used to align the directional lights.
+
+v@light_color = v@rand_v;
+f@light_intensity = fit01(f@rand_f, chf("intensity_min"), chf("intensity_max"));'''
+    pwrangler.parm("snippet").set(code)
+    parmname = 'snippet'
+
+    import vexpressionmenu
+    vexpressionmenu.createSpareParmsFromChCalls(pwrangler, parmname)
+    pwrangler.parm("intensity_max").set(3)
+
+    # out null
+    null.setColor(yellow_light)
+    null.setDisplayFlag(True)
+    null.setRenderFlag(True)
+
+    # update positions
+    obj_merge.moveToGoodPosition()
+    attr_del.moveToGoodPosition()
+    attr_adj_float.moveToGoodPosition()
+    attr_adj_color.moveToGoodPosition()
+    pwrangler.moveToGoodPosition()
+    null.moveToGoodPosition()

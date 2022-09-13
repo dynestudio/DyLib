@@ -69,6 +69,9 @@ def link_rs_tex_psr(nodes):
 def main():
     # network
     network_node = dylib.current_context()
+    builders = ["redshift_vopnet", "rs_usd_material_builder"]
+    if not network_node.type().name() in builders:
+        exit()
 
     # main nodes
     texs = []

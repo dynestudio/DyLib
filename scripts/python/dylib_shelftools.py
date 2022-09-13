@@ -136,21 +136,27 @@ def rslight_instances_attrs():
     # create nodes
     obj_merge = network_node.createNode('object_merge')
     obj_merge.setName("get_points", True)
+    obj_merge.setCurrent(True, clear_all_selected=False)
 
     attr_del = network_node.createNode('attribdelete')
     attr_del.setName("clean_attrs", True)
+    attr_del.setCurrent(True, clear_all_selected=False)
 
     attr_adj_float = network_node.createNode('attribadjustfloat')
     attr_adj_float.setName("vary_intensity", True)
+    attr_adj_float.setCurrent(True, clear_all_selected=False)
 
     attr_adj_color = network_node.createNode('attribadjustcolor')
     attr_adj_color.setName("vary_color", True)
+    attr_adj_color.setCurrent(True, clear_all_selected=False)
 
     pwrangler = network_node.createNode('attribwrangle')
     pwrangler.setName("assign_RS_lights_attrs", True)
+    pwrangler.setCurrent(True, clear_all_selected=False)
 
     null = network_node.createNode('null')
     null.setName("OUT_points_2_RS_lights_instances", True)
+    null.setCurrent(True, clear_all_selected=False)
 
     # nodes connections
     attr_del.setNextInput(obj_merge)

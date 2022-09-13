@@ -6,6 +6,7 @@
  a single file. -->
 
   <toolshelf name="dyne" label="Dyne">
+    <memberTool name="dylib_support"/>
     <memberTool name="dy_shader_out"/>
     <memberTool name="dy_save_incremental"/>
     <memberTool name="dy_new_geo"/>
@@ -116,5 +117,11 @@ dylib.rslight_instances_attrs()]]></script>
     <keywordList>
       <keyword>rs light instances</keyword>
     </keywordList>
+  </tool>
+
+  <tool name="dylib_support" label="Donate for DyLib Support" icon="hicon:/SVGIcons.index?TOP_topfetchinput.svg">
+    <script scriptType="python"><![CDATA[import webbrowser
+url = "https://bit.ly/DyLib_support"
+webbrowser.open(url)]]></script>
   </tool>
 </shelfDocument>

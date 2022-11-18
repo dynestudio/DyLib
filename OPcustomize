@@ -1,2 +1,3 @@
 opunhide Sop shotsculpt
 ophide Vop dylib::rs_srgb_to_aces_cg::1.0
+ophide Vop dylib::mtlx_surface_visualizer::1.0

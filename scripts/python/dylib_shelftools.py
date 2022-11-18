@@ -37,21 +37,67 @@ def current_context():
 
     return network_node
 
+def active_network_editor():
+    network_editor = None
+    for pane in hou.ui.paneTabs():
+        if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
+            network_editor = pane
+
+    return network_editor
+
+def auto_connect(node_connect, connection_limit):
+    nodes = hou.selectedNodes()
+
+    if nodes:
+        if connection_limit > 0:
+            for i in range(len(nodes)):
+                if i > connection_limit:
+                    break
+                node = nodes[i]
+                node_connect.setNextInput(node)
+        else:
+            for node in nodes:
+                node_connect.setNextInput(node)
+
 def new_geo():
     network_node = current_context()
+
+    # network editor
+    network_editor = active_network_editor()
+    if not network_editor:
+        exit()
     
+    node = None
+
     # obj context
     if network_node.type().name() == "obj":
         node = network_node.createNode('geo')
-        node.moveToGoodPosition()
-        return node
 
     # stage context
     elif network_node.type().name() == "stage":
         node = network_node.createNode('sopcreate')
         node.parm("asreference").set(1)
-        node.moveToGoodPosition()
-        return node
+
+    node.setPosition(network_editor.cursorPosition())
+    #node.moveToGoodPosition()
+
+    return node
+
+def remove_connections(nodes, input, output):
+    for node in nodes:
+        # remove input connections
+        if input:
+            for inConnection in node.inputConnections():
+                inIndex = inConnection.inputIndex()
+                inNode = inConnection.outputNode()
+                inNode.setInput(inIndex, None, 0)
+
+        # remove output connections
+        if output:
+            for outConnection in node.outputConnections():
+                outIndex = outConnection.inputIndex()
+                outNode = outConnection.outputNode()
+                outNode.setInput(outIndex, None, 0)
 
 def dy_obj_merge():
     # current context type

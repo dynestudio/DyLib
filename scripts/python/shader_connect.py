@@ -147,27 +147,37 @@ def shader_out():
         # define output parms
         output_connections = node.outputConnections()
 
-        if output_connections:
-            # swap between available outputs
-            out = output_connection_type(output_connections)
-        
-            if out:
-                out_node = out.outputNode()
-                out_index = out.outputIndex()
+        # materialx excepcion
+        if "mtlx" in node.type().name():
+            dy_mtlx = hou.getenv("DYLIB_MTLX_VISUALIZER")
 
-                if (out_index + 1) == len(node.outputConnectors()):
-                    index = 0
+            if dy_mtlx:
+                import shader_connect_mtlx as mtlx
+                mtlx.shader_connect_mtlx(node)
+
+        # common render engines
+        else:
+            if output_connections:
+                # swap between available outputs
+                out = output_connection_type(output_connections)
+            
+                if out:
+                    out_node = out.outputNode()
+                    out_index = out.outputIndex()
+
+                    if (out_index + 1) == len(node.outputConnectors()):
+                        index = 0
+                    else:
+                        index = out_index + 1
+
                 else:
-                    index = out_index + 1
-
+                    out_node = render_material_out(mat_builder, node.parent())
+                    
             else:
                 out_node = render_material_out(mat_builder, node.parent())
-                
-        else:
-            out_node = render_material_out(mat_builder, node.parent())
 
-        # connect node to output
-        if node.outputConnectors():
-            if out_node:
-                mat_index = input_type(node, out_node, mat_builder)
-                out_node.setInput(mat_index, node, index)
+            # connect node to output
+            if node.outputConnectors():
+                if out_node:
+                    mat_index = input_type(node, out_node, mat_builder)
+                    out_node.setInput(mat_index, node, index)

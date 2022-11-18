@@ -18,11 +18,12 @@ We have some paid tools in our gumroad profile: https://gumroad.com/dynestudio
 
 ## Other
 
-The structure of this library is based on the AeLib and qLib Houdini library:  
+The structure of this library is inspired by MOPs, AeLib and qLib Houdini libraries:  
 https://github.com/Aeoll/Aelib  
 https://github.com/qLab/qLib
 
 ## License
+Final license description pending.
 DyLib from Dyne Ltda.
 For commercial and personal uses.   
 The DyLib granted shall not be copied, distributed, or-sold, offered for resale, transferred in whole or in part except that you may make one copy for archive purposes only.   

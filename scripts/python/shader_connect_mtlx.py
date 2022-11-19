@@ -5,14 +5,17 @@ def find_mtlx_child_mat(parent, vop_builder_name, material_output_name, parm, pa
     out_node = None
     # find output node
     if parent.type().name() == vop_builder_name:
-        if 'MaterialX' in parent.evalParm('tabmenumask'):
-            childs = parent.children()
 
-            for child in childs:
-                if material_output_name in child.type().name():
-                    if child.evalParm(parm) == parm_name:
-                        out_node = child
-                        break
+        parm_exist = dylib.parm_exist(parent.path() + '/tabmenumask')
+        if parm_exist:
+            if 'MaterialX' in parent.evalParm('tabmenumask'):
+                childs = parent.children()
+
+                for child in childs:
+                    if material_output_name in child.type().name():
+                        if child.evalParm(parm) == parm_name:
+                            out_node = child
+                            break
 
     return out_node
 

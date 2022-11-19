@@ -1,4 +1,4 @@
-import hou, random
+import hou, random, os
 
 def handleColorChange(color, alpha):
     nodes = hou.selectedNodes()
@@ -6,7 +6,7 @@ def handleColorChange(color, alpha):
         for node in nodes:
             # apply selected color
             node.setColor(color)
-            
+   
 def change_color():
     nodes = hou.selectedNodes()
     if nodes:
@@ -48,6 +48,11 @@ def random_color(group):
             for node in nodes:
                 color = random_color_data(0)
                 node.setColor(color)
+
+def parm_exist(parmpath):
+    nodepath, parmname = os.path.split(parmpath)
+    node = hou.node(nodepath)
+    return node.parmTuple(parmname) != None
 
 def current_context():
     network_editor = None

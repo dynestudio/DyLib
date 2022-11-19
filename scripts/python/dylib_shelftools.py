@@ -1,4 +1,4 @@
-import hou
+import hou, random
 
 def handleColorChange(color, alpha):
     nodes = hou.selectedNodes()
@@ -23,6 +23,31 @@ def default_color():
         for node in nodes:
             col = node.type().defaultColor()
             node.setColor(col)
+
+def random_color_data(seed):
+    if seed > 0:
+        random.seed(seed)
+    rcolor = None
+    # create random values for rgb channels
+    rr=round(random.uniform(0.2, 0.9),3)
+    rg=round(random.uniform(0.2, 0.9),3)
+    rb=round(random.uniform(0.2, 0.9),3)
+    # create vector color
+    rcolor = hou.Color((rr, rg, rb))
+    return rcolor
+
+def random_color(group):
+    nodes = hou.selectedNodes()
+    if nodes:
+        if group:
+            seed = random.uniform(0, 100000)
+            for node in nodes:
+                color = random_color_data(seed)
+                node.setColor(color)
+        else:
+            for node in nodes:
+                color = random_color_data(0)
+                node.setColor(color)
 
 def current_context():
     network_editor = None

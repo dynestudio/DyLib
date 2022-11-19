@@ -1,4 +1,5 @@
 desktop.ini
 *desktop.ini
 scripts/dev/*
+scripts/python/__pycache__
 examples/conversion/*

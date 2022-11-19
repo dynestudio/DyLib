@@ -9,19 +9,19 @@
 #
 
 attribwrangle/snippet
-    [DyLib] Instance point attribute
+    [dylib] Instance point attribute
     // create the UI parameter to set the instance path
     s@instance = chsop("instance_path");
 
 attribwrangle/snippet
-    [DyLib] Instance point attribute (random)
+    [dylib] Instance point attribute (random)
     // create the UI parameter to set the instance path
     string instance_pattern = chsop("instances_path")[:-1];
     int rnum = int(ceil(rand(@ptnum + chf("Seed")) * chi("instances_amount")));
     s@instance = instance_pattern + itoa(rnum);
 
 attribwrangle/snippet
-    [DyLib] Basic random float and vector attributes
+    [dylib] Basic random float and vector attributes
     float seed = chf("seed");
     f@rand_f = rand(@ptnum + seed);
 
@@ -32,7 +32,7 @@ attribwrangle/snippet
     v@rand_v = set(rand_r, rand_g, rand_b);
 
 attribwrangle/snippet
-    [DyLib] RS light - instance attributes
+    [dylib] RS light - instance attributes
     //light_color (float 3)
     //light_temperature (float)
     //light_intensity (float)
@@ -42,7 +42,7 @@ attribwrangle/snippet
     f@light_intensity = fit01(f@rand_f, chf("intensity_min"), chf("intensity_max"));
 
 attribwrangle/snippet
-    [DyLib] Vector remap
+    [dylib] Vector remap
     // @v is loaded by default, you can change it for your desire vector attribute
 	// initial params
     vector vn = normalize(v@v);
@@ -86,7 +86,7 @@ attribwrangle/snippet
     v@v = remap;
 
 attribwrangle/snippet
-    [DyLib] Vector remap (remap each component separately)
+    [dylib] Vector remap (remap each component separately)
     // @v is loaded by default, you can change it for your desire vector attribute
 	// initial params
     vector vn = normalize(v@v);

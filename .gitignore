@@ -3,3 +3,4 @@ desktop.ini
 scripts/dev/*
 scripts/python/__pycache__
 examples/conversion/*
+otls/backup

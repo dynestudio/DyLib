@@ -29,6 +29,10 @@ def shader_connect_mtlx(node):
     out_node = find_mtlx_child_mat(node.parent(), 'subnet', 'subnetconnector', 'parmname', 'surface')
     out_displ = find_mtlx_child_mat(node.parent(), 'subnet', 'subnetconnector', 'parmname', 'displacement')
 
+    # exit if not surface out node
+    if not out_node:
+        exit()
+
     # set conection
     out_node.setInput(0, node)
     node_outs = node.outputConnections()

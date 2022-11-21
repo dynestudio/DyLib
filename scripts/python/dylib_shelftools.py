@@ -132,7 +132,7 @@ def new_mat():
         exit()
     
     node = None
-    net_types = ['mat', 'matnet']
+    net_types = ['mat', 'matnet', 'materiallibrary']
 
     # obj context
     if network_node.type().name() in net_types:

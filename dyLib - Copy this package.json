@@ -4,7 +4,9 @@
 	[
         {"DYLIB" : ".. your local machine custom path../DyLib"},
 		{"DYLIB_MTLX_VISUALIZER" : 1},
-		{"DYLIB_NEW_MAT_TYPE" : "rs_usd_material_builder"}
+		{"DYLIB_NEW_MAT_TYPE" : "rs_usd_material_builder"},
+		{"DYLIB_DEFAULT_SCENE_MERGE" : 0},
+		{"DYLIB_DEFAULT_SCENE_PATH" : "your / scene / path.hip"}
 	],
 
 	"path":

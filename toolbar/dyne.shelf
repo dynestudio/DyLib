@@ -10,6 +10,7 @@
     <memberTool name="dy_shader_out"/>
     <memberTool name="dy_save_incremental"/>
     <memberTool name="dy_new_geo"/>
+    <memberTool name="dy_new_mat"/>
     <memberTool name="dy_obj_merge"/>
     <memberTool name="dy_node_change_color"/>
     <memberTool name="dy_node_random_color"/>
@@ -171,5 +172,11 @@ dylib.random_color(True)]]></script>
     <keywordList>
       <keyword>random color</keyword>
     </keywordList>
+  </tool>
+
+  <tool name="dy_new_mat" label="New Material" icon="hicon:/SVGIcons.index?LOP_componentmaterial.svg">
+    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+
+dylib.new_mat()]]></script>
   </tool>
 </shelfDocument>

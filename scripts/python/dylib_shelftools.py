@@ -108,8 +108,51 @@ def new_geo():
         node = network_node.createNode('sopcreate')
         node.parm("asreference").set(1)
 
+    else:
+        try:
+            objnet = network_node.createNode('objnet')
+            objnet.setPosition(network_editor.cursorPosition())
+            node = objnet.createNode('geo')
+        except:
+            exit()
+
     node.setPosition(network_editor.cursorPosition())
-    #node.moveToGoodPosition()
+
+    return node
+
+def new_mat():
+    mat_type = hou.getenv("DYLIB_NEW_MAT_TYPE")
+    if not mat_type:
+        exit()
+    network_node = current_context()
+
+    # network editor
+    network_editor = active_network_editor()
+    if not network_editor:
+        exit()
+    
+    node = None
+    net_types = ['mat', 'matnet']
+
+    # obj context
+    if network_node.type().name() in net_types:
+        node = network_node.createNode(mat_type)
+
+        # update position
+        node.setPosition(network_editor.cursorPosition())
+
+    elif network_node.type().name() == 'stage':
+        matnet = network_node.createNode('materiallibrary')
+        matnet.setPosition(network_editor.cursorPosition())
+        node = matnet.createNode(mat_type)
+
+    else:
+        try:
+            matnet = network_node.createNode('matnet')
+            matnet.setPosition(network_editor.cursorPosition())
+            node = matnet.createNode(mat_type)
+        except:
+            exit()
 
     return node
 

@@ -3,7 +3,8 @@
 	"env":
 	[
         {"DYLIB" : ".. your local machine custom path../DyLib"},
-		{"DYLIB_MTLX_VISUALIZER" : 1}
+		{"DYLIB_MTLX_VISUALIZER" : 1},
+		{"DYLIB_NEW_MAT_TYPE" : "rs_usd_material_builder"}
 	],
 
 	"path":

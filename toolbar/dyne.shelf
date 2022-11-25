@@ -12,10 +12,10 @@
     <memberTool name="dy_new_geo"/>
     <memberTool name="dy_new_mat"/>
     <memberTool name="dy_obj_merge"/>
-    <memberTool name="dy_node_change_color"/>
-    <memberTool name="dy_node_random_color"/>
-    <memberTool name="dyne_node_random_color_group"/>
-    <memberTool name="dy_node_default_color"/>
+    <memberTool name="dy_color_node_change"/>
+    <memberTool name="dy_color_node_random"/>
+    <memberTool name="dyne_color_node_random_group"/>
+    <memberTool name="dy_color_node_default"/>
     <memberTool name="dy_rs_pbr_base"/>
     <memberTool name="dy_rslight_instances_attrs"/>
   </toolshelf>
@@ -82,30 +82,13 @@ url = "https://bit.ly/DyLib_support"
 webbrowser.open(url)]]></script>
   </tool>
 
-  <tool name="dy_node_default_color" label="dy Default Node Color" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
-    <toolMenuContext name="network">
-      <contextNetType>OBJ</contextNetType>
-      <contextNetType>SOP</contextNetType>
-      <contextNetType>CHOP</contextNetType>
-      <contextNetType>ROP</contextNetType>
-      <contextNetType>SHOP</contextNetType>
-      <contextNetType>COP2</contextNetType>
-      <contextNetType>VOP</contextNetType>
-      <contextNetType>VOPNET</contextNetType>
-      <contextNetType>DOP</contextNetType>
-      <contextNetType>TOP</contextNetType>
-      <contextNetType>LOP</contextNetType>
-    </toolMenuContext>
-    <toolSubmenu>Dyne/</toolSubmenu>
+  <tool name="dy_new_mat" label="New Material" icon="hicon:/SVGIcons.index?LOP_componentmaterial.svg">
     <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
 
-dylib.default_color()]]></script>
-    <keywordList>
-      <keyword>default color</keyword>
-    </keywordList>
+dylib.new_mat()]]></script>
   </tool>
 
-  <tool name="dy_node_change_color" label="dy Change Node Color" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
+  <tool name="dy_color_node_change" label="dy Color Node Change" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
     <toolMenuContext name="network">
       <contextNetType>OBJ</contextNetType>
       <contextNetType>SOP</contextNetType>
@@ -128,7 +111,7 @@ dylib.change_color()]]></script>
     </keywordList>
   </tool>
 
-  <tool name="dy_node_random_color" label="dy Random Node Color" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
+  <tool name="dy_color_node_random" label="dy Color Node Random" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
     <toolMenuContext name="network">
       <contextNetType>OBJ</contextNetType>
       <contextNetType>SOP</contextNetType>
@@ -151,7 +134,7 @@ dylib.random_color(False)]]></script>
     </keywordList>
   </tool>
 
-  <tool name="dyne_node_random_color_group" label="dy Random Color Group" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
+  <tool name="dyne_color_node_random_group" label="dy Color Node Random Group" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
     <toolMenuContext name="network">
       <contextNetType>OBJ</contextNetType>
       <contextNetType>SOP</contextNetType>
@@ -174,9 +157,26 @@ dylib.random_color(True)]]></script>
     </keywordList>
   </tool>
 
-  <tool name="dy_new_mat" label="New Material" icon="hicon:/SVGIcons.index?LOP_componentmaterial.svg">
+  <tool name="dy_color_node_default" label="dy Color Node Default" icon="hicon:/SVGIcons.index?COP2_colorwheel.svg">
+    <toolMenuContext name="network">
+      <contextNetType>OBJ</contextNetType>
+      <contextNetType>SOP</contextNetType>
+      <contextNetType>CHOP</contextNetType>
+      <contextNetType>ROP</contextNetType>
+      <contextNetType>SHOP</contextNetType>
+      <contextNetType>COP2</contextNetType>
+      <contextNetType>VOP</contextNetType>
+      <contextNetType>VOPNET</contextNetType>
+      <contextNetType>DOP</contextNetType>
+      <contextNetType>TOP</contextNetType>
+      <contextNetType>LOP</contextNetType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne/</toolSubmenu>
     <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
 
-dylib.new_mat()]]></script>
+dylib.default_color()]]></script>
+    <keywordList>
+      <keyword>default color</keyword>
+    </keywordList>
   </tool>
 </shelfDocument>

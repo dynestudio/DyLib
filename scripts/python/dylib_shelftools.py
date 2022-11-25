@@ -117,11 +117,14 @@ def new_geo():
             exit()
 
     node.setPosition(network_editor.cursorPosition())
+    node.setCurrent(True, clear_all_selected=True)
 
     return node
 
 def new_mat():
     mat_type = hou.getenv("DYLIB_NEW_MAT_TYPE")
+    mat_auto_create_sop = hou.getenv("DYLIB_NEW_SOP_AUTO_CREATE_MATERIAL")
+
     if not mat_type:
         exit()
     network_node = current_context()
@@ -137,20 +140,44 @@ def new_mat():
     # obj context
     if network_node.type().name() in net_types:
         node = network_node.createNode(mat_type)
-
-        # update position
         node.setPosition(network_editor.cursorPosition())
+        node.setCurrent(True, clear_all_selected=True)
 
     elif network_node.type().name() == 'stage':
         matnet = network_node.createNode('materiallibrary')
         matnet.setPosition(network_editor.cursorPosition())
+        matnet.setCurrent(True, clear_all_selected=True)
         node = matnet.createNode(mat_type)
 
     else:
         try:
+            # create matnet and material builder
             matnet = network_node.createNode('matnet')
             matnet.setPosition(network_editor.cursorPosition())
             node = matnet.createNode(mat_type)
+
+            sel_nodes = [matnet]
+
+            # if geometry context, create material SOP and add the material
+            if mat_auto_create_sop:
+                if network_node.type().name() == 'geo':
+                    childs_types = []
+                    for child in network_node.children():
+                        childs_types.append(child.type().name())
+
+                    if not 'material' in childs_types:
+                        mat_path = "../" + matnet.name() + "/" + node.name()
+                        mat_sop = network_node.createNode('material')
+                        mat_sop.setPosition(network_editor.cursorPosition())
+                        mat_sop.setPosition([mat_sop.position()[0] - 2.25, mat_sop.position()[1]])
+                        mat_sop.parm('shop_materialpath1').set(mat_path)
+                        sel_nodes.append(mat_sop)
+
+            # update active selection
+            matnet.setCurrent(False, clear_all_selected=True)
+            for n in sel_nodes:
+                n.setCurrent(True, clear_all_selected=False)
+
         except:
             exit()
 

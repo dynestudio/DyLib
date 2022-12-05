@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menuDocument>
+    <menu>
+        
+        <subMenu id="dylib">
+        <label>dylib</label>
+
+            <subMenu id="dylib_variables">
+            <label>Global Variables</label>
+
+
+                <scriptItem id="dy_vars_activecam">
+                    <!-- <insertBefore /> -->
+                    <label>Node path name as $ACTIVECAM</label>
+                    <scriptCode>
+<![CDATA[
+import dylib_shelftools as dylib
+dylib.variable_create_activecam(kwargs['parms'][0].eval())
+]]>
+                    </scriptCode>
+                </scriptItem>
+
+
+                <scriptItem id="dy_vars_path_custom">
+                    <!-- <insertBefore /> -->
+                    <label>Node path name as Custom Variable</label>
+                    <scriptCode>
+<![CDATA[
+import dylib_shelftools as dylib
+dylib.variable_create_path_custom(kwargs['parms'][0].eval())
+]]>
+                    </scriptCode>
+                </scriptItem>
+
+
+            </subMenu>
+        </subMenu>
+    </menu>
+</menuDocument>

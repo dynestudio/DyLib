@@ -1,4 +1,4 @@
-import hou, random, os
+import hou, random, os, re
 
 def handleColorChange(color, alpha):
     nodes = hou.selectedNodes()
@@ -358,3 +358,41 @@ f@light_intensity = fit01(f@rand_f, chf("intensity_min"), chf("intensity_max"));
     attr_adj_color.moveToGoodPosition()
     pwrangler.moveToGoodPosition()
     null.moveToGoodPosition()
+
+def variable_create():
+    input_labels = ['Name', 'Value']
+    button_idx, values = hou.ui.readMultiInput('Create Global Variable:', input_labels, buttons=('OK','Cancel'), default_choice=0, close_choice=1)
+
+    # exit conditions
+    if button_idx:
+        exit()
+    if not values[0] or not values[1]:
+        exit()
+
+    # create the variable using Hscript
+    hou.hscript("set -g {} = {}".format(values[0].upper().replace(" ", "_"), values[1].replace(" ", "_")))
+
+def variable_create_activecam(cam_path):
+    cam = hou.node(cam_path)
+    cam_types = ['cam', 'camera']
+    
+    if cam:
+       if cam.type().name() in cam_types: 
+            cam_name = cam.name()
+
+            # create the variable using Hscript
+            hou.hscript("set -g ACTIVECAM = {}".format(cam_name))
+
+def variable_create_path_custom(path):
+    node = hou.node(path)
+
+    if node:
+        node_name = node.name()
+        button_idx, value = hou.ui.readInput('Variable Name:', buttons=('OK', 'Cancel'), severity=hou.severityType.Message, default_choice=0, close_choice=1, help=None, title=None, initial_contents=None)
+
+        # exit conditions
+        if button_idx:
+            exit()
+
+        # create the variable using Hscript
+        hou.hscript("set -g {} = {}".format(value.upper().replace(" ", "_"), node_name))

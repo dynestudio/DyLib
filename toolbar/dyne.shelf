@@ -18,6 +18,7 @@
     <memberTool name="dy_color_node_default"/>
     <memberTool name="dy_rs_pbr_base"/>
     <memberTool name="dy_rslight_instances_attrs"/>
+    <memberTool name="variable_create"/>
   </toolshelf>
 
   <tool name="dy_save_incremental" label="Save Incremental" icon="hicon:/SVGIcons.index?MISC_python.svg">
@@ -178,5 +179,11 @@ dylib.default_color()]]></script>
     <keywordList>
       <keyword>default color</keyword>
     </keywordList>
+  </tool>
+
+  <tool name="variable_create" label="Create Variable" icon="hicon:/SVGIcons.index?BUTTONS_label.svg">
+    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+
+dylib.variable_create()]]></script>
   </tool>
 </shelfDocument>

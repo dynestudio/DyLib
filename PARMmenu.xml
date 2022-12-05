@@ -11,7 +11,7 @@
 
                 <scriptItem id="dy_vars_activecam">
                     <!-- <insertBefore /> -->
-                    <label>Node path name as $ACTIVECAM</label>
+                    <label>Node path name as $CAM</label>
                     <scriptCode>
 <![CDATA[
 import dylib_shelftools as dylib

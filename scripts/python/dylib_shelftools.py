@@ -381,7 +381,10 @@ def variable_create_activecam(cam_path):
             cam_name = cam.name()
 
             # create the variable using Hscript
-            hou.hscript("set -g ACTIVECAM = {}".format(cam_name))
+            hou.hscript("set -g CAM = {}".format(cam_name))
+
+    else:
+        print('There is no node with this path.')
 
 def variable_create_path_custom(path):
     node = hou.node(path)
@@ -396,3 +399,6 @@ def variable_create_path_custom(path):
 
         # create the variable using Hscript
         hou.hscript("set -g {} = {}".format(value.upper().replace(" ", "_"), node_name))
+
+    else:
+        print('There is no node with this path.')

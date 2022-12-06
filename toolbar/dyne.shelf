@@ -19,6 +19,7 @@
     <memberTool name="dy_rs_pbr_base"/>
     <memberTool name="dy_rslight_instances_attrs"/>
     <memberTool name="variable_create"/>
+    <memberTool name="ocio_switcher"/>
   </toolshelf>
 
   <tool name="dy_save_incremental" label="Save Incremental" icon="hicon:/SVGIcons.index?MISC_python.svg">
@@ -185,5 +186,11 @@ dylib.default_color()]]></script>
     <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
 
 dylib.variable_create()]]></script>
+  </tool>
+
+  <tool name="ocio_switcher" label="OCIO Switcher" icon="VOP_ocio_import">
+    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+
+dylib.ocio_switcher()]]></script>
   </tool>
 </shelfDocument>

@@ -1,4 +1,4 @@
-import hou, random, os, re
+import hou, random, os
 
 def handleColorChange(color, alpha):
     nodes = hou.selectedNodes()
@@ -402,3 +402,74 @@ def variable_create_path_custom(path):
 
     else:
         print('There is no node with this path.')
+
+def ocio_switcher():
+    import json, subprocess
+    file = os.path.join( hou.getenv("DYLIB") , "ocio_paths.json")
+    
+    # check if .json file with configs data exist
+    if not os.path.exists(file):
+        print("'ocio_paths.json' file doesn't exist inside of $DYLIB library.")
+        exit()
+
+    # extract data from json file
+    with open(file) as f:
+        data = json.load(f)
+
+    # check if .json key are correctly created
+    try:
+        configs = data['ocio_paths']
+    except:
+        print ("'ocio_paths.json' file is not correctly structured, 'ocio_paths' key is missing.")
+        exit()
+
+    # get config data
+    choices = []
+    for d in configs:
+        choices.append( list(d.keys())[0] )
+
+    dlg = hou.ui.selectFromList(choices, exclusive=True, message=None, title="OCIO Switcher", column_header="Configs", num_visible_rows=5)
+
+    # continue if dlg has one input
+    if dlg:
+        config = choices[dlg[0]]
+        config_path = data['ocio_paths'][dlg[0]][config].replace("/", "\\")
+
+        ##### CHECK IF CONFIG FILE EXIST FIRST ##############
+        
+        # update Houdini's OCIO config file
+        hou.putenv("OCIO", config_path)
+
+        # update system variable OCIO path
+        if hou.ui.displayMessage("Update the system environment variable too?", buttons=("Yes", "No")) == 0:
+            command = "setx OCIO {}".format(config_path)
+            print (command)
+
+            #subprocess.run("setx OCIO C:\my_path_2")
+            subprocess.run(command)
+
+            exit()
+
+            startupinfo = None
+            creationflags = 0
+            hideWindow=True
+            readStdout=True
+            hideWindow=True
+            readStdout=True
+
+            if os.name == 'nt':
+                if hideWindow:
+                    # Python 2.6 has subprocess.STARTF_USESHOWWINDOW, and Python 2.7 has subprocess._subprocess.STARTF_USESHOWWINDOW, so check for both.
+                    if hasattr( subprocess, '_subprocess' ) and hasattr( subprocess._subprocess, 'STARTF_USESHOWWINDOW' ):
+                        startupinfo = subprocess.STARTUPINFO()
+                        startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
+                    elif hasattr( subprocess, 'STARTF_USESHOWWINDOW' ):
+                        startupinfo = subprocess.STARTUPINFO()
+                        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                else:
+                    # still show top-level windows, but don't show a console window
+                    CREATE_NO_WINDOW = 0x08000000   #MSDN process creation flag
+                    creationflags = CREATE_NO_WINDOW
+
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=startupinfo, creationflags=creationflags)
+            print (1)

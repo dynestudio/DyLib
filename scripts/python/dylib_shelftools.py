@@ -54,27 +54,6 @@ def parm_exist(parmpath):
     node = hou.node(nodepath)
     return node.parmTuple(parmname) != None
 
-def current_context():
-    network_editor = None
-    for pane in hou.ui.paneTabs():
-        if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
-            network_editor = pane
-            
-    if network_editor:
-        network_node = network_editor.pwd()
-    else:
-        network_node = None
-
-    return network_node
-
-def active_network_editor():
-    network_editor = None
-    for pane in hou.ui.paneTabs():
-        if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
-            network_editor = pane
-
-    return network_editor
-
 def auto_connect(node_connect, connection_limit):
     nodes = hou.selectedNodes()
 
@@ -88,6 +67,35 @@ def auto_connect(node_connect, connection_limit):
         else:
             for node in nodes:
                 node_connect.setNextInput(node)
+
+def active_network_editor():
+    network_editor = None
+    sel = 0 # select active pane method -- temp experimental test
+    if sel:
+        for pane in hou.ui.paneTabs():
+            if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
+                network_editor = pane
+    else:
+        network_editor = hou.ui.paneTabUnderCursor()
+
+    return network_editor
+
+def current_context():
+    network_editor = None
+    sel = 0 # select active pane method -- temp experimental test
+    if sel:
+        for pane in hou.ui.paneTabs():
+            if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
+                network_editor = pane
+                
+        if network_editor:
+            network_node = network_editor.pwd()
+        else:
+            network_node = None
+    else:
+        network_node = active_network_editor().pwd()
+
+    return network_node
 
 def new_geo():
     network_node = current_context()

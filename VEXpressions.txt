@@ -128,3 +128,8 @@ attribwrangle/snippet
 
     // out velocity remaped
     v@v = remap;
+
+attribwrangle/snippet
+    [dylib] Adjust Prim Length (groom library)
+    #include <groom.h>
+    adjustPrimLength(0,0,f@perimeter,f@perimeter * chf("density"));

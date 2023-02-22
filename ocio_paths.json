@@ -1,8 +1,8 @@
 {
     "ocio_paths":[
         {"Redshift Built-in" : "C:/ProgramData/Redshift/Data/OCIO/config.ocio"},
-        {"ACES 1.2" : "Y:/My Drive/Dyne - Softwares Data Bases/01_OCIO/aces_1.2/config.ocio"},
-        {"Saul RS Custom OCIO 2.0" : "Y:/My Drive/Dyne - Softwares Data Bases/01_OCIO/RedshiftOCIOConfigs-main_saul_espinosa/redshift-custom-config/config.ocio"},
-        {"Saul AGX" : "Y:/My Drive/Dyne - Softwares Data Bases/01_OCIO/RedshiftOCIOConfigs-main_saul_espinosa/AgX-Redshift/config.ocio"}
+        {"ACES 1.2" : "Y:/Dropbox (Dyne)/database/ocio/aces_1.2/config.ocio"},
+        {"Saul RS Custom OCIO 2.0" : "Y:/Dropbox (Dyne)/database/ocio/RedshiftOCIOConfigs-main_saul_espinosa/redshift-custom-config/config.ocio"},
+        {"Saul AGX" : "Y:/Dropbox (Dyne)/database/ocio/RedshiftOCIOConfigs-main_saul_espinosa/AgX-Redshift/config.ocio"}
     ]
 }

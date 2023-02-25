@@ -194,7 +194,7 @@ dylib.variable_create()]]></script>
 dylib.ocio_switcher()]]></script>
   </tool>
 
-  <tool name="dy_collect_delegates" label="Collect Delegates" icon="VOP_collect">
+  <tool name="dy_collect_delegates" label="dy Collect Delegates" icon="VOP_collect">
     <toolMenuContext name="network">
       <contextNetType>VOP</contextNetType>
       <contextNetType>VOPNET</contextNetType>

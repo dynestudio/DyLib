@@ -204,4 +204,20 @@ dylib.ocio_switcher()]]></script>
 
 dy_voptoolutils.collect_delegates()]]></script>
   </tool>
+
+  <tool name="dy_octane_subnet" label="dy Octane Subnet" icon="VOP_subnet">
+    <toolMenuContext name="network">
+      <contextNetType>VOP</contextNetType>
+      <contextNetType>VOPNET</contextNetType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne/</toolSubmenu>
+    <script scriptType="python"><![CDATA[import dy_voptoolutils
+import dy_toolutils
+
+network_editor = dy_toolutils.active_network_editor()
+network_node = dy_toolutils.current_context()
+pos = network_editor.cursorPosition()
+subnet = dy_voptoolutils.createOctaneSubnet(network_node, 'octane_subnet', 'Octane', 'Octane Subnet')
+subnet.setPosition(pos)]]></script>
+  </tool>
 </shelfDocument>

@@ -2,6 +2,7 @@ import hou
 import dy_toolutils
 
 def createMaskedMtlXSubnet(network_node, name, mask, folder_label):
+    # modified version from the original createdMaskedMtlXSubnet
     subnet_node = network_node.createNode('subnet')
     subnet_node.setName(name,True)
 

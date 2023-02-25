@@ -50,11 +50,6 @@ def random_color(group):
                 color = random_color_data(0)
                 node.setColor(color)
 
-def parm_exist(parmpath):
-    nodepath, parmname = os.path.split(parmpath)
-    node = hou.node(nodepath)
-    return node.parmTuple(parmname) != None
-
 def auto_connect(node_connect, connection_limit):
     nodes = hou.selectedNodes()
 
@@ -69,40 +64,11 @@ def auto_connect(node_connect, connection_limit):
             for node in nodes:
                 node_connect.setNextInput(node)
 
-def active_network_editor():
-    network_editor = None
-    sel = 0 # select active pane method -- temp experimental test
-    if sel:
-        for pane in hou.ui.paneTabs():
-            if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
-                network_editor = pane
-    else:
-        network_editor = hou.ui.paneTabUnderCursor()
-
-    return network_editor
-
-def current_context():
-    network_editor = None
-    sel = 0 # select active pane method -- temp experimental test
-    if sel:
-        for pane in hou.ui.paneTabs():
-            if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab():
-                network_editor = pane
-                
-        if network_editor:
-            network_node = network_editor.pwd()
-        else:
-            network_node = None
-    else:
-        network_node = active_network_editor().pwd()
-
-    return network_node
-
 def new_geo():
-    network_node = current_context()
+    network_node = dy_toolutils.current_context()
 
     # network editor
-    network_editor = active_network_editor()
+    network_editor = dy_toolutils.active_network_editor()
     if not network_editor:
         exit()
     
@@ -136,10 +102,10 @@ def new_mat():
 
     if not mat_type:
         exit()
-    network_node = current_context()
+    network_node = dy_toolutils.current_context()
 
     # network editor
-    network_editor = active_network_editor()
+    network_editor = dy_toolutils.active_network_editor()
     if not network_editor:
         exit()
     
@@ -210,7 +176,7 @@ def remove_connections(nodes, input, output):
 
 def dy_obj_merge():
     # current context type
-    network_node = current_context()
+    network_node = dy_toolutils.current_context()
     if network_node.type().name() == "stage":
         node = network_node.createNode('sopimport')
         node.parm("asreference").set(1)
@@ -284,7 +250,7 @@ def dy_obj_merge():
 
 def rslight_instances_attrs():
     # current context type
-    network_node = current_context()
+    network_node = dy_toolutils.current_context()
     if not network_node.type().name() == "geo":
         exit()
 

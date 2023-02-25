@@ -152,7 +152,7 @@ def shader_out():
             dy_mtlx = hou.getenv("DYLIB_MTLX_VISUALIZER")
 
             if dy_mtlx:
-                import shader_connect_mtlx as mtlx
+                import dy_shader_connect_mtlx as mtlx
                 mtlx.shader_connect_mtlx(node)
 
         # common render engines

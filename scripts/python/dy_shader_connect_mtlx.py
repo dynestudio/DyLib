@@ -1,12 +1,12 @@
 import hou
-import dylib_shelftools as dylib
+import dy_toolutils
 
 def find_mtlx_child_mat(parent, vop_builder_name, material_output_name, parm, parm_name):
     out_node = None
     # find output node
     if parent.type().name() == vop_builder_name:
 
-        parm_exist = dylib.parm_exist(parent.path() + '/tabmenumask')
+        parm_exist = dy_toolutils.parm_exist(parent.path() + '/tabmenumask')
         if parm_exist:
             if 'MaterialX' in parent.evalParm('tabmenumask'):
                 childs = parent.children()
@@ -53,10 +53,10 @@ def shader_connect_mtlx(node):
 
             # create a new dy_viz if doesn't exist
             if not dy_viz:
-                network_node = dylib.current_context()
+                network_node = dy_toolutils.current_context()
 
                 # network editor
-                network_editor = dylib.active_network_editor()
+                network_editor = dy_toolutils.active_network_editor()
                 if not network_editor:
                     exit()
 
@@ -79,10 +79,10 @@ def shader_connect_mtlx(node):
 
             # create a new mtlx surface if doesn't exist
             if not mtlx_surface:
-                network_node = dylib.current_context()
+                network_node = dy_toolutils.current_context()
 
                 # network editor
-                network_editor = dylib.active_network_editor()
+                network_editor = dy_toolutils.active_network_editor()
                 if not network_editor:
                     exit()
 

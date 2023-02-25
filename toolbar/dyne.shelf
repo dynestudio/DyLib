@@ -27,15 +27,15 @@
   </tool>
 
   <tool name="dy_new_geo" label="New Geometry" icon="OBJ_geo">
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.new_geo()]]></script>
   </tool>
 
   <tool name="dy_shader_out" label="Shader Connect" icon="hicon:/SVGIcons.index?NETVIEW_material_flag.svg">
-    <script scriptType="python"><![CDATA[import shader_connect
+    <script scriptType="python"><![CDATA[import dy_shader_connect
 
-shader_connect.shader_out()]]></script>
+dy_shader_connect.shader_out()]]></script>
   </tool>
 
   <tool name="dy_obj_merge" label="dy Object Merge" icon="SOP_object_merge">
@@ -44,7 +44,7 @@ shader_connect.shader_out()]]></script>
       <contextNetType>LOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.dy_obj_merge()]]></script>
     <keywordList>
@@ -58,7 +58,7 @@ dylib.dy_obj_merge()]]></script>
       <contextNetType>VOPNET</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import rs_pbr_base as rspbr
+    <script scriptType="python"><![CDATA[import dy_rs_pbr_base as rspbr
 
 rspbr.main()]]></script>
     <keywordList>
@@ -70,7 +70,7 @@ rspbr.main()]]></script>
     <toolMenuContext name="network">
       <contextNetType>SOP</contextNetType>
     </toolMenuContext>
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.rslight_instances_attrs()]]></script>
     <keywordList>
@@ -85,7 +85,7 @@ webbrowser.open(url)]]></script>
   </tool>
 
   <tool name="dy_new_mat" label="New Material" icon="hicon:/SVGIcons.index?LOP_componentmaterial.svg">
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.new_mat()]]></script>
   </tool>
@@ -105,7 +105,7 @@ dylib.new_mat()]]></script>
       <contextNetType>LOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.change_color()]]></script>
     <keywordList>
@@ -128,7 +128,7 @@ dylib.change_color()]]></script>
       <contextNetType>LOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.random_color(False)]]></script>
     <keywordList>
@@ -151,7 +151,7 @@ dylib.random_color(False)]]></script>
       <contextNetType>LOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.random_color(True)]]></script>
     <keywordList>
@@ -174,7 +174,7 @@ dylib.random_color(True)]]></script>
       <contextNetType>LOP</contextNetType>
     </toolMenuContext>
     <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.default_color()]]></script>
     <keywordList>
@@ -183,13 +183,13 @@ dylib.default_color()]]></script>
   </tool>
 
   <tool name="variable_create" label="Create Variable" icon="hicon:/SVGIcons.index?BUTTONS_label.svg">
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.variable_create()]]></script>
   </tool>
 
   <tool name="ocio_switcher" label="OCIO Switcher" icon="VOP_ocio_import">
-    <script scriptType="python"><![CDATA[import dylib_shelftools as dylib
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
 dylib.ocio_switcher()]]></script>
   </tool>

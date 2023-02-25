@@ -1,5 +1,5 @@
 import hou
-import dylib_shelftools as dylib
+import dy_toolutils
 
 # colors
 color_default = hou.Color((0.8, 0.8, 0.8))
@@ -68,7 +68,7 @@ def link_rs_tex_psr(nodes):
 
 def main():
     # network
-    network_node = dylib.current_context()
+    network_node = dy_toolutils.current_context()
     builders = ["redshift_vopnet", "rs_usd_material_builder"]
     if not network_node.type().name() in builders:
         exit()

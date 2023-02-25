@@ -1,4 +1,5 @@
 import hou, random, os
+import dy_toolutils
 
 def handleColorChange(color, alpha):
     nodes = hou.selectedNodes()
@@ -143,7 +144,7 @@ def new_mat():
         exit()
     
     node = None
-    net_types = ['mat', 'matnet', 'materiallibrary']
+    net_types = ['mat', 'matnet', 'materiallibrary', 'editmaterial']
 
     # obj context
     if network_node.type().name() in net_types:

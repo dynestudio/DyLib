@@ -18,6 +18,7 @@
     <memberTool name="dy_color_node_default"/>
     <memberTool name="dy_rs_pbr_base"/>
     <memberTool name="dy_rslight_instances_attrs"/>
+    <memberTool name="dy_usd_batch_render"/>
     <memberTool name="variable_create"/>
     <memberTool name="ocio_switcher"/>
   </toolshelf>
@@ -203,6 +204,9 @@ dylib.ocio_switcher()]]></script>
     <script scriptType="python"><![CDATA[import dy_voptoolutils
 
 dy_voptoolutils.collect_delegates()]]></script>
+    <keywordList>
+      <keyword>dy Collect Delegates Master Material</keyword>
+    </keywordList>
   </tool>
 
   <tool name="dy_octane_subnet" label="dy Octane Subnet" icon="VOP_subnet">
@@ -219,5 +223,21 @@ network_node = dy_toolutils.current_context()
 pos = network_editor.cursorPosition()
 subnet = dy_voptoolutils.createOctaneSubnet(network_node, 'octane_subnet', 'Octane', 'Octane Subnet')
 subnet.setPosition(pos)]]></script>
+    <keywordList>
+      <keyword>dy Octane Subnet Builder</keyword>
+    </keywordList>
+  </tool>
+
+  <tool name="dy_usd_batch_render" label="dy USD Batch Render" icon="hicon:/SVGIcons.index?DESKTOP_cdrom.svg">
+    <toolMenuContext name="network">
+      <contextNetType>LOP</contextNetType>
+    </toolMenuContext>
+    <toolSubmenu>Dyne/</toolSubmenu>
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
+
+dylib.batch_usd_render(False, False)]]></script>
+    <keywordList>
+      <keyword>dy batch usd render</keyword>
+    </keywordList>
   </tool>
 </shelfDocument>

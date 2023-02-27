@@ -419,3 +419,85 @@ def ocio_switcher():
 
         else:
             print ("Config file path error.\nCheck your 'ocio_paths.json' file on $DYLIB library directory.")
+
+def batch_usd_render(start_render, parallel):
+    nodes = hou.selectedNodes()
+
+    buttons = ('Single Frame', 'Frame Range', 'Cancel')
+    text = 'What are you going to batch?'
+    dlg = hou.ui.displayMessage(text, buttons, severity=hou.severityType.Message, close_choice=2, help=None, title='dy Batch USD Render')
+
+    # exit if dlg is cancelled
+    if dlg == 2:
+        exit()
+
+    if nodes:
+        # create TOP network
+        root = nodes[0].parent()
+        topnet = root.createNode('topnet')
+        topnet.setName("dy_USD_Batch_Render", True)
+        topnet.setColor(hou.Color((0.98, 0.275, 0.275)))
+        topnet.moveToGoodPosition()
+
+        # update TOP scheduler parameters
+        scheduler = topnet.children()[0]
+        scheduler.parm("maxprocsmenu").set(-1)
+
+
+        # create TOP nodes based on render method
+        render_node = None
+        fetchs = []
+
+        # parallel render
+        if parallel:
+            merge = topnet.createNode('waitforall')
+            for node in nodes:
+                if 'usdrender_rop' in node.type().name():
+                    out = node
+                    
+                    fetch = topnet.createNode('ropfetch')
+                    fetch.setName(node.name(), True)
+                    fetch.moveToGoodPosition()
+                    fetch.parm("roppath").set(out.path())
+                    fetchs.append(fetch)
+                    merge.setNextInput(fetch)
+            render_node = merge
+
+        # sequential render
+        else:
+            for node in nodes:
+                if 'usdrender_rop' in node.type().name():
+                    out = node
+
+                    fetch = topnet.createNode('ropfetch')
+                    fetch.setName(node.name(), True)
+                    fetch.moveToGoodPosition()
+                    fetch.parm("roppath").set(out.path())
+                    fetch.parm("pdg_workitemgeneration").set(3)
+                    fetch.parm('framegeneration').set(dlg)
+                    fetch.parm('singletask').set(1)
+                    fetchs.append(fetch)
+
+            # connect fetch nodes
+            for i in range(len(fetchs)):
+                # avoid first iteration
+                if i == 0:
+                    continue
+                # find current and previous node to connect them
+                current = fetchs[i]
+                prev = fetchs[i-1]
+                current.setNextInput(prev)
+
+            # update output flat
+            render_node = fetchs[-1]
+            render_node.setRenderFlag(True)
+            render_node.setDisplayFlag(True)
+
+        # ------------------------------------------------------------
+
+        # align created nodes
+        topnet.layoutChildren()
+
+        # start render after create the setup
+        if start_render:
+            render_node.cookWorkItems() 

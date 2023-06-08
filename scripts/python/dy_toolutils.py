@@ -74,3 +74,17 @@ def auto_connect(node_connect, connection_limit):
         else:
             for node in nodes:
                 node_connect.setNextInput(node)
+
+def viewport_update():
+    hou.hscript("glcache -c;")
+    hou.hscript("texcache -n")
+
+def find_gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def calculate_aspect_ratio(width, height):
+    gcd = find_gcd(width, height)
+    aspect_ratio = [width // gcd, height // gcd]
+    return aspect_ratio

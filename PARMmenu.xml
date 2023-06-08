@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menuDocument>
     <menu>
-        
+        <separatorItem/>
+
         <subMenu id="dylib">
         <label>dylib</label>
 
@@ -35,5 +36,8 @@ dylib.variable_create_path_custom(kwargs['parms'][0].eval())
 
             </subMenu>
         </subMenu>
+
+        <separatorItem/>
+        
     </menu>
 </menuDocument>

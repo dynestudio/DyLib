@@ -5,24 +5,6 @@
  Note, that two definitions of the same element are not allowed in
  a single file. -->
 
-  <toolshelf name="dyne" label="Dyne">
-    <memberTool name="dylib_support"/>
-    <memberTool name="dy_shader_out"/>
-    <memberTool name="dy_save_incremental"/>
-    <memberTool name="dy_new_geo"/>
-    <memberTool name="dy_new_mat"/>
-    <memberTool name="dy_obj_merge"/>
-    <memberTool name="dy_color_node_change"/>
-    <memberTool name="dy_color_node_random"/>
-    <memberTool name="dyne_color_node_random_group"/>
-    <memberTool name="dy_color_node_default"/>
-    <memberTool name="dy_rs_pbr_base"/>
-    <memberTool name="dy_rslight_instances_attrs"/>
-    <memberTool name="dy_usd_batch_render"/>
-    <memberTool name="variable_create"/>
-    <memberTool name="ocio_switcher"/>
-  </toolshelf>
-
   <tool name="dy_save_incremental" label="Save Incremental" icon="hicon:/SVGIcons.index?MISC_python.svg">
     <script scriptType="python"><![CDATA[hou.hipFile.saveAndIncrementFileName()]]></script>
   </tool>
@@ -240,4 +222,22 @@ dylib.batch_usd_render(False, False)]]></script>
       <keyword>dy batch usd render</keyword>
     </keywordList>
   </tool>
+
+  <toolshelf name="dylib" label="DyLib">
+    <memberTool name="dylib_support"/>
+    <memberTool name="dy_shader_out"/>
+    <memberTool name="dy_save_incremental"/>
+    <memberTool name="dy_new_geo"/>
+    <memberTool name="dy_new_mat"/>
+    <memberTool name="dy_obj_merge"/>
+    <memberTool name="dy_color_node_change"/>
+    <memberTool name="dy_color_node_random"/>
+    <memberTool name="dyne_color_node_random_group"/>
+    <memberTool name="dy_color_node_default"/>
+    <memberTool name="dy_rs_pbr_base"/>
+    <memberTool name="dy_rslight_instances_attrs"/>
+    <memberTool name="dy_usd_batch_render"/>
+    <memberTool name="variable_create"/>
+    <memberTool name="ocio_switcher"/>
+  </toolshelf>
 </shelfDocument>

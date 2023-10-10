@@ -67,7 +67,7 @@ def new_geo():
     # stage context
     elif network_node.type().name() == "stage":
         node = network_node.createNode('sopcreate')
-        node.parm("asreference").set(1)
+        #node.parm("asreference").set(1)
 
     else:
         try:

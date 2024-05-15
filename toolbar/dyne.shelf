@@ -177,20 +177,6 @@ dylib.variable_create()]]></script>
 dylib.ocio_switcher()]]></script>
   </tool>
 
-  <tool name="dy_collect_delegates" label="dy Collect Delegates" icon="VOP_collect">
-    <toolMenuContext name="network">
-      <contextNetType>VOP</contextNetType>
-      <contextNetType>VOPNET</contextNetType>
-    </toolMenuContext>
-    <toolSubmenu>Dyne/</toolSubmenu>
-    <script scriptType="python"><![CDATA[import dy_voptoolutils
-
-dy_voptoolutils.collect_delegates()]]></script>
-    <keywordList>
-      <keyword>dy Collect Delegates Master Material</keyword>
-    </keywordList>
-  </tool>
-
   <tool name="dy_octane_subnet" label="dy Octane Subnet" icon="VOP_subnet">
     <toolMenuContext name="network">
       <contextNetType>VOP</contextNetType>

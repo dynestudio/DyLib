@@ -5,7 +5,7 @@
  Note, that two definitions of the same element are not allowed in
  a single file. -->
 
-  <toolshelf name="install_libs" label="Install Libs">
+  <toolshelf name="dy_install_libs" label="Dy Install Libs">
     <memberTool name="install_lib"/>
     <memberTool name="install_lib_json"/>
     <memberTool name="install_lib_github"/>
@@ -26,6 +26,17 @@ def add_env_variable(env_list, key, value):
 
 def add_path_variable(path_list, key):
     path_list.append(f"${key}")
+
+def hou_reload_packages(lib_name, package_path):
+    print (f"Installing: {lib_name}")
+    spacer = "----------------"
+    print (f"{spacer} Packages reload START {spacer}")
+    load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
+    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles."
+    print (load_msg)
+    hou.ui.loadPackage(package_path)
+    print (f"{spacer} Packages reload END {spacer}")
+    print ("The packages reload process is finished.")
 
 # -----------------------------------------------------------------------
 
@@ -91,6 +102,9 @@ with open(package_path, "w") as f:
 
 # -----------------------------------------------------------------------
 
+# RELOAD HOUDINI PACKAGES
+hou_reload_packages(lib_name, package_path)
+exit()
 # RESTART HOUDINI
 if hou.ui.displayMessage("Do you want to restart Houdini?",
                          buttons=('No', 'Yes'),
@@ -143,6 +157,19 @@ import platform
 
 # -----------------------------------------------------------------------
 
+def hou_reload_packages(lib_name, package_path):
+    print (f"Installing: {lib_name}")
+    spacer = "----------------"
+    print (f"{spacer} Packages reload START {spacer}")
+    load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
+    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles."
+    print (load_msg)
+    hou.ui.loadPackage(package_path)
+    print (f"{spacer} Packages reload END {spacer}")
+    print ("The packages reload process is finished.")
+
+# -----------------------------------------------------------------------
+
 package_path = hou.ui.selectFile(start_directory=None,
                         title=None,
                         collapse_sequences=False,
@@ -156,6 +183,8 @@ package_path = hou.ui.selectFile(start_directory=None,
 
 if not package_path:
     exit()
+
+package_path = hou.expandString(package_path)
 
 # Read the package file
 with open(package_path, "r") as f:
@@ -218,6 +247,9 @@ with open(package_path, "w") as f:
 
 # -----------------------------------------------------------------------
 
+# RELOAD HOUDINI PACKAGES
+hou_reload_packages(var, package_path)
+exit()
 # RESTART HOUDINI
 if hou.ui.displayMessage("Do you want to restart Houdini?",
                          buttons=('No', 'Yes'),
@@ -393,6 +425,17 @@ def add_env_variable(env_list, key, value):
 
 def add_path_variable(path_list, key):
     path_list.append(f"${key}")
+
+def hou_reload_packages(lib_name, package_path):
+    print (f"Installing: {lib_name}")
+    spacer = "----------------"
+    print (f"{spacer} Packages reload START {spacer}")
+    load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
+    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles."
+    print (load_msg)
+    hou.ui.loadPackage(package_path)
+    print (f"{spacer} Packages reload END {spacer}")
+    print ("The packages reload process is finished.")
 
 # -----------------------------------------------------------------------
 
@@ -579,6 +622,9 @@ with open(package_path, "w") as f:
 
 # -----------------------------------------------------------------------
 
+# RELOAD HOUDINI PACKAGES
+hou_reload_packages(repo_name, package_path)
+exit()
 # RESTART HOUDINI
 if hou.ui.displayMessage("Do you want to restart Houdini?",
                          buttons=('No', 'Yes'),

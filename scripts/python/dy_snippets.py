@@ -11,6 +11,7 @@ def set_job_folders_back(hip_path, folders_back):
         path = path.parent
 
     path = str(path)
+    path = path.replace("\\", "/")
     hou.putenv('JOB', path)
 
 def change_parm_value(node_path, parm_name, parm_value, data_type):

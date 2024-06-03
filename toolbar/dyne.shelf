@@ -165,18 +165,6 @@ dylib.default_color()]]></script>
     </keywordList>
   </tool>
 
-  <tool name="variable_create" label="Create Variable" icon="hicon:/SVGIcons.index?BUTTONS_label.svg">
-    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
-
-dylib.variable_create()]]></script>
-  </tool>
-
-  <tool name="ocio_switcher" label="OCIO Switcher" icon="VOP_ocio_import">
-    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
-
-dylib.ocio_switcher()]]></script>
-  </tool>
-
   <tool name="dy_octane_subnet" label="dy Octane Subnet" icon="VOP_subnet">
     <toolMenuContext name="network">
       <contextNetType>VOP</contextNetType>
@@ -223,7 +211,19 @@ dylib.batch_usd_render(False, False)]]></script>
     <memberTool name="dy_rs_pbr_base"/>
     <memberTool name="dy_rslight_instances_attrs"/>
     <memberTool name="dy_usd_batch_render"/>
-    <memberTool name="variable_create"/>
-    <memberTool name="ocio_switcher"/>
+    <memberTool name="dy_variable_create"/>
+    <memberTool name="dy_rs_ocio_switcher"/>
   </toolshelf>
+
+  <tool name="dy_variable_create" label="Create Variable" icon="hicon:/SVGIcons.index?BUTTONS_label.svg">
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
+
+dylib.variable_create()]]></script>
+  </tool>
+
+  <tool name="dy_rs_ocio_switcher" label="OCIO Switcher" icon="VOP_ocio_import">
+    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
+
+dylib.ocio_switcher()]]></script>
+  </tool>
 </shelfDocument>

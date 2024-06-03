@@ -6,14 +6,14 @@
  a single file. -->
 
   <toolshelf name="dy_install_libs" label="Dy Install Libs">
-    <memberTool name="install_lib"/>
-    <memberTool name="install_lib_json"/>
-    <memberTool name="install_lib_github"/>
-    <memberTool name="create_lib"/>
-    <memberTool name="restart_houdini"/>
+    <memberTool name="dy_install_lib"/>
+    <memberTool name="dy_install_lib_json"/>
+    <memberTool name="dy_install_lib_github"/>
+    <memberTool name="dy_create_lib"/>
+    <memberTool name="dy_restart_houdini"/>
   </toolshelf>
 
-  <tool name="install_lib" label="Install Library" icon="hicon:/SVGIcons.index?DESKTOP_installer2.svg">
+  <tool name="dy_install_lib" label="Install Library" icon="hicon:/SVGIcons.index?DESKTOP_installer2.svg">
     <script scriptType="python"><![CDATA[import hou
 import json
 import os
@@ -126,30 +126,7 @@ else:
     print ("A library was installed, you must restart Houdini in order to use it.")]]></script>
   </tool>
 
-  <tool name="restart_houdini" label="Restart Houdini" icon="hicon:/SVGIcons.index?BUTTONS_reload.svg">
-    <script scriptType="python"><![CDATA[import os
-import platform
-
-# RESTART HOUDINI
-if hou.ui.displayMessage("Do you want to restart Houdini?",
-                         buttons=('No', 'Yes'),
-                         severity=hou.severityType.ImportantMessage,
-                         default_choice=0,
-                         close_choice=-1,
-                         help=None,
-                         title=None,
-                         details=None,
-                         details_label=None,
-                         details_expanded=False,
-                         suppress=hou.confirmType.NoConfirmType):
-    
-    if platform.system() == 'Windows':
-        os.system("taskkill /F /IM houdini.exe && start houdini.exe")
-    else:
-        print ("The restart feature works only in Windows.\nYou need to restart manually.")]]></script>
-  </tool>
-
-  <tool name="install_lib_json" label="Library from Json" icon="hicon:/SVGIcons.index?DESKTOP_installer.svg">
+  <tool name="dy_install_lib_json" label="Library from Json" icon="hicon:/SVGIcons.index?DESKTOP_installer.svg">
     <script scriptType="python"><![CDATA[import hou
 import json
 import os
@@ -271,122 +248,7 @@ else:
     print ("A library was installed, you must restart Houdini in order to use it.")]]></script>
   </tool>
 
-  <tool name="create_lib" label="Create Library" icon="hicon:/SVGIcons.index?BUTTONS_addassetdirectory.svg">
-    <script scriptType="python"><![CDATA[import json
-import os
-import hou
-
-# -----------------------------------------------------------------------
-
-def add_env_variable(env_list, key, value):
-    env_list.append({key: value})
-
-def add_path_variable(path_list, key):
-    path_list.append(f"${key}")
-
-# -----------------------------------------------------------------------
-
-lib_name = hou.ui.readInput(message = "Library Name:",
-                       buttons=('OK',),
-                       severity=hou.severityType.Message,
-                       default_choice=0,
-                       close_choice=-1,
-                       help=None,
-                       title=None,
-                       initial_contents=None)[1]
-
-if not lib_name:
-    exit()
-
-lib_dir = hou.ui.selectFile(start_directory=None,
-                        title=None,
-                        collapse_sequences=False,
-                        file_type=hou.fileType.Directory,
-                        pattern=None,
-                        default_value=None,
-                        multiple_select=False,
-                        image_chooser=None,
-                        chooser_mode=hou.fileChooserMode.Read,
-                        width=0, height=0)
-
-if not lib_dir:
-    exit()
-
-# -----------------------------------------------------------------------
-
-# Define the directory path
-lib_path = hou.expandString(os.path.join(lib_dir, lib_name))
-
-# Create the directory if it doesn't exist
-if not os.path.exists(lib_path):
-    os.makedirs(lib_path)
-
-lib_root_folders = ["config", "examples", "gallery", "otls", "presets", "scripts", "toolbar"]
-
-# Select the variable that defines the library path
-folders_index = hou.ui.selectFromList(lib_root_folders,
-                             default_choices=(1,3,5,6),
-                             exclusive=False,
-                             message="Select the variable that defines the library path:",
-                             title=None,
-                             column_header="Variables",
-                             num_visible_rows=10,
-                             clear_on_cancel=True,
-                             width=0, height=0,
-                             sort=False,
-                             condense_paths=False)
-
-if not folders_index:
-    exit()
-
-# -----------------------------------------------------------------------
-
-# Create library folders
-for index in folders_index:
-    folder = lib_root_folders[index]
-    folder_path = os.path.join(lib_path, folder)
-    os.makedirs(folder_path)
-
-    if folder == "scripts":
-        folder_path = os.path.join(folder_path, "python")
-        os.makedirs(folder_path)
-
-# -----------------------------------------------------------------------
-
-# Create the JSON package structure
-data = {
-    "enable": True,
-    "env": [],
-    "path": []
-}
-
-# Add environment variables
-add_env_variable(data["env"], lib_name, os.path.join(lib_dir, lib_name))
-
-# Add path variable
-add_path_variable(data["path"], lib_name)
-
-# -----------------------------------------------------------------------
-
-# Define the directory path
-directory = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
-
-# Create the directory if it doesn't exist
-if not os.path.exists(directory):
-    os.makedirs(directory)
-
-# Define the file path
-package_path = os.path.join(directory, lib_name + ".json")
-
-# Normalize the path
-package_path = os.path.normpath(package_path)
-
-# Write the JSON data to a file
-with open(package_path, "w") as f:
-    json.dump(data, f, indent=4)]]></script>
-  </tool>
-
-  <tool name="install_lib_github" label="Library from Github" icon="hicon:/SVGIcons.index?BUTTONS_download.svg">
+  <tool name="dy_install_lib_github" label="Library from Github" icon="hicon:/SVGIcons.index?BUTTONS_download.svg">
     <script scriptType="python"><![CDATA[import hou
 import webbrowser
 import subprocess
@@ -644,5 +506,143 @@ if hou.ui.displayMessage("Do you want to restart Houdini?",
         print ("The restart feature works only in Windows.\nYou need to restart manually.")
 else:
     print ("A library was installed, you must restart Houdini in order to use it.")]]></script>
+  </tool>
+
+  <tool name="dy_create_lib" label="Create Library" icon="hicon:/SVGIcons.index?BUTTONS_addassetdirectory.svg">
+    <script scriptType="python"><![CDATA[import json
+import os
+import hou
+
+# -----------------------------------------------------------------------
+
+def add_env_variable(env_list, key, value):
+    env_list.append({key: value})
+
+def add_path_variable(path_list, key):
+    path_list.append(f"${key}")
+
+# -----------------------------------------------------------------------
+
+lib_name = hou.ui.readInput(message = "Library Name:",
+                       buttons=('OK',),
+                       severity=hou.severityType.Message,
+                       default_choice=0,
+                       close_choice=-1,
+                       help=None,
+                       title=None,
+                       initial_contents=None)[1]
+
+if not lib_name:
+    exit()
+
+lib_dir = hou.ui.selectFile(start_directory=None,
+                        title=None,
+                        collapse_sequences=False,
+                        file_type=hou.fileType.Directory,
+                        pattern=None,
+                        default_value=None,
+                        multiple_select=False,
+                        image_chooser=None,
+                        chooser_mode=hou.fileChooserMode.Read,
+                        width=0, height=0)
+
+if not lib_dir:
+    exit()
+
+# -----------------------------------------------------------------------
+
+# Define the directory path
+lib_path = hou.expandString(os.path.join(lib_dir, lib_name))
+
+# Create the directory if it doesn't exist
+if not os.path.exists(lib_path):
+    os.makedirs(lib_path)
+
+lib_root_folders = ["config", "examples", "gallery", "otls", "presets", "scripts", "toolbar"]
+
+# Select the variable that defines the library path
+folders_index = hou.ui.selectFromList(lib_root_folders,
+                             default_choices=(1,3,5,6),
+                             exclusive=False,
+                             message="Select the variable that defines the library path:",
+                             title=None,
+                             column_header="Variables",
+                             num_visible_rows=10,
+                             clear_on_cancel=True,
+                             width=0, height=0,
+                             sort=False,
+                             condense_paths=False)
+
+if not folders_index:
+    exit()
+
+# -----------------------------------------------------------------------
+
+# Create library folders
+for index in folders_index:
+    folder = lib_root_folders[index]
+    folder_path = os.path.join(lib_path, folder)
+    os.makedirs(folder_path)
+
+    if folder == "scripts":
+        folder_path = os.path.join(folder_path, "python")
+        os.makedirs(folder_path)
+
+# -----------------------------------------------------------------------
+
+# Create the JSON package structure
+data = {
+    "enable": True,
+    "env": [],
+    "path": []
+}
+
+# Add environment variables
+add_env_variable(data["env"], lib_name, os.path.join(lib_dir, lib_name))
+
+# Add path variable
+add_path_variable(data["path"], lib_name)
+
+# -----------------------------------------------------------------------
+
+# Define the directory path
+directory = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+
+# Create the directory if it doesn't exist
+if not os.path.exists(directory):
+    os.makedirs(directory)
+
+# Define the file path
+package_path = os.path.join(directory, lib_name + ".json")
+
+# Normalize the path
+package_path = os.path.normpath(package_path)
+
+# Write the JSON data to a file
+with open(package_path, "w") as f:
+    json.dump(data, f, indent=4)]]></script>
+  </tool>
+
+  <tool name="dy_restart_houdini" label="Restart Houdini" icon="hicon:/SVGIcons.index?BUTTONS_reload.svg">
+    <script scriptType="python"><![CDATA[import os
+import platform
+
+# RESTART HOUDINI
+if hou.ui.displayMessage("Do you want to restart Houdini?",
+                         buttons=('No', 'Yes'),
+                         severity=hou.severityType.ImportantMessage,
+                         default_choice=0,
+                         close_choice=-1,
+                         help=None,
+                         title=None,
+                         details=None,
+                         details_label=None,
+                         details_expanded=False,
+                         suppress=hou.confirmType.NoConfirmType):
+    
+    if platform.system() == 'Windows':
+        os.system("taskkill /F /IM houdini.exe && start houdini.exe")
+    else:
+        print ("The restart feature works only in Windows.\nYou need to restart manually.")]]></script>
   </tool>
 </shelfDocument>

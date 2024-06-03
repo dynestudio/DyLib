@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menuDocument>
+    <menu>
+
+    <separatorItem/>
+
+        <subMenu id="dylib">
+        <label>dylib</label>
+
+            <subMenu id="dy_generic_tools">
+            <label>Generic Tools</label>
+
+
+                <scriptItem id="dy_recook_node">
+                    <!-- <insertBefore /> -->
+                    <label>Recook Node</label>
+                    <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.recook_node(kwargs)
+]]>
+                    </scriptCode>
+                </scriptItem>
+
+
+            </subMenu>
+        </subMenu>
+
+    </menu>
+</menuDocument>

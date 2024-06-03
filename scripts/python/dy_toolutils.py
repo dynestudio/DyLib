@@ -88,3 +88,9 @@ def calculate_aspect_ratio(width, height):
     gcd = find_gcd(width, height)
     aspect_ratio = [width // gcd, height // gcd]
     return aspect_ratio
+
+def recook_node(kwargs):
+    #node = kwargs['node']
+    nodes = kwargs['items']
+    for node in nodes:
+        node.cook(force=True)

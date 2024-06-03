@@ -15,7 +15,7 @@
                     <label>Node path name as $CAM</label>
                     <scriptCode>
 <![CDATA[
-import dylib_shelftools as dylib
+import dy_shelftools as dylib
 dylib.variable_create_activecam(kwargs['parms'][0].eval())
 ]]>
                     </scriptCode>
@@ -27,7 +27,7 @@ dylib.variable_create_activecam(kwargs['parms'][0].eval())
                     <label>Node path name as Custom Variable</label>
                     <scriptCode>
 <![CDATA[
-import dylib_shelftools as dylib
+import dy_shelftools as dylib
 dylib.variable_create_path_custom(kwargs['parms'][0].eval())
 ]]>
                     </scriptCode>

@@ -212,7 +212,6 @@ dylib.batch_usd_render(False, False)]]></script>
     <memberTool name="dy_rslight_instances_attrs"/>
     <memberTool name="dy_usd_batch_render"/>
     <memberTool name="dy_variable_create"/>
-    <memberTool name="dy_rs_ocio_switcher"/>
   </toolshelf>
 
   <tool name="dy_variable_create" label="Create Variable" icon="hicon:/SVGIcons.index?BUTTONS_label.svg">
@@ -221,9 +220,5 @@ dylib.batch_usd_render(False, False)]]></script>
 dylib.variable_create()]]></script>
   </tool>
 
-  <tool name="dy_rs_ocio_switcher" label="OCIO Switcher" icon="VOP_ocio_import">
-    <script scriptType="python"><![CDATA[import dy_shelftools as dylib
 
-dylib.ocio_switcher()]]></script>
-  </tool>
 </shelfDocument>

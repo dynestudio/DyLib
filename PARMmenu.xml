@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menuDocument>
     <menu>
-        <separatorItem/>
+
+    <separatorItem/>
 
         <subMenu id="dylib">
-        <label>dylib</label>
+        <label>DyLib</label>
 
-            <subMenu id="dylib_variables">
+            <subMenu id="dy_variables">
             <label>Global Variables</label>
 
 

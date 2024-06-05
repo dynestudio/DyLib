@@ -5,7 +5,7 @@
     <separatorItem/>
 
         <subMenu id="dylib">
-        <label>dylib</label>
+        <label>DyLib</label>
 
             <subMenu id="dy_generic_tools">
             <label>Generic Tools</label>

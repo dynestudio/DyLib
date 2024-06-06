@@ -13,6 +13,9 @@ def active_network_editor():
     else:
         network_editor = hou.ui.paneTabUnderCursor()
     '''
+
+    if not network_editor.type().name() == "network_editor":
+        network_editor = [pane for pane in hou.ui.paneTabs() if isinstance(pane, hou.NetworkEditor) and pane.isCurrentTab()][-1]
     return network_editor
 
 def current_context():

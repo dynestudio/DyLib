@@ -6,8 +6,8 @@
  a single file. -->
 
   <toolshelf name="dy_install_libs" label="Dy Install Libs">
-    <memberTool name="dy_install_lib"/>
     <memberTool name="dy_install_lib_json"/>
+    <memberTool name="dy_install_lib"/>
     <memberTool name="dy_install_lib_github"/>
     <memberTool name="dy_create_lib"/>
     <memberTool name="dy_restart_houdini"/>

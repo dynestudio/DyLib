@@ -32,9 +32,19 @@ def hou_reload_packages(lib_name, package_path):
     spacer = "----------------"
     print (f"{spacer} Packages reload START {spacer}")
     load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
-    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles."
+    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles.\n"
     print (load_msg)
-    hou.ui.loadPackage(package_path)
+
+    try:
+        with hou.InterruptableOperation(
+            "Reloading Houdini Packages", open_interrupt_dialog=True
+        ) as operation:
+            print(f"Loading package: {package_path}")
+            hou.ui.loadPackage(package_path)
+            operation.updateProgress(1.0)  # Indicate that the operation is complete
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
     print (f"{spacer} Packages reload END {spacer}")
     print ("The packages reload process is finished.")
 
@@ -139,9 +149,19 @@ def hou_reload_packages(lib_name, package_path):
     spacer = "----------------"
     print (f"{spacer} Packages reload START {spacer}")
     load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
-    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles."
+    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles.\n"
     print (load_msg)
-    hou.ui.loadPackage(package_path)
+
+    try:
+        with hou.InterruptableOperation(
+            "Reloading Houdini Packages", open_interrupt_dialog=True
+        ) as operation:
+            print(f"Loading package: {package_path}")
+            hou.ui.loadPackage(package_path)
+            operation.updateProgress(1.0)  # Indicate that the operation is complete
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
     print (f"{spacer} Packages reload END {spacer}")
     print ("The packages reload process is finished.")
 
@@ -293,9 +313,19 @@ def hou_reload_packages(lib_name, package_path):
     spacer = "----------------"
     print (f"{spacer} Packages reload START {spacer}")
     load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
-    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles."
+    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles.\n"
     print (load_msg)
-    hou.ui.loadPackage(package_path)
+
+    try:
+        with hou.InterruptableOperation(
+            "Reloading Houdini Packages", open_interrupt_dialog=True
+        ) as operation:
+            print(f"Loading package: {package_path}")
+            hou.ui.loadPackage(package_path)
+            operation.updateProgress(1.0)  # Indicate that the operation is complete
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
     print (f"{spacer} Packages reload END {spacer}")
     print ("The packages reload process is finished.")
 

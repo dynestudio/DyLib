@@ -16,8 +16,8 @@
                     <label>Recook Node</label>
                     <scriptCode>
 <![CDATA[
-import dy_toolutils as dylib
-dylib.recook_node(kwargs)
+import dy_toolutils
+dy_toolutils.recook_node(kwargs)
 ]]>
                     </scriptCode>
                 </scriptItem>

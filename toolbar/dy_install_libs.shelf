@@ -656,8 +656,13 @@ with open(package_path, "w") as f:
   <tool name="dy_restart_houdini" label="Restart Houdini" icon="hicon:/SVGIcons.index?BUTTONS_reload.svg">
     <script scriptType="python"><![CDATA[import os
 import platform
+import hou
 
 # RESTART HOUDINI
+#if not platform.system() == 'Windows':
+#    print ("The restart feature works only in Windows.\nYou need to restart manually.")
+#    exit()
+
 if hou.ui.displayMessage("Do you want to restart Houdini?",
                          buttons=('No', 'Yes'),
                          severity=hou.severityType.ImportantMessage,
@@ -670,9 +675,28 @@ if hou.ui.displayMessage("Do you want to restart Houdini?",
                          details_expanded=False,
                          suppress=hou.confirmType.NoConfirmType):
     
-    if platform.system() == 'Windows':
-        os.system("taskkill /F /IM houdini.exe && start houdini.exe")
+    if hou.ui.displayMessage("Do you want to open the same file?",
+                         buttons=('No', 'Yes'),
+                         severity=hou.severityType.ImportantMessage,
+                         default_choice=1,
+                         close_choice=-1,
+                         help=None,
+                         title=None,
+                         details=None,
+                         details_label=None,
+                         details_expanded=False,
+                         suppress=hou.confirmType.NoConfirmType):
+
+        hip_file_path = hou.hipFile.path()
+        if platform.system() == 'Windows':
+            os.system(f'taskkill /F /IM houdini.exe && start houdini.exe "{hip_file_path}"')
+        else:
+            os.system(f'pkill houdini && houdini "{hip_file_path}"')
+
     else:
-        print ("The restart feature works only in Windows.\nYou need to restart manually.")]]></script>
+        if platform.system() == 'Windows':
+            os.system(f'taskkill /F /IM houdini.exe && start houdini.exe')
+        else:
+            os.system(f'pkill houdini && houdini')]]></script>
   </tool>
 </shelfDocument>

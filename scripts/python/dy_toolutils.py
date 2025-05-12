@@ -145,7 +145,8 @@ def parm_localize_file(kwargs):
 
     choices = ["abc", "geo", "sim", "cache", "footage", "render", "tex", "vdb", "usd", "scripts", "comp", "misc", "other", "audio", "video"]
 
-    choices = sorted(choices) + ["custom directory"]
+    custom_entry = "custom directory"
+    choices = sorted(choices) + [custom_entry]
 
     dlg = hou.ui.selectFromList(choices,
                                 default_choices=(choices.index("tex"),),
@@ -165,7 +166,7 @@ def parm_localize_file(kwargs):
 
     target_dir_name = choices[dlg[0]]
 
-    if target_dir_name == "custom directory":
+    if target_dir_name == custom_entry:
         dlg_custom = hou.ui.readInput("Custom Directory:",
                                             buttons=('OK', 'Cancel'),
                                             severity=hou.severityType.Message,

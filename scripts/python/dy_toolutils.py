@@ -136,6 +136,7 @@ def parm_string_replace_by_var(kwargs):
     # replace string in selected prms
     for parm in kwargs:
         src = parm.unexpandedString()
+        src = src.replace("\\", "/")
         new_str = src.replace(var, f"${dlg[1]}")
         parm.set(new_str)
 

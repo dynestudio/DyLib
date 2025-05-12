@@ -1,4 +1,4 @@
-import hou, os, shutil
+import hou, os, shutil, re
 
 def active_network_editor():
     network_editor = None
@@ -139,6 +139,90 @@ def parm_string_replace_by_var(kwargs):
         new_str = src.replace(var, f"${dlg[1]}")
         parm.set(new_str)
 
+def detect_and_convert_sequence(file_path):
+    """
+    Detect if a file is part of a sequence and convert the path to use Houdini frame expressions.
+    
+    Args:
+        file_path (str): The path to the file
+        
+    Returns:
+        tuple: (converted_path, is_sequence)
+    """
+    # Get the directory and filename
+    directory = os.path.dirname(file_path)
+    directory_name = os.path.basename(directory)
+    filename = os.path.basename(file_path)
+    debug = False
+    
+    if debug:
+        print(f"Directory: {directory}")
+        print(f"Filename: {filename}")
+    
+    # Look for numeric patterns in the filename
+    # This regex finds numbers with optional leading zeros
+    match = re.search(r'(.+?)(\d+)(\.\w+)$', filename)
+    
+    if not match:
+        # No numeric pattern found at the end of the filename
+        print("No numeric pattern found")
+        return file_path, False
+    
+    prefix, number_str, extension = match.groups()
+    padding = len(number_str)
+    
+    if debug:
+        print(f"Prefix: {prefix}")
+        print(f"Number: {number_str}")
+        print(f"Extension: {extension}")
+        print(f"Padding: {padding}")
+    
+    # Check if there are other files in the sequence
+    is_sequence = False
+    
+    # List all files in the directory
+    if os.path.exists(directory):
+        if debug:
+            print(f"Directory exists: {directory}")
+        files_in_dir = os.listdir(directory)
+        if debug:
+            print(f"Files in directory: {len(files_in_dir)}")
+        
+        # Create a pattern to match sequence files
+        pattern = f"^{re.escape(prefix)}\\d{{{padding}}}{re.escape(extension)}$"
+        if debug:
+            print(f"Pattern for matching: {pattern}")
+        
+        sequence_files = []
+        src_file = None
+        for other_file in files_in_dir:
+            # Skip the current file
+            if other_file == filename:
+                src_file = other_file
+                continue      
+            # Check if this file matches the pattern but with a different number
+            if re.match(pattern, other_file):
+                sequence_files.append(other_file)
+                is_sequence = True
+        if len(sequence_files) > 1:
+            sequence_files.append(src_file)
+        
+        if debug:
+            print(f"Sequence files found: {len(sequence_files)}")
+            if sequence_files:
+                print(f"Example files: {sequence_files[:5]}")
+    else:
+        if debug:
+            print(f"Directory does not exist: {directory}")
+    
+    if is_sequence:
+        # Convert to Houdini frame expression
+        converted_path = os.path.join(directory, f"{prefix}$F{padding}{extension}")
+        return converted_path, True, directory, sequence_files, directory_name
+    else:
+        # Not a sequence or no other files found
+        return file_path, False, None, None, None
+
 def parm_localize_file(kwargs):
     hip_file = hou.hipFile.path()
     dir = os.path.dirname(hip_file)
@@ -196,20 +280,45 @@ def parm_localize_file(kwargs):
         if not os.path.isfile(path):
             continue
 
-        copy_folder = os.path.normpath(os.path.join(dir, target_dir_name))
+        # Check if it's a sequence and convert if needed
+        path_seq, is_sequence, seq_dir, seq_files, seq_dir_name = detect_and_convert_sequence(path)
 
+        copy_folder = os.path.normpath(os.path.join(dir, target_dir_name))
         # Create target dir if doesnt exist
         if not os.path.exists(copy_folder):
             os.makedirs(copy_folder)
 
-        # Copy file only if it doesn't exist already
-        target_path = os.path.join(copy_folder, os.path.basename(path))
-        if not os.path.exists(target_path):
-            shutil.copy(path, copy_folder)
+        # Copy files locally
+        if is_sequence:
+            path = path_seq
+            # Create sequence subfolder if needed
+            copy_folder = os.path.normpath(os.path.join(copy_folder, seq_dir_name))
+            if not os.path.exists(copy_folder):
+                os.makedirs(copy_folder)
+
+            # Copy sequence files
+            for file in seq_files:
+                target_path = os.path.join(copy_folder, file)
+
+                if not os.path.exists(target_path):
+                    shutil.copy(os.path.join(seq_dir, file), copy_folder)
+
+            target_dir_name = os.path.join(target_dir_name, seq_dir_name)
+
+        else:
+            # Copy file only if it doesn't exist already
+            target_path = os.path.join(copy_folder, os.path.basename(path))
+            if not os.path.exists(target_path):
+                shutil.copy(path, copy_folder)
+
+        # ----------------------------------------------------------------
 
         # Set new path
         new_path = os.path.normpath(os.path.join(os.path.dirname(hip_file), target_dir_name, os.path.basename(path))).replace("\\", "/")
-
         # Replace with HIP
         new_path = new_path.replace(os.path.dirname(hip_file), "$HIP")
+        
+        # ----------------------------------------------------------------
+
+        # Path parm update
         parm.set(new_path)

@@ -129,6 +129,9 @@ def input_type(node, out_node, mat_builder):
         elif "Environment".upper() in n_type:
             if "Environment".upper() in input_name:
                 index = out_input_types.index(t) ; break
+        elif "Contour".upper() in n_type:
+            if "Contour".upper() in input_name:
+                index = out_input_types.index(t) ; break
 
     return index
 

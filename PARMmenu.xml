@@ -7,6 +7,44 @@
         <subMenu id="dylib">
         <label>DyLib</label>
 
+            <subMenu id="dy_strings">
+            <label>String Parms</label>
+
+                <scriptItem id="dy_parm_string_replace">
+                <!-- <insertBefore /> -->
+                <label>Replace Parm String</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_string_replace(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
+                <scriptItem id="dy_parm_string_replace_by_var">
+                <!-- <insertBefore /> -->
+                <label>Replace String by Variable</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_string_replace_by_var(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
+                <scriptItem id="dy_parm_localize_file">
+                <!-- <insertBefore /> -->
+                <label>Localize File to $HIP</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_localize_file(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
+            </subMenu>
+
             <subMenu id="dy_variables">
             <label>Global Variables</label>
 
@@ -16,26 +54,26 @@
 
 
                 <scriptItem id="dy_vars_activecam">
-                    <!-- <insertBefore /> -->
-                    <label>Node path name as $CAM</label>
-                    <scriptCode>
+                <!-- <insertBefore /> -->
+                <label>Node path name as $CAM</label>
+                <scriptCode>
 <![CDATA[
 import dy_shelftools as dylib
 dylib.variable_create_activecam(kwargs['parms'][0].eval())
 ]]>
-                    </scriptCode>
+                </scriptCode>
                 </scriptItem>
 
 
                 <scriptItem id="dy_vars_path_custom">
-                    <!-- <insertBefore /> -->
-                    <label>Node path name as Custom Variable</label>
-                    <scriptCode>
+                <!-- <insertBefore /> -->
+                <label>Node path name as Custom Variable</label>
+                <scriptCode>
 <![CDATA[
 import dy_shelftools as dylib
 dylib.variable_create_path_custom(kwargs['parms'][0].eval())
 ]]>
-                    </scriptCode>
+                </scriptCode>
                 </scriptItem>
 
 

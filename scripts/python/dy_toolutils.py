@@ -1,4 +1,4 @@
-import hou, os
+import hou, os, shutil
 
 def active_network_editor():
     network_editor = None
@@ -97,3 +97,118 @@ def recook_node(kwargs):
     nodes = kwargs['items']
     for node in nodes:
         node.cook(force=True)
+
+def parm_string_replace(kwargs):
+    message = "Replace Parm String"
+    input_labels = ["Replace", "With"]
+    dlg = hou.ui.readMultiInput(message,
+                                input_labels,
+                                password_input_indices=(),
+                                buttons=('OK',),
+                                severity=hou.severityType.Message,
+                                default_choice=0,
+                                close_choice=-1,
+                                help=None,
+                                title=None,
+                                initial_contents=("",))
+    
+    # replace string in selected prms
+    for parm in kwargs:
+        src = parm.unexpandedString()
+        new_str = src.replace(dlg[1][0], dlg[1][1])
+        parm.set(new_str)
+
+def parm_string_replace_by_var(kwargs):
+    message = "Replace String by Variable"
+    dlg = hou.ui.readInput(message,
+                           buttons=('OK',),
+                           severity=hou.severityType.Message,
+                           default_choice=0,
+                           close_choice=-1,
+                           help=None,
+                           title=None
+                           )
+
+    var = hou.getenv(dlg[1])
+    if not var:
+        return
+
+    # replace string in selected prms
+    for parm in kwargs:
+        src = parm.unexpandedString()
+        new_str = src.replace(var, f"${dlg[1]}")
+        parm.set(new_str)
+
+def parm_localize_file(kwargs):
+    hip_file = hou.hipFile.path()
+    dir = os.path.dirname(hip_file)
+
+    choices = ["abc", "geo", "sim", "cache", "footage", "render", "tex", "vdb", "usd", "scripts", "comp", "misc", "other", "audio", "video"]
+
+    choices = sorted(choices) + ["custom directory"]
+
+    dlg = hou.ui.selectFromList(choices,
+                                default_choices=(choices.index("tex"),),
+                                exclusive=True,
+                                message=None,
+                                title=None,
+                                column_header="Directory",
+                                num_visible_rows=10,
+                                clear_on_cancel=True,
+                                width=0,
+                                height=0,
+                                sort=False,
+                                condense_paths=False)
+
+    if not dlg:
+        return
+
+    target_dir_name = choices[dlg[0]]
+
+    if target_dir_name == "custom directory":
+        dlg_custom = hou.ui.readInput("Custom Directory:",
+                                            buttons=('OK', 'Cancel'),
+                                            severity=hou.severityType.Message,
+                                            default_choice=0,
+                                            close_choice=1,
+                                            help=None,
+                                            title=None
+                                            )
+
+        # Return if Cancel is pressed
+        if dlg_custom[0] == 1:
+            return
+        # Update target_dir_name if OK is pressed
+        else:
+            target_dir_name = dlg_custom[1]
+
+    # Return if target_dir_name is empty
+    if not target_dir_name:
+        return
+
+    # Update each parm
+    for parm in kwargs:
+        # Get file path
+        path = parm.eval()
+
+        # Check if path is an existing file
+        if not os.path.isfile(path):
+            continue
+
+        copy_folder = os.path.normpath(os.path.join(dir, target_dir_name))
+
+        # Create target dir if doesnt exist
+        if not os.path.exists(copy_folder):
+            os.makedirs(copy_folder)
+
+        # Copy file only if it doesn't exist already
+        target_path = os.path.join(copy_folder, os.path.basename(path))
+        if not os.path.exists(target_path):
+            shutil.copy(path, copy_folder)
+
+        # Set new path
+        new_path = os.path.normpath(os.path.join(os.path.dirname(hip_file), target_dir_name, os.path.basename(path))).replace("\\", "/")
+
+        # Replace with HIP
+        new_path = new_path.replace(os.path.dirname(hip_file), "$HIP")
+        parm.set(new_path)

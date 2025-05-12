@@ -43,6 +43,17 @@ dylib.parm_localize_file(kwargs['parms'])
                 </scriptCode>
                 </scriptItem>
 
+                <scriptItem id="dy_parm_open_dir">
+                <!-- <insertBefore /> -->
+                <label>Open Directory</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_open_dir(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
             </subMenu>
 
             <subMenu id="dy_variables">

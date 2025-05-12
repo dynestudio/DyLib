@@ -1,4 +1,4 @@
-import hou, os, shutil, re
+import hou, os, shutil, re, platform, subprocess
 
 def active_network_editor():
     network_editor = None
@@ -165,8 +165,9 @@ def detect_and_convert_sequence(file_path):
     
     if not match:
         # No numeric pattern found at the end of the filename
-        print("No numeric pattern found")
-        return file_path, False
+        if debug:
+            print("No numeric pattern found")
+        return file_path, False, None, None, None
     
     prefix, number_str, extension = match.groups()
     padding = len(number_str)
@@ -322,3 +323,18 @@ def parm_localize_file(kwargs):
 
         # Path parm update
         parm.set(new_path)
+
+def parm_open_dir(kwargs):
+    for parm in kwargs:
+        path = parm.eval()
+        if os.path.exists(path):
+            # Get directory from the path
+            folder_path = os.path.dirname(path)
+            
+            # Open directory based on platform
+            if platform.system() == "Windows":
+                os.startfile(folder_path)
+            elif platform.system() == "Darwin":
+                subprocess.Popen(["open", folder_path])
+            else:  # Linux
+                subprocess.Popen(["xdg-open", folder_path])

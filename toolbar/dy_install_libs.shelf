@@ -5,9 +5,6 @@
  Note, that two definitions of the same element are not allowed in
  a single file. -->
 
- <!--
-dy install libs version 1.0
--->
   <toolshelf name="dy_install_libs" label="Dy Install Libs">
     <memberTool name="dy_install_lib_json"/>
     <memberTool name="dy_install_lib"/>
@@ -18,7 +15,6 @@ dy install libs version 1.0
 
   <tool name="dy_install_lib" label="Install Library" icon="hicon:/SVGIcons.index?DESKTOP_installer2.svg">
     <script scriptType="python"><![CDATA[# INSTALL LIBRARY
-
 import hou
 import json
 import os
@@ -90,8 +86,11 @@ data = {
     "hpath": []
 }
 
+# Define the directory path
+lib_path = hou.expandString(lib_dir)
+
 # Add environment variables
-add_env_variable(data["env"], lib_name, lib_dir)
+add_env_variable(data["env"], lib_name, lib_path)
 
 # Add path variable
 add_path_variable(data["hpath"], lib_name)
@@ -143,7 +142,6 @@ else:
 
   <tool name="dy_install_lib_json" label="Library from JSON" icon="hicon:/SVGIcons.index?DESKTOP_installer.svg">
     <script scriptType="python"><![CDATA[# LIBRARY FROM JSON
-
 import hou
 import json
 import os
@@ -277,7 +275,6 @@ else:
 
   <tool name="dy_install_lib_github" label="Library from Github" icon="hicon:/SVGIcons.index?BUTTONS_download.svg">
     <script scriptType="python"><![CDATA[# LIBRARY FROM GITHUB
-
 import hou
 import webbrowser
 import subprocess
@@ -556,10 +553,10 @@ else:
 
   <tool name="dy_create_lib" label="Create Library" icon="hicon:/SVGIcons.index?BUTTONS_addassetdirectory.svg">
     <script scriptType="python"><![CDATA[# CREATE LIBRARY
-
 import json
 import os
 import hou
+import shutil
 
 # -----------------------------------------------------------------------
 
@@ -646,7 +643,7 @@ data = {
 }
 
 # Add environment variables
-add_env_variable(data["env"], lib_name, os.path.join(lib_dir, lib_name))
+add_env_variable(data["env"], lib_name, lib_path)
 
 # Add path variable
 add_path_variable(data["hpath"], lib_name)
@@ -668,12 +665,14 @@ package_path = os.path.normpath(package_path)
 
 # Write the JSON data to a file
 with open(package_path, "w") as f:
-    json.dump(data, f, indent=4)]]></script>
+    json.dump(data, f, indent=4)
+
+# Copy the package file to the lib_dir directory
+shutil.copy(package_path, lib_path)]]></script>
   </tool>
 
   <tool name="dy_restart_houdini" label="Restart Houdini" icon="hicon:/SVGIcons.index?BUTTONS_reload.svg">
     <script scriptType="python"><![CDATA[# RESTART HOUDINI
-
 import os
 import platform
 import hou

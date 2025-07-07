@@ -5,6 +5,9 @@
  Note, that two definitions of the same element are not allowed in
  a single file. -->
 
+ <!--
+dy install libs version 1.0
+-->
   <toolshelf name="dy_install_libs" label="Dy Install Libs">
     <memberTool name="dy_install_lib_json"/>
     <memberTool name="dy_install_lib"/>
@@ -14,7 +17,9 @@
   </toolshelf>
 
   <tool name="dy_install_lib" label="Install Library" icon="hicon:/SVGIcons.index?DESKTOP_installer2.svg">
-    <script scriptType="python"><![CDATA[import hou
+    <script scriptType="python"><![CDATA[# INSTALL LIBRARY
+
+import hou
 import json
 import os
 import platform
@@ -82,14 +87,14 @@ if not lib_dir:
 data = {
     "enable": True,
     "env": [],
-    "path": []
+    "hpath": []
 }
 
 # Add environment variables
 add_env_variable(data["env"], lib_name, lib_dir)
 
 # Add path variable
-add_path_variable(data["path"], lib_name)
+add_path_variable(data["hpath"], lib_name)
 
 # -----------------------------------------------------------------------
 
@@ -136,8 +141,10 @@ else:
     print ("A library was installed, you must restart Houdini in order to use it.")]]></script>
   </tool>
 
-  <tool name="dy_install_lib_json" label="Library from Json" icon="hicon:/SVGIcons.index?DESKTOP_installer.svg">
-    <script scriptType="python"><![CDATA[import hou
+  <tool name="dy_install_lib_json" label="Library from JSON" icon="hicon:/SVGIcons.index?DESKTOP_installer.svg">
+    <script scriptType="python"><![CDATA[# LIBRARY FROM JSON
+
+import hou
 import json
 import os
 import platform
@@ -269,7 +276,9 @@ else:
   </tool>
 
   <tool name="dy_install_lib_github" label="Library from Github" icon="hicon:/SVGIcons.index?BUTTONS_download.svg">
-    <script scriptType="python"><![CDATA[import hou
+    <script scriptType="python"><![CDATA[# LIBRARY FROM GITHUB
+
+import hou
 import webbrowser
 import subprocess
 import os
@@ -365,8 +374,15 @@ repo_name = Path(repo_url).stem
 branches = get_remote_branches(repo_url)
 
 # Select the variable that defines the library path
+if "master" in branches:
+    default_choice = branches.index("master")
+elif "main" in branches:
+    default_choice = branches.index("main")
+else:
+    default_choice = 0
+
 branch_index = hou.ui.selectFromList(branches,
-                             default_choices=([branches.index("master")]),
+                             default_choices=([default_choice]),
                              exclusive=1,
                              message="Select the branch to download:",
                              title=repo_name,
@@ -473,12 +489,12 @@ if json_files:
         data = {
             "enable": True,
             "env": [],
-            "path": []
+            "hpath": []
         }
         # Add environment variables
         add_env_variable(data["env"], repo_name, lib_dir)
         # Add path variable
-        add_path_variable(data["path"], repo_name)
+        add_path_variable(data["hpath"], repo_name)
 
 # CREATE PACKAGE MANUALLY
 else:
@@ -486,7 +502,7 @@ else:
     data = {
         "enable": True,
         "env": [],
-        "path": []
+        "hpath": []
     }
     # Add environment variables
     add_env_variable(data["env"], repo_name, lib_dir)
@@ -539,7 +555,9 @@ else:
   </tool>
 
   <tool name="dy_create_lib" label="Create Library" icon="hicon:/SVGIcons.index?BUTTONS_addassetdirectory.svg">
-    <script scriptType="python"><![CDATA[import json
+    <script scriptType="python"><![CDATA[# CREATE LIBRARY
+
+import json
 import os
 import hou
 
@@ -624,14 +642,14 @@ for index in folders_index:
 data = {
     "enable": True,
     "env": [],
-    "path": []
+    "hpath": []
 }
 
 # Add environment variables
 add_env_variable(data["env"], lib_name, os.path.join(lib_dir, lib_name))
 
 # Add path variable
-add_path_variable(data["path"], lib_name)
+add_path_variable(data["hpath"], lib_name)
 
 # -----------------------------------------------------------------------
 
@@ -654,7 +672,9 @@ with open(package_path, "w") as f:
   </tool>
 
   <tool name="dy_restart_houdini" label="Restart Houdini" icon="hicon:/SVGIcons.index?BUTTONS_reload.svg">
-    <script scriptType="python"><![CDATA[import os
+    <script scriptType="python"><![CDATA[# RESTART HOUDINI
+
+import os
 import platform
 import hou
 

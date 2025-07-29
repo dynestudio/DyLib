@@ -91,7 +91,16 @@ data = {
 lib_path = hou.expandString(lib_dir)
 
 # Add environment variables
-add_env_variable(data["env"], lib_name, lib_path)
+# Check if the package path can be relative to the Houdini packages directory
+houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+try:
+    package_path_rel = os.path.relpath(lib_path, houdini_packages_dir)
+    relative_path = "$HOUDINI_PACKAGE_PATH/" + package_path_rel.replace("\\", "/")
+    add_env_variable(data["env"], lib_name, relative_path)
+    print(f"Library Path: {relative_path}")
+except:
+    add_env_variable(data["env"], lib_name, lib_path)
+    print(f"Library Path: {lib_path}")
 
 # Add path variable
 add_path_variable(data["hpath"], lib_name)
@@ -99,7 +108,7 @@ add_path_variable(data["hpath"], lib_name)
 # -----------------------------------------------------------------------
 
 # Define the directory path
-directory = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+directory = houdini_packages_dir
 
 # Create the directory if it doesn't exist
 if not os.path.exists(directory):
@@ -227,12 +236,23 @@ if not var_index:
 
 # Update memory package before save it
 var = env_keys[var_index[0]]
-data["env"][var_index[0]][var] = package_path
+
+# Check if the package path can be relative to the Houdini packages directory
+houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+try:
+    package_path_rel = os.path.relpath(package_path, houdini_packages_dir)
+    relative_path = "$HOUDINI_PACKAGE_PATH/" + package_path_rel.replace("\\", "/")
+    data["env"][var_index[0]][var] = relative_path
+    print(f"Library Path: {relative_path}")
+except:
+    # Use the absolute path for paths that are too far from packages dir
+    data["env"][var_index[0]][var] = package_path
+    print(f"Library Path: {package_path}")
 
 # -----------------------------------------------------------------------
 
 # Define the directory path
-directory = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+directory = houdini_packages_dir
 
 # Create the directory if it doesn't exist
 if not os.path.exists(directory):
@@ -274,7 +294,7 @@ else:
     print ("A library was installed, you must restart Houdini in order to use it.")]]></script>
   </tool>
 
-  <tool name="dy_install_lib_github" label="Library from Github" icon="hicon:/SVGIcons.index?BUTTONS_download.svg">
+  <tool name="dy_install_lib_github" label="Library from GitHub" icon="hicon:/SVGIcons.index?BUTTONS_download.svg">
     <script scriptType="python"><![CDATA[# LIBRARY FROM GITHUB
 import hou
 import webbrowser
@@ -433,6 +453,12 @@ download_type = hou.ui.displayMessage(
 # Get items from Branches or Releases
 items = get_remote_branches(repo_url) if download_type == 0 else get_remote_releases(repo_url)
 is_release = download_type != 0
+column_header = "Branches" if not is_release else "Releases"
+
+if len(items)==0 and column_header == "Releases":
+    print("No Repository Releases found, switching to Branches")
+    items = get_remote_branches(repo_url)
+    is_release = 0
 
 # Set default selection
 default_choice = 0
@@ -445,7 +471,6 @@ if not is_release:  # For branches, prefer master/main
 # Prepare items for display
 display_items = items if not is_release else [name for name, _ in items]
 selection_message = f"Select the {'branch' if not is_release else 'release'} to download:"
-column_header = "Branches" if not is_release else "Releases"
 
 # Show selection dialog
 item_index = hou.ui.selectFromList(
@@ -491,6 +516,8 @@ lib_dir = os.path.join(hou.expandString(lib_dir), repo_name)
 download_github_repository(repo_url, lib_dir, selected_item, is_release=is_release)
 
 # -----------------------------------------------------------------------
+
+houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
 
 #json_files = glob.glob(os.path.normpath(os.path.join(lib_dir, '*.json')))
 json_files = glob.glob(os.path.join(lib_dir, '**', '*.json'), recursive=True)
@@ -557,7 +584,16 @@ if json_files:
 
         # Update memory package before save it
         var = env_keys[var_index[0]]
-        data["env"][var_index[0]][var] = package_path
+
+        # Check if the package path can be relative to the Houdini packages directory
+        try:
+            package_path_rel = os.path.relpath(package_path, houdini_packages_dir)
+            relative_path = "$HOUDINI_PACKAGE_PATH/" + package_path_rel.replace("\\", "/")
+            data["env"][var_index[0]][var] = relative_path
+            print(f"Library Path: {relative_path}")
+        except:
+            data["env"][var_index[0]][var] = package_path
+            print(f"Library Path: {package_path}")
 
     else:
         # Create the JSON package structure
@@ -567,9 +603,17 @@ if json_files:
             "hpath": []
         }
         # Add environment variables
-        add_env_variable(data["env"], repo_name, lib_dir)
+        # Check if the package path can be relative to the Houdini packages directory
+        try:
+            package_path_rel = os.path.relpath(lib_dir, houdini_packages_dir)
+            relative_path = "$HOUDINI_PACKAGE_PATH/" + package_path_rel.replace("\\", "/")
+            add_env_variable(data["env"], repo_name.replace("-", "_"), relative_path)
+            print(f"Library Path: {relative_path}")
+        except:
+            add_env_variable(data["env"], repo_name.replace("-", "_"), lib_dir)
+            print(f"Library Path: {lib_dir}")
         # Add path variable
-        add_path_variable(data["hpath"], repo_name)
+        add_path_variable(data["hpath"], repo_name.replace("-", "_"))
 
 # CREATE PACKAGE MANUALLY
 else:
@@ -581,14 +625,22 @@ else:
         "hpath": []
     }
     # Add environment variables
-    add_env_variable(data["env"], repo_name, lib_dir)
+    # Check if the package path can be relative to the Houdini packages directory
+    try:
+        package_path_rel = os.path.relpath(lib_dir, houdini_packages_dir)
+        relative_path = "$HOUDINI_PACKAGE_PATH/" + package_path_rel.replace("\\", "/")
+        add_env_variable(data["env"], repo_name.replace("-", "_"), relative_path)
+        print(f"Library Path: {relative_path}")
+    except:
+        add_env_variable(data["env"], repo_name.replace("-", "_"), lib_dir)
+        print(f"Library Path: {lib_dir}")
     # Add path variable
-    add_path_variable(data["hpath"], repo_name)
+    add_path_variable(data["hpath"], repo_name.replace("-", "_"))
 
 # -----------------------------------------------------------------------
 
 # Define the directory path
-directory = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+directory = houdini_packages_dir
 
 # Create the directory if it doesn't exist
 if not os.path.exists(directory):
@@ -722,15 +774,24 @@ data = {
 }
 
 # Add environment variables
-add_env_variable(data["env"], lib_name, lib_path)
+# Check if the package path can be relative to the Houdini packages directory
+houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+try:
+    package_path_rel = os.path.relpath(lib_path, houdini_packages_dir)
+    relative_path = "$HOUDINI_PACKAGE_PATH/" + package_path_rel.replace("\\", "/")
+    add_env_variable(data["env"], lib_name, relative_path)
+    print(f"Library Path: {relative_path}")
+except:
+    add_env_variable(data["env"], lib_name, lib_path)
+    print(f"Library Path: {lib_path}")
 
-# Add path variable
+# Add hpath variable
 add_path_variable(data["hpath"], lib_name)
 
 # -----------------------------------------------------------------------
 
 # Define the directory path
-directory = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+directory = houdini_packages_dir
 
 # Create the directory if it doesn't exist
 if not os.path.exists(directory):

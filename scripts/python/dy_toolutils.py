@@ -1,4 +1,4 @@
-import hou, os, shutil, re, platform, subprocess
+import hou, os, shutil, re, platform, subprocess, glob
 
 def active_network_editor():
     network_editor = None
@@ -339,3 +339,94 @@ def parm_open_dir(kwargs):
                 subprocess.Popen(["open", folder_path])
             else:  # Linux
                 subprocess.Popen(["xdg-open", folder_path])
+
+def parm_string_replace_back_slashes(kwargs):
+    for parm in kwargs:
+        src = parm.unexpandedString()
+        new_str = src.replace("\\", "/")
+        parm.set(new_str)
+
+def parm_copy_file_to_custom_dir(kwargs):
+    hip_file = hou.hipFile.path()
+
+    target_dir = hou.ui.selectFile(start_directory=None,
+                            title=None,
+                            collapse_sequences=False,
+                            file_type=hou.fileType.Directory,
+                            pattern=None,
+                            default_value=None,
+                            multiple_select=False,
+                            image_chooser=None,
+                            chooser_mode=hou.fileChooserMode.Read,
+                            width=0, height=0)
+
+    if not target_dir:
+        exit()
+
+    target_dir = hou.expandString(target_dir)
+
+    for parm in kwargs:
+        src = hou.expandString(parm.eval())
+        if os.path.exists(src):
+            # Copy file to target directory
+            shutil.copy(src, target_dir)
+            # Update parm with new path
+            filepath = os.path.join(target_dir, os.path.basename(src))
+            filepath = filepath.replace("\\", "/")
+            filepath = filepath.replace(hou.getenv("JOB"), "$JOB")
+            filepath = filepath.replace(hou.getenv("HIP"), "$HIP")
+            parm.set(filepath)
+
+def parm_find_file(kwargs):
+    root_dir = hou.ui.selectFile(start_directory=None,
+                title=None,
+                collapse_sequences=False,
+                file_type=hou.fileType.Directory,
+                pattern=None,
+                default_value=None,
+                multiple_select=False,
+                image_chooser=None,
+                chooser_mode=hou.fileChooserMode.Read,
+                width=0, height=0)
+
+    if not root_dir:
+        exit()
+
+    root_dir = hou.expandString(root_dir)
+
+    for parm in kwargs:
+        src_filename = os.path.basename(parm.eval())
+        
+        # Search recursively for the file using glob
+        found_files = []
+        for filepath in glob.glob(os.path.join(root_dir, '**', src_filename), recursive=True):
+            if os.path.isfile(filepath):
+                found_files.append(filepath)
+        
+        if found_files:
+            # If multiple files found, let user choose which one to use
+            if len(found_files) > 1:
+                choices = [f"{i+1}. {path}" for i, path in enumerate(found_files)]
+                dlg = hou.ui.selectFromList(choices,
+                                          default_choices=(0,),
+                                          exclusive=True,
+                                          message="Multiple files found. Select one:",
+                                          title="Select File",
+                                          column_header="Files Found",
+                                          num_visible_rows=10,
+                                          clear_on_cancel=True)
+                
+                if dlg:  # If user made a selection
+                    selected_path = found_files[dlg[0]]
+                    # Convert to forward slashes for Houdini
+                    selected_path = selected_path.replace("\\", "/")
+                    # Update the parameter with the found file path
+                    parm.set(selected_path)
+                    print(f"File found and parameter updated: {selected_path}")
+            else:
+                # Only one file found, use it directly
+                found_path = found_files[0].replace("\\", "/")
+                parm.set(found_path)
+                print(f"File found and parameter updated: {found_path}")
+        else:
+            print(f"No file matching '{src_filename}' found in {root_dir}")

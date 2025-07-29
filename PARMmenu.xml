@@ -32,6 +32,17 @@ dylib.parm_string_replace_by_var(kwargs['parms'])
                 </scriptCode>
                 </scriptItem>
 
+                <scriptItem id="dy_parm_string_replace_back_slashes">
+                <!-- <insertBefore /> -->
+                <label>Replace Back Slashes</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_string_replace_back_slashes(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
                 <scriptItem id="dy_parm_localize_file">
                 <!-- <insertBefore /> -->
                 <label>Localize File to $HIP</label>
@@ -39,6 +50,29 @@ dylib.parm_string_replace_by_var(kwargs['parms'])
 <![CDATA[
 import dy_toolutils as dylib
 dylib.parm_localize_file(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
+                <scriptItem id="dy_parm_copy_file_to_custom_dir">
+                <!-- <insertBefore /> -->
+                <label>Copy File to Custom Directory</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_copy_file_to_custom_dir(kwargs['parms'])
+]]>
+                </scriptCode>
+                </scriptItem>
+
+
+                <scriptItem id="dy_parm_find_file">
+                <!-- <insertBefore /> -->
+                <label>Find File</label>
+                <scriptCode>
+<![CDATA[
+import dy_toolutils as dylib
+dylib.parm_find_file(kwargs['parms'])
 ]]>
                 </scriptCode>
                 </scriptItem>

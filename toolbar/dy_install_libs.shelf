@@ -4,7 +4,7 @@
  It should not be hand-edited when it is being used by the application.
  Note, that two definitions of the same element are not allowed in
  a single file. -->
- <!-- dy Install Libs v1.1 -->
+ <!-- dy Install Libs v1.2 -->
 
   <toolshelf name="dy_install_libs" label="Dy Install Libs">
     <memberTool name="dy_install_lib_json"/>
@@ -12,6 +12,7 @@
     <memberTool name="dy_install_lib_github"/>
     <memberTool name="dy_create_lib"/>
     <memberTool name="dy_restart_houdini"/>
+    <memberTool name="dy_copy_prefs"/>
   </toolshelf>
 
   <tool name="dy_install_lib" label="Install Library" icon="hicon:/SVGIcons.index?DESKTOP_installer2.svg">
@@ -857,5 +858,189 @@ if hou.ui.displayMessage("Do you want to restart Houdini?",
             os.system(f'taskkill /F /IM houdini.exe && start houdini.exe')
         else:
             os.system(f'pkill houdini && houdini')]]></script>
+  </tool>
+
+  <tool name="dy_copy_prefs" label="Copy Preferences" icon="hicon:/SVGIcons.index?SOP_packedfoldercopy.svg">
+    <script scriptType="python"><![CDATA[import hou
+import os
+import shutil
+
+DIRS = ['asset_store', 'config', 'desktop', 'gallery', 'otls', 'packages', 'radialmenu', 'scripts', 'toolbar', '_PLUGINS']
+FILES = [
+    'animbar.pref', 'copsettings.json', 'dir.history', 'ExternalEditor.cfg', 'file.history', 'hcommon.pref', 'hotkeys.pref',
+    'houdini.env', 'Houdini.keymap.overrides', 'houdini.pref', 'jump.pref',
+    'networkeditor.pref', 'nodethemes.json', 'opencl.pref', 'solaris.pref', 'ui.pref', 'redshift30_rv.json'
+]
+DEFAULT_SEL = [
+    'desktop', 'otls', 'packages', 'radialmenu', 'scripts', 'toolbar', '_PLUGINS',
+    'houdini.pref', 'jump.pref', 'networkeditor.pref', 'nodethemes.json', 'ui.pref'
+]
+PREFS_DIR = None
+
+# ----------------------------------------------------------------
+
+def prompt_prefs_dir():
+    """Ask user for source preferences directory and expand Houdini variables."""
+    button, value = hou.ui.readInput(
+        message="Preferences Directory:",
+        buttons=("OK", "Cancel"),
+        severity=hou.severityType.Message,
+        default_choice=0,
+        close_choice=1,
+        title="Houdini",
+        initial_contents="$HOUDINI_USER_PREF_DIR",
+    )
+
+    if button != 0:
+        return None
+
+    value = (value or "").strip()
+    if not value:
+        return None
+
+    return os.path.normpath(hou.expandString(value))
+
+def get_existing_items(items, is_dir=True):
+    """Filter items that exist in the preferences directory."""
+    check = os.path.isdir if is_dir else os.path.isfile
+    return [item for item in items if check(os.path.join(PREFS_DIR, item))]
+
+def select_items(items, is_dir=True):
+    """Show selection dialog for directories or files."""
+    existing = get_existing_items(items, is_dir)
+    item_type = "directories" if is_dir else "files"
+    
+    if not existing:
+        hou.ui.displayMessage(f"No {item_type} found in preferences folder.", title="Migration Tool")
+        return []
+    
+    indices = hou.ui.selectFromList(
+        choices=existing,
+        default_choices=tuple(i for i, name in enumerate(existing) if name in DEFAULT_SEL),
+        message=f"Select {item_type} to migrate from:\n{PREFS_DIR}",
+        title=f"Select {item_type.title()}",
+        column_header=item_type.title(),
+        num_visible_rows=15,
+        clear_on_cancel=True,
+    )
+    return [existing[i] for i in indices] if indices else []
+
+def select_target_directory():
+    """Select target directory using file chooser."""
+    target = hou.ui.selectFile(
+        start_directory=os.path.dirname(PREFS_DIR).replace("\\", "/"),
+        title="Select Target Preferences Directory",
+        file_type=hou.fileType.Directory,
+        chooser_mode=hou.fileChooserMode.ReadAndWrite,
+    )
+    if target:
+        return os.path.normpath(hou.text.expandString(target))
+    return None
+
+def copy_item(src, dst):
+    """Copy file or directory, merging if destination exists."""
+    if os.path.isdir(src):
+        shutil.copytree(src, dst, dirs_exist_ok=True)
+    else:
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy2(src, dst)
+
+def migrate_preferences():
+    """Main migration workflow."""
+    global PREFS_DIR
+    PREFS_DIR = prompt_prefs_dir()
+
+    if not PREFS_DIR:
+        hou.ui.displayMessage("No source preferences directory provided.", title="Migration Cancelled")
+        return
+
+    if not os.path.isdir(PREFS_DIR):
+        hou.ui.displayMessage(f"Preferences directory not found:\n{PREFS_DIR}",
+                              severity=hou.severityType.Error, title="Copy Error")
+        return
+
+    # Copy start message
+    hou.ui.displayMessage(f"Copying preferences from:\n{PREFS_DIR}\n\n"
+                          "You will now select directories, files, and target location.",
+                          title="Copy Preferences")
+
+    # Select directories
+    selected_dirs = select_items(DIRS, is_dir=True)
+    if not selected_dirs:
+        hou.ui.displayMessage(
+            "Copy cancelled: no directories selected.",
+            title="Copy Cancelled"
+        )
+        return
+
+    # Select files
+    selected_files = select_items(FILES, is_dir=False)
+    if not selected_files:
+        hou.ui.displayMessage(
+            "Copy cancelled: no files selected.",
+            title="Copy Cancelled"
+        )
+        return
+
+    target_dir = select_target_directory()
+    if not target_dir:
+        hou.ui.displayMessage("No target directory selected.", title="Copy Cancelled")
+        return
+
+    if os.path.normpath(target_dir) == os.path.normpath(PREFS_DIR):
+        hou.ui.displayMessage("Target cannot be the same as source.",
+                              severity=hou.severityType.Error, title="Copy Error")
+        return
+
+    # Confirmation
+    dirs_str = ', '.join(selected_dirs) if selected_dirs else 'None'
+    files_str = ', '.join(selected_files) if selected_files else 'None'
+    confirm_msg = (f"Directories ({len(selected_dirs)}): {dirs_str}\n\n"
+                   f"Files ({len(selected_files)}): {files_str}\n\n"
+                   f"From: {PREFS_DIR}\nTo: {target_dir}\n\n"
+                   f"Existing items will be overwritten/merged. Continue?")
+    
+    if not hou.ui.displayConfirmation(confirm_msg, title="Confirm Copy"):
+        return
+
+    # Perform copy
+    all_items = [(d, True) for d in selected_dirs] + [(f, False) for f in selected_files]
+    total = len(all_items)
+    errors, copied = [], 0
+
+    try:
+        with hou.InterruptableOperation("Copy Preferences",
+                                        long_operation_name="Copying",
+                                        open_interrupt_dialog=True) as op:
+            for i, (name, is_dir) in enumerate(all_items):
+                item_type = "directory" if is_dir else "file"
+                op.updateLongProgress(i / total, f"Copying {item_type}: {name}")
+                
+                try:
+                    copy_item(os.path.join(PREFS_DIR, name), os.path.join(target_dir, name))
+                    copied += 1
+                except Exception as e:
+                    errors.append(f"{item_type.title()} '{name}': {e}")
+                
+                op.updateProgress((i + 1) / total)
+
+    except hou.OperationInterrupted:
+        hou.ui.displayMessage(f"Cancelled. Copied {copied}/{total} items.",
+                              severity=hou.severityType.Warning, title="Copy Cancelled")
+        return
+
+    # Result
+    if errors:
+        hou.ui.displayMessage(f"Completed with {len(errors)} error(s). Copied: {copied} items",
+                              severity=hou.severityType.Warning,
+                              title="Copy Complete (with errors)",
+                              details="\n".join(errors), details_label="Show Errors")
+    else:
+        hou.ui.displayMessage(f"Successfully copied {copied} items to:\n{target_dir}",
+                              title="Copy Complete")
+
+# ----------------------------------------------------------------
+
+migrate_preferences()]]></script>
   </tool>
 </shelfDocument>

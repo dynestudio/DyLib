@@ -960,9 +960,9 @@ def migrate_preferences():
         return
 
     # Copy start message
-    hou.ui.displayMessage(f"Copying preferences from:\n{PREFS_DIR}\n\n"
-                          "You will now select directories, files, and target location.",
-                          title="Copy Preferences")
+    #hou.ui.displayMessage(f"Copying preferences from:\n{PREFS_DIR}\n\n"
+    #                      "You will now select directories, files, and target location.",
+    #                      title="Copy Preferences")
 
     # Select directories
     selected_dirs = select_items(DIRS, is_dir=True)

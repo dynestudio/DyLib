@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "libraries": [
+    {
+      "clone_url": "https://github.com/toadstorm/MOPS.git",
+      "package_file": "MOPS.json",
+      "package_key": "MOPS",
+      "default_channel": "release",
+      "default_branch": null
+    },
+    {
+      "clone_url": "https://github.com/cdordelly/dyLib.git",
+      "package_file": "dyLib - Copy this package.json",
+      "package_key": "DYLIB",
+      "default_channel": "branch",
+      "default_branch": "dev"
+    }
+  ]
+}

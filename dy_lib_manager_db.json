@@ -13,35 +13,34 @@
   ],
   "libraries": [
     {
-      "clone_url": "https://github.com/lcrs/_.hips.git",
+      "url": "https://github.com/lcrs/_.hips.git",
       "name": "_.hips",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/lcrs/_.hips",
+      "description": ".hips: do they lie? our experts investigate (various houdini tools in here)",
+      "author": "lcrs",
       "package_file": null,
       "package_key": "",
       "tags": [
         "hip"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/andrey214/aa_tools.git",
+      "url": "https://github.com/andrey214/aa_tools.git",
       "name": "aa_tools",
       "description": "Various hdas (Houdini Digital Assets)",
       "author": "andrey214",
-      "repo_url": "https://github.com/andrey214/aa_tools",
       "package_file": null,
       "package_key": "",
       "tags": [
         "library"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/Aeoll/Aelib.git",
+      "url": "https://github.com/Aeoll/Aelib.git",
       "name": "Aelib",
       "description": "Digital Assets for Houdini FX",
       "author": "Aeoll",
-      "repo_url": "https://github.com/Aeoll/Aelib",
       "package_file": "Aelib.json",
       "package_key": "AELIB",
       "tags": [
@@ -49,37 +48,36 @@
       ]
     },
     {
-      "clone_url": "https://github.com/lecopivo/another-houdini-mcp.git",
+      "url": "https://github.com/lecopivo/another-houdini-mcp.git",
       "name": "another-houdini-mcp",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/lecopivo/another-houdini-mcp",
+      "description": "Yet Another Houdini MCP",
+      "author": "lecopivo",
       "package_file": null,
       "package_key": "",
       "tags": [
         "integration",
         "ai"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/FuzzyCactusLogic/AOV_rebuild_karma.git",
+      "url": "https://github.com/FuzzyCactusLogic/AOV_rebuild_karma.git",
       "name": "AOV_rebuild_karma",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/FuzzyCactusLogic/AOV_rebuild_karma",
+      "description": "Built for use with renders from karma render engine",
+      "author": "FuzzyCactusLogic",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility",
         "shader"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "",
+      "url": "https://www.enoni.de/wp/assethandler/",
       "name": "Asset Handler",
       "description": "Asset management tool for SideFX Houdini (Commercial)",
       "author": "Enoni",
-      "repo_url": "https://www.enoni.de/wp/assethandler/",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -89,36 +87,35 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/jakericedesigns/Assorted-Houdini-Demos.git",
+      "url": "https://github.com/jakericedesigns/Assorted-Houdini-Demos.git",
       "name": "Assorted-Houdini-Demos",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/jakericedesigns/Assorted-Houdini-Demos",
+      "description": "Toy projects I play with during weekends :) ",
+      "author": "jakericedesigns",
       "package_file": null,
       "package_key": "",
       "tags": [
         "hip",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/wyhinton/AwesomeHoudini.git",
+      "url": "https://github.com/wyhinton/AwesomeHoudini.git",
       "name": "AwesomeHoudini",
       "description": "A collection of awesome Free/Open Source things regarding the SideFx Houdini ecosystem.",
       "author": "wyhinton",
-      "repo_url": "https://github.com/wyhinton/AwesomeHoudini",
       "package_file": null,
       "package_key": "",
       "tags": [
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "",
+      "url": "https://www.theoryaccelerated.com/axiom",
       "name": "Axiom Solver",
       "description": "GPU accelerated multiphysics solver for SideFX Houdini (Commercial)",
       "author": "Theory Accelerated",
-      "repo_url": "https://www.theoryaccelerated.com/axiom",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -128,23 +125,22 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/ynput/ayon-houdini.git",
+      "url": "https://github.com/ynput/ayon-houdini.git",
       "name": "ayon-houdini",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ynput/ayon-houdini",
+      "description": "Houdini addon for AYON",
+      "author": "ynput",
       "package_file": null,
       "package_key": "",
       "tags": [
         "pipeline"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/simonreeves/BeeHou.git",
+      "url": "https://github.com/simonreeves/BeeHou.git",
       "name": "BeeHou",
       "description": "Houdini Package",
       "author": "simonreeves",
-      "repo_url": "https://github.com/simonreeves/BeeHou",
       "package_file": "BeeHou.json",
       "package_key": "BEE_HOU",
       "tags": [
@@ -152,11 +148,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/jamesrobinsonvfx/colorpaletteramp.git",
+      "url": "https://github.com/jamesrobinsonvfx/colorpaletteramp.git",
       "name": "colorpaletteramp",
       "description": "A Houdini HDA that creates a ramp based on a color palette from an image using k-means clustering.",
       "author": "jamesrobinsonvfx",
-      "repo_url": "https://github.com/jamesrobinsonvfx/colorpaletteramp",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -164,11 +159,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/Illogicstudios/COP_hdri_editor.git",
+      "url": "https://github.com/Illogicstudios/COP_hdri_editor.git",
       "name": "COP_hdri_editor",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Illogicstudios/COP_hdri_editor",
+      "description": "HDRI editor in Copernicus (houdini)",
+      "author": "Illogicstudios",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -176,11 +170,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/probiner/DASH.git",
+      "url": "https://github.com/probiner/DASH.git",
       "name": "DASH",
       "description": "Quality of Life utilities package for SideFX Houdini.",
       "author": "probiner",
-      "repo_url": "https://github.com/probiner/DASH",
       "package_file": "DASH.json",
       "package_key": "DASH",
       "tags": [
@@ -188,36 +181,35 @@
       ]
     },
     {
-      "clone_url": "https://github.com/SideswipeeZ/Daz2HouNeo.git",
+      "url": "https://github.com/SideswipeeZ/Daz2HouNeo.git",
       "name": "Daz2HouNeo",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/SideswipeeZ/Daz2HouNeo",
+      "description": "Daz Studio to Houdini Processing Tools (with Arnold)",
+      "author": "SideswipeeZ",
       "package_file": null,
       "package_key": "",
       "tags": [
         "integration"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/jroy1992/Diffusion-Limited-Aggregation.git",
+      "url": "https://github.com/jroy1992/Diffusion-Limited-Aggregation.git",
       "name": "Diffusion-Limited-Aggregation",
       "description": "Create fractal like growth inside 3D geometry using the principle of Diffusion Limited Aggregation. The implementation has been done in three parts: Text and 3D Geometry and Intersection",
       "author": "jroy1992",
-      "repo_url": "https://github.com/jroy1992/Diffusion-Limited-Aggregation",
       "package_file": null,
       "package_key": "",
       "tags": [
         "fx",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/DominikLingenover/DMNK-Tools.git",
+      "url": "https://github.com/DominikLingenover/DMNK-Tools.git",
       "name": "DMNK-Tools",
       "description": "DMNK Shelf | Workflow oriented Python Scripts / HDAs",
       "author": "DominikLingenover",
-      "repo_url": "https://github.com/DominikLingenover/DMNK-Tools",
       "package_file": "dmnk_tools.json",
       "package_key": "dmnk",
       "tags": [
@@ -225,11 +217,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/handcraftedcc/DomLib.git",
+      "url": "https://github.com/handcraftedcc/DomLib.git",
       "name": "DomLib",
       "description": "Compilation of Houdini Tools and Utilities created by yours truly!",
       "author": "handcraftedcc",
-      "repo_url": "https://github.com/handcraftedcc/DomLib",
       "package_file": "DomLib.json",
       "package_key": "DOMLIB",
       "tags": [
@@ -237,11 +228,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/cdordelly/dyLib.git",
+      "url": "https://github.com/cdordelly/dyLib.git",
       "name": "dyLib",
-      "description": "Houdini custom library from Dyne Studio.",
+      "description": "Houdini custom library from @cdordelly (ex Dyne Studio).",
       "author": "cdordelly",
-      "repo_url": "https://github.com/cdordelly/dyLib",
       "package_file": "dyLib - Copy this package.json",
       "package_key": "DYLIB",
       "tags": [
@@ -249,24 +239,23 @@
       ]
     },
     {
-      "clone_url": "https://github.com/xjorma/EarthMeshHoudini.git",
+      "url": "https://github.com/xjorma/EarthMeshHoudini.git",
       "name": "EarthMeshHoudini",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/xjorma/EarthMeshHoudini",
+      "description": "Generate real world meshes in Houdini using the Google API.",
+      "author": "xjorma",
       "package_file": null,
       "package_key": "",
       "tags": [
         "environment",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/eglaubauf/egLib.git",
+      "url": "https://github.com/eglaubauf/egLib.git",
       "name": "egLib",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/eglaubauf/egLib",
+      "description": "A collection of scripts for SideFx Houdini",
+      "author": "eglaubauf",
       "package_file": "egLib.json",
       "package_key": "EGLIB",
       "tags": [
@@ -274,23 +263,21 @@
       ]
     },
     {
-      "clone_url": "https://github.com/eglaubauf/egMatLib.git",
+      "url": "https://github.com/eglaubauf/egMatLib.git",
       "name": "egMatLib",
       "description": "Material Library for Houdini Mantra, Redshift and Arnold",
       "author": "eglaubauf",
-      "repo_url": "https://github.com/eglaubauf/egMatLib",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "MatLib.json",
+      "package_key": "EGMATLIB",
       "tags": [
         "shader"
       ]
     },
     {
-      "clone_url": "https://github.com/eglaubauf/egRedshiftTools.git",
+      "url": "https://github.com/eglaubauf/egRedshiftTools.git",
       "name": "egRedshiftTools",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/eglaubauf/egRedshiftTools",
+      "description": "Tools for Redshift in SideFx Houdini",
+      "author": "eglaubauf",
       "package_file": "egRedshiftTools.json",
       "package_key": "EGRS",
       "tags": [
@@ -298,35 +285,33 @@
       ]
     },
     {
-      "clone_url": "https://github.com/Fe-Elf/FeELib-for-Houdini.git",
+      "url": "https://github.com/Fe-Elf/FeELib-for-Houdini.git",
       "name": "FeELib-for-Houdini",
       "description": "精灵超可爱",
       "author": "Fe-Elf",
-      "repo_url": "https://github.com/Fe-Elf/FeELib-for-Houdini",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "FeELib.json",
+      "package_key": "FeELib",
       "tags": [
         "library"
       ]
     },
     {
-      "clone_url": "https://github.com/Tronotrond/FindCenterSpline.git",
+      "url": "https://github.com/Tronotrond/FindCenterSpline.git",
       "name": "FindCenterSpline",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Tronotrond/FindCenterSpline",
+      "author": "Tronotrond",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/alexnardini/FLAM3_for_SideFX_Houdini.git",
+      "url": "https://github.com/alexnardini/FLAM3_for_SideFX_Houdini.git",
       "name": "FLAM3_for_SideFX_Houdini",
       "description": "The Fractal Flame Algorithm, FLAM3 for SideFX Houdini - aka: FLAM3H™",
       "author": "alexnardini",
-      "repo_url": "https://github.com/alexnardini/FLAM3_for_SideFX_Houdini",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -334,11 +319,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/QuadSpinner/Gaea2Houdini_beta.git",
+      "url": "https://github.com/QuadSpinner/Gaea2Houdini_beta.git",
       "name": "Gaea2Houdini_beta",
       "description": "",
       "author": "QuadSpinner",
-      "repo_url": "https://github.com/QuadSpinner/Gaea2Houdini_beta",
       "package_file": "Gaea2Houdini.json",
       "package_key": "GAEA2HOUDINI",
       "tags": [
@@ -347,23 +331,22 @@
       ]
     },
     {
-      "clone_url": "https://github.com/karanfx/glacier_houdini_tools.git",
+      "url": "https://github.com/karanfx/glacier_houdini_tools.git",
       "name": "glacier_houdini_tools",
       "description": "Some tools to enhance your workflow in SideFX Houdini. ",
       "author": "karanfx",
-      "repo_url": "https://github.com/karanfx/glacier_houdini_tools",
       "package_file": null,
       "package_key": "",
       "tags": [
         "library"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "",
+      "url": "https://kwac.gumroad.com/l/groombear?layout=profile",
       "name": "GroomBear",
       "description": "Grooming toolset for SideFX Houdini (Commercial)",
       "author": "kwac",
-      "repo_url": "https://kwac.gumroad.com/l/groombear?layout=profile",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -373,24 +356,22 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/cgnomads/GSOPs.git",
+      "url": "https://github.com/cgnomads/GSOPs.git",
       "name": "GSOPs",
       "description": "Gaussian Splatting Operators for SideFX Houdini",
       "author": "cgnomads",
-      "repo_url": "https://github.com/cgnomads/GSOPs",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "GSOPs_21.0.json",
+      "package_key": "GSOPS",
       "tags": [
         "library",
         "fx"
       ]
     },
     {
-      "clone_url": "https://github.com/PhilHaf/hipCollection.git",
+      "url": "https://github.com/PhilHaf/hipCollection.git",
       "name": "hipCollection",
       "description": "Houdini Files, Hdas, Effects",
       "author": "PhilHaf",
-      "repo_url": "https://github.com/PhilHaf/hipCollection",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -399,23 +380,22 @@
       ]
     },
     {
-      "clone_url": "https://github.com/WaffleBoyTom/hips_dont_lie.git",
+      "url": "https://github.com/WaffleBoyTom/hips_dont_lie.git",
       "name": "hips_dont_lie",
       "description": "Trying to be organized and store all my helpful files somewhere",
       "author": "WaffleBoyTom",
-      "repo_url": "https://github.com/WaffleBoyTom/hips_dont_lie",
       "package_file": null,
       "package_key": "",
       "tags": [
         "hip"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/andrew-lowell/HMT.git",
+      "url": "https://github.com/andrew-lowell/HMT.git",
       "name": "HMT",
       "description": " Houdini Music Toolset (HMT) turns the most powerful 3D program into a MIDI sequencer",
       "author": "andrew-lowell",
-      "repo_url": "https://github.com/andrew-lowell/HMT",
       "package_file": "HMT.json",
       "package_key": "HMT",
       "tags": [
@@ -424,49 +404,46 @@
       ]
     },
     {
-      "clone_url": "https://github.com/vfxkevin/hou_file_manager.git",
+      "url": "https://github.com/vfxkevin/hou_file_manager.git",
       "name": "hou_file_manager",
       "description": "A GUI tool and central place for managing all Houdini file paths, such as textures and geometries, of node parameters.",
       "author": "vfxkevin",
-      "repo_url": "https://github.com/vfxkevin/hou_file_manager",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "hou_file_manager.json",
+      "package_key": "HOU_FILE_MANAGER",
       "tags": [
         "pipeline",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/ajz3d/houclip.git",
+      "url": "https://github.com/ajz3d/houclip.git",
       "name": "houclip",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ajz3d/houclip",
-      "package_file": null,
-      "package_key": "",
+      "author": "ajz3d",
+      "package_file": "houclip.json",
+      "package_key": "HOUCLIP",
       "tags": [
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/kiryha/Houdini.git",
+      "url": "https://github.com/kiryha/Houdini.git",
       "name": "Houdini",
       "description": "Houdini pipeline and learning database",
       "author": "kiryha",
-      "repo_url": "https://github.com/kiryha/Houdini",
       "package_file": null,
       "package_key": "",
       "tags": [
         "learn",
         "pipeline"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "",
+      "url": "https://www.sidefx.com/learn/learning-library/content/",
       "name": "Houdini Content Library",
       "description": "Official SideFX learning library with examples and tutorials",
       "author": "SideFX",
-      "repo_url": "https://www.sidefx.com/learn/learning-library/content/",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -476,61 +453,59 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/ParkerBritt/houdini-attribute-connectivity.git",
+      "url": "https://github.com/ParkerBritt/houdini-attribute-connectivity.git",
       "name": "houdini-attribute-connectivity",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ParkerBritt/houdini-attribute-connectivity",
+      "description": "Houdini library for the Attribute Connectivity SOP",
+      "author": "ParkerBritt",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/ajz3d/houdini-blender-clipboard.git",
+      "url": "https://github.com/ajz3d/houdini-blender-clipboard.git",
       "name": "houdini-blender-clipboard",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ajz3d/houdini-blender-clipboard",
-      "package_file": null,
-      "package_key": "",
+      "description": "Enables easy geometry exchange between Houdini and Blender.",
+      "author": "ajz3d",
+      "package_file": "houdini-blender-clipboard.json",
+      "package_key": "BLENDER_APPLINK",
       "tags": [
         "integration",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/atayilgun/Houdini-claudecode-mcp.git",
+      "url": "https://github.com/atayilgun/Houdini-claudecode-mcp.git",
       "name": "Houdini-claudecode-mcp",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/atayilgun/Houdini-claudecode-mcp",
+      "description": "Control SideFX Houdini from Claude Code using Model    Context Protocol",
+      "author": "atayilgun",
       "package_file": null,
       "package_key": "",
       "tags": [
         "integration",
         "ai"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/ParkerBritt/houdini-clipboard-io.git",
+      "url": "https://github.com/ParkerBritt/houdini-clipboard-io.git",
       "name": "houdini-clipboard-io",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ParkerBritt/houdini-clipboard-io",
+      "description": "Python module for creating and modifying Houdini clipboard items in external programs.",
+      "author": "ParkerBritt",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/CapybaraCrowporation/houdini-comfyui-bridge.git",
+      "url": "https://github.com/CapybaraCrowporation/houdini-comfyui-bridge.git",
       "name": "houdini-comfyui-bridge",
       "description": "",
       "author": "CapybaraCrowporation",
-      "repo_url": "https://github.com/CapybaraCrowporation/houdini-comfyui-bridge",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -539,11 +514,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/ParkerBritt/houdini-environment-builder.git",
+      "url": "https://github.com/ParkerBritt/houdini-environment-builder.git",
       "name": "houdini-environment-builder",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ParkerBritt/houdini-environment-builder",
+      "description": "A high level HDA for building environments in Houdini.",
+      "author": "ParkerBritt",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -552,60 +526,58 @@
       ]
     },
     {
-      "clone_url": "https://github.com/MysteryPancake/Houdini-Fun.git",
+      "url": "https://github.com/MysteryPancake/Houdini-Fun.git",
       "name": "Houdini-Fun",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/MysteryPancake/Houdini-Fun",
+      "description": "Various Houdini tips and tricks",
+      "author": "MysteryPancake",
       "package_file": null,
       "package_key": "",
       "tags": [
         "hip",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/gupon/Houdini-Gulib.git",
+      "url": "https://github.com/gupon/Houdini-Gulib.git",
       "name": "Houdini-Gulib",
       "description": "personal vex library for houdini",
       "author": "gupon",
-      "repo_url": "https://github.com/gupon/Houdini-Gulib",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "Gulib.json",
+      "package_key": "GULIB",
       "tags": [
         "library"
       ]
     },
     {
-      "clone_url": "https://github.com/chordee/houdini-hda-collection.git",
+      "url": "https://github.com/chordee/houdini-hda-collection.git",
       "name": "houdini-hda-collection",
       "description": "Houdini Digital Assets Collection",
       "author": "chordee",
-      "repo_url": "https://github.com/chordee/houdini-hda-collection",
       "package_file": null,
       "package_key": "",
       "tags": [
         "library"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/fabriciochamon/houdini-hips.git",
+      "url": "https://github.com/fabriciochamon/houdini-hips.git",
       "name": "houdini-hips",
       "description": "A collection of Houdini hip files, examples, tech r&d's, vex, all the good stuff...",
       "author": "fabriciochamon",
-      "repo_url": "https://github.com/fabriciochamon/houdini-hips",
       "package_file": null,
       "package_key": "",
       "tags": [
         "hip"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/d-gfx/Houdini-Library.git",
+      "url": "https://github.com/d-gfx/Houdini-Library.git",
       "name": "Houdini-Library",
       "description": "Houdini Library.",
       "author": "d-gfx",
-      "repo_url": "https://github.com/d-gfx/Houdini-Library",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -613,202 +585,185 @@
       ]
     },
     {
-      "clone_url": "https://github.com/jakericedesigns/Houdini-Matrix-Library",
+      "url": "https://github.com/jakericedesigns/Houdini-Matrix-Library",
       "name": "Houdini-Matrix-Library",
       "description": "",
       "author": "jakericedesigns",
-      "repo_url": "https://github.com/jakericedesigns/Houdini-Matrix-Library",
       "package_file": null,
       "package_key": "",
       "tags": [
         "library",
         "fx"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/MysteryPancake/Houdini-OpenCL.git",
+      "url": "https://github.com/MysteryPancake/Houdini-OpenCL.git",
       "name": "Houdini-OpenCL",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/MysteryPancake/Houdini-OpenCL",
+      "description": "Examples and documentation for OpenCL in Houdini",
+      "author": "MysteryPancake",
       "package_file": null,
       "package_key": "",
       "tags": [
         "learn",
         "fx"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/ariffjeff/houdini-package-manager.git",
+      "url": "https://github.com/ariffjeff/houdini-package-manager.git",
       "name": "houdini-package-manager",
       "description": "An easy and functional plugin manager for SideFX Houdini",
       "author": "ariffjeff",
-      "repo_url": "https://github.com/ariffjeff/houdini-package-manager",
       "package_file": null,
       "package_key": "",
       "tags": [
         "pipeline",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/ParkerBritt/houdini-relinker.git",
+      "url": "https://github.com/ParkerBritt/houdini-relinker.git",
       "name": "houdini-relinker",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ParkerBritt/houdini-relinker",
+      "description": "Relink files houdini node file references",
+      "author": "ParkerBritt",
       "package_file": null,
       "package_key": "",
       "tags": [
         "pipeline",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/agmmnn/houdini-resources.git",
+      "url": "https://github.com/agmmnn/houdini-resources.git",
       "name": "houdini-resources",
       "description": "Various tools, tutorials and resources for Houdini.",
       "author": "agmmnn",
-      "repo_url": "https://github.com/agmmnn/houdini-resources",
       "package_file": null,
       "package_key": "",
       "tags": [
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/beatreichenbach/houdini-themes.git",
+      "url": "https://github.com/beatreichenbach/houdini-themes.git",
       "name": "houdini-themes",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/beatreichenbach/houdini-themes",
+      "description": "Houdini color scheme configs",
+      "author": "beatreichenbach",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/captainhammy/Houdini-Toolbox.git",
+      "url": "https://github.com/captainhammy/Houdini-Toolbox.git",
       "name": "Houdini-Toolbox",
       "description": "Houdini things!",
       "author": "captainhammy",
-      "repo_url": "https://github.com/captainhammy/Houdini-Toolbox",
-      "package_file": "houdini-toolbox.json",
-      "package_key": "HOUDINI_PACKAGE_PATH",
+      "package_file": null,
+      "package_key": "",
       "tags": [
         "library",
         "pipeline"
       ]
     },
     {
-      "clone_url": "https://github.com/MysteryPancake/Houdini-VBD.git",
+      "url": "https://github.com/MysteryPancake/Houdini-VBD.git",
       "name": "Houdini-VBD",
       "description": "Augmented Vertex Block Descent for Houdini",
       "author": "MysteryPancake",
-      "repo_url": "https://github.com/MysteryPancake/Houdini-VBD",
       "package_file": null,
       "package_key": "",
       "tags": [
         "fx",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/mushyfruit/houdini-web-rendering-interface.git",
+      "url": "https://github.com/mushyfruit/houdini-web-rendering-interface.git",
       "name": "houdini-web-rendering-interface",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/mushyfruit/houdini-web-rendering-interface",
+      "description": "A dockerized SideFX Houdini web app for exploring, rendering, and displaying nodes in a hip file.",
+      "author": "mushyfruit",
       "package_file": null,
       "package_key": "",
       "tags": [
         "pipeline",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/Mandrake0/houdini2godot.git",
+      "url": "https://github.com/Mandrake0/houdini2godot.git",
       "name": "houdini2godot",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Mandrake0/houdini2godot",
-      "package_file": null,
-      "package_key": "",
+      "description": "SideFx Houdini to Godot Exporter",
+      "author": "Mandrake0",
+      "package_file": "houdini2godot.json",
+      "package_key": "HOUDINI2GODOT",
       "tags": [
         "integration",
         "gamedev"
       ]
     },
     {
-      "clone_url": "https://github.com/fabriciochamon/Houdini_ABO.git",
+      "url": "https://github.com/fabriciochamon/Houdini_ABO.git",
       "name": "Houdini_ABO",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/fabriciochamon/Houdini_ABO",
+      "description": "Amazon Berkeley Objects file browser for Houdini",
+      "author": "fabriciochamon",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/3Dmattias/Houdini_Escapades.git",
+      "url": "https://github.com/3Dmattias/Houdini_Escapades.git",
       "name": "Houdini_Escapades",
       "description": "A place where I dump interesting Houdini things for your amusement",
       "author": "3Dmattias",
-      "repo_url": "https://github.com/3Dmattias/Houdini_Escapades",
       "package_file": null,
       "package_key": "",
       "tags": [
         "hip",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/3Dmattias/Houdini_Escapades.git",
-      "name": "Houdini_Escapades",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/3Dmattias/Houdini_Escapades",
-      "package_file": null,
-      "package_key": "",
-      "tags": [
-        "hip",
-        "learn"
-      ]
-    },
-    {
-      "clone_url": "https://github.com/LewisOrton/Houdini_Scripts.git",
+      "url": "https://github.com/LewisOrton/Houdini_Scripts.git",
       "name": "Houdini_Scripts",
       "description": "Personal Houdini scripts",
       "author": "LewisOrton",
-      "repo_url": "https://github.com/LewisOrton/Houdini_Scripts",
       "package_file": null,
       "package_key": "",
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/Baldrax/Houdini_TaleSpire_Terrain_Generation_Toolset.git",
+      "url": "https://github.com/Baldrax/Houdini_TaleSpire_Terrain_Generation_Toolset.git",
       "name": "Houdini_TaleSpire_Terrain_Generation_Toolset",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Baldrax/Houdini_TaleSpire_Terrain_Generation_Toolset",
-      "package_file": null,
-      "package_key": "",
+      "description": "A toolset to procedurally create terrain for TaleSpire in Houdini.",
+      "author": "Baldrax",
+      "package_file": "htg_env.json",
+      "package_key": "HTG_BASEDIR",
       "tags": [
         "gamedev",
         "environment"
       ]
     },
     {
-      "clone_url": "https://github.com/cgtoolbox/HoudiniExprEditor.git",
+      "url": "https://github.com/cgtoolbox/HoudiniExprEditor.git",
       "name": "HoudiniExprEditor",
       "description": "Houdini External Editor with file watchers system",
       "author": "cgtoolbox",
-      "repo_url": "https://github.com/cgtoolbox/HoudiniExprEditor",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -816,49 +771,48 @@
       ]
     },
     {
-      "clone_url": "https://github.com/ToniMacaroni/HoudiniGLTFExtended.git",
+      "url": "https://github.com/ToniMacaroni/HoudiniGLTFExtended.git",
       "name": "HoudiniGLTFExtended",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ToniMacaroni/HoudiniGLTFExtended",
+      "description": "Extended GLTF exporter for Houdini",
+      "author": "ToniMacaroni",
       "package_file": null,
       "package_key": "",
       "tags": [
         "integration",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/Bismuth-Consultancy-BV/HoudiniOnAWS.git",
+      "url": "https://github.com/Bismuth-Consultancy-BV/HoudiniOnAWS.git",
       "name": "HoudiniOnAWS",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Bismuth-Consultancy-BV/HoudiniOnAWS",
+      "description": "All files related to setting up Houdini on AWS",
+      "author": "Bismuth-Consultancy-BV",
       "package_file": null,
       "package_key": "",
       "tags": [
         "pipeline"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/AdrianPanGithub/HoudiniPCGTranslator.git",
+      "url": "https://github.com/AdrianPanGithub/HoudiniPCGTranslator.git",
       "name": "HoudiniPCGTranslator",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/AdrianPanGithub/HoudiniPCGTranslator",
+      "description": "Unreal PCG ⇋ Houdini Engine: Seamless Integration",
+      "author": "AdrianPanGithub",
       "package_file": null,
       "package_key": "",
       "tags": [
         "integration",
         "gamedev"
-      ]
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/kylelinvfx/HoudiniTools.git",
+      "url": "https://github.com/kylelinvfx/HoudiniTools.git",
       "name": "HoudiniTools",
       "description": "Tools for Houdini",
       "author": "kylelinvfx",
-      "repo_url": "https://github.com/kylelinvfx/HoudiniTools",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -866,33 +820,35 @@
       ]
     },
     {
-      "clone_url": "https://github.com/tanitta/HoudiniUnityAnimationClip.git",
+      "url": "https://github.com/tanitta/HoudiniUnityAnimationClip.git",
       "name": "HoudiniUnityAnimationClip",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/tanitta/HoudiniUnityAnimationClip",
+      "description": "This package consists of HDAs that directly export AnimationClips from Houdini to Unity.",
+      "author": "tanitta",
       "package_file": null,
       "package_key": "",
-      "tags": []
+      "tags": [
+        "integration",
+        "gamedev"
+      ],
+      "create_package": false
     },
     {
-      "clone_url": "https://github.com/mchaloner/HouTools.git",
+      "url": "https://github.com/mchaloner/HouTools.git",
       "name": "HouTools",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/mchaloner/HouTools",
+      "description": "Tools for Houdini",
+      "author": "mchaloner",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "library"
       ]
     },
     {
-      "clone_url": "https://github.com/aaronsmithtv/hpaint.git",
+      "url": "https://github.com/aaronsmithtv/hpaint.git",
       "name": "hpaint",
       "description": "🎨 HPaint is a viewport drawing utility for Houdini, allowing you to digitally paint on any geometry.",
       "author": "aaronsmithtv",
-      "repo_url": "https://github.com/aaronsmithtv/hpaint",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -900,11 +856,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/permahorse/hpaste.git",
+      "url": "https://github.com/permahorse/hpaste.git",
       "name": "hpaste",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/permahorse/hpaste",
+      "description": "simple plain text snippet exchange for Houdini",
+      "author": "permahorse",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -912,35 +867,34 @@
       ]
     },
     {
-      "clone_url": "https://github.com/shaderology/hShadertoy.git",
+      "url": "https://github.com/shaderology/hShadertoy.git",
       "name": "hShadertoy",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/shaderology/hShadertoy",
+      "description": "Shadertoy Importer for Houdini COPs",
+      "author": "shaderology",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "shader"
       ]
     },
     {
-      "clone_url": "https://github.com/pixel-ninja/HuskStandaloneSubmitter.git",
+      "url": "https://github.com/pixel-ninja/HuskStandaloneSubmitter.git",
       "name": "HuskStandaloneSubmitter",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/pixel-ninja/HuskStandaloneSubmitter",
+      "description": "Standalone Render submitter for Houdini Husk",
+      "author": "pixel-ninja",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "pipeline"
       ]
     },
     {
-      "clone_url": "https://github.com/HakeemAdam/Hywall.git",
+      "url": "https://github.com/HakeemAdam/Hywall.git",
       "name": "Hywall",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/HakeemAdam/Hywall",
+      "description": "Hywall is a tool for generating inspiring colour palettes from images in Houdini. Generates 5 palette variants: Main, Pastels, Warm Shift, Dark Mode, and Cool Shift.",
+      "author": "HakeemAdam",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -949,49 +903,47 @@
       ]
     },
     {
-      "clone_url": "https://github.com/innogames/IG-VFX-Houdini-Tools.git",
+      "url": "https://github.com/innogames/IG-VFX-Houdini-Tools.git",
       "name": "IG-VFX-Houdini-Tools",
       "description": "",
       "author": "innogames",
-      "repo_url": "https://github.com/innogames/IG-VFX-Houdini-Tools",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "InnoGames_Package.json",
+      "package_key": "INNOGAMES",
       "tags": [
         "library",
         "gamedev"
       ]
     },
     {
-      "clone_url": "https://github.com/crystalboxes/isogrid-houdini-sop.git",
+      "url": "https://github.com/crystalboxes/isogrid-houdini-sop.git",
       "name": "isogrid-houdini-sop",
       "description": "voxel-based generative geometry",
       "author": "crystalboxes",
-      "repo_url": "https://github.com/crystalboxes/isogrid-houdini-sop",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/parkerjon/jpVolumeLayers.git",
+      "url": "https://github.com/parkerjon/jpVolumeLayers.git",
       "name": "jpVolumeLayers",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/parkerjon/jpVolumeLayers",
+      "description": "Volume shader layering tools for Side Effects Houdini",
+      "author": "parkerjon",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "fx",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/kdbra/kdbra-houdini-tools.git",
+      "url": "https://github.com/kdbra/kdbra-houdini-tools.git",
       "name": "kdbra-houdini-tools",
       "description": "Production tools for SideFX Houdini",
       "author": "kdbra",
-      "repo_url": "https://github.com/kdbra/kdbra-houdini-tools",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -999,35 +951,22 @@
       ]
     },
     {
-      "clone_url": "https://github.com/kamilhepner/kinefx_tools.git",
+      "url": "https://github.com/kamilhepner/kinefx_tools.git",
       "name": "kinefx_tools",
       "description": "Collection of rigging tools and utils for Houdini Kinefx",
       "author": "kamilhepner",
-      "repo_url": "https://github.com/kamilhepner/kinefx_tools",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "rigging"
       ]
     },
     {
-      "clone_url": "https://github.com/kamilhepner/kinefx_tools.git",
-      "name": "kinefx_tools",
-      "description": "Collection of rigging tools and utils for Houdini Kinefx",
-      "author": "kamilhepner",
-      "repo_url": "https://github.com/kamilhepner/kinefx_tools",
-      "package_file": null,
-      "package_key": "",
-      "tags": [
-        "rigging"
-      ]
-    },
-    {
-      "clone_url": "https://github.com/Faitel/KineFXBallRig.git",
+      "url": "https://github.com/Faitel/KineFXBallRig.git",
       "name": "KineFXBallRig",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Faitel/KineFXBallRig",
+      "description": "Rig for practice in animation and an example for how to make a squash and stretch constraint using KineFX in Houdini.",
+      "author": "Faitel",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1036,23 +975,21 @@
       ]
     },
     {
-      "clone_url": "https://github.com/csdjk/LcLLib-for-Houdini.git",
+      "url": "https://github.com/csdjk/LcLLib-for-Houdini.git",
       "name": "LcLLib-for-Houdini",
       "description": "houdini library,some example and hda tools",
       "author": "csdjk",
-      "repo_url": "https://github.com/csdjk/LcLLib-for-Houdini",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "LcLLib.json",
+      "package_key": "LcLLib",
       "tags": [
         "library"
       ]
     },
     {
-      "clone_url": "https://github.com/grabanton/lighter.git",
+      "url": "https://github.com/grabanton/lighter.git",
       "name": "lighter",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/grabanton/lighter",
+      "description": "Houdini package for fast and flexible hdri based lighting. ",
+      "author": "grabanton",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1061,23 +998,22 @@
       ]
     },
     {
-      "clone_url": "https://github.com/luk4m4repo/luk4m4_Undini_framework.git",
+      "url": "https://github.com/luk4m4repo/luk4m4_Undini_framework.git",
       "name": "luk4m4_Undini_framework",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/luk4m4repo/luk4m4_Undini_framework",
+      "author": "luk4m4repo",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
-        "library"
+        "gamedev"
       ]
     },
     {
-      "clone_url": "https://github.com/lukevanlukevan/LV-Tools.git",
+      "url": "https://github.com/lukevanlukevan/LV-Tools.git",
       "name": "LV-Tools",
       "description": "A collection of tools, scripts, and python panels for Houdini",
       "author": "lukevanlukevan",
-      "repo_url": "https://github.com/lukevanlukevan/LV-Tools",
       "package_file": "LVTools.json",
       "package_key": "LV",
       "tags": [
@@ -1085,23 +1021,22 @@
       ]
     },
     {
-      "clone_url": "https://github.com/stehrani3d/MaterialEggs.git",
+      "url": "https://github.com/stehrani3d/MaterialEggs.git",
       "name": "MaterialEggs",
       "description": "",
       "author": "stehrani3d",
-      "repo_url": "https://github.com/stehrani3d/MaterialEggs",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "shader"
       ]
     },
     {
-      "clone_url": "https://github.com/Faitel/MaterialXEssentials.git",
+      "url": "https://github.com/Faitel/MaterialXEssentials.git",
       "name": "MaterialXEssentials",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Faitel/MaterialXEssentials",
+      "description": "Essential nodes that would help you create MaterialX shaders for Karma XPU",
+      "author": "Faitel",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1110,37 +1045,36 @@
       ]
     },
     {
-      "clone_url": "https://github.com/pixel-ninja/mdl_to_usd.git",
+      "url": "https://github.com/pixel-ninja/mdl_to_usd.git",
       "name": "mdl_to_usd",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/pixel-ninja/mdl_to_usd",
+      "description": "Simple python script to convert Evermotion VRay MDL materials to MaterialX USDs",
+      "author": "pixel-ninja",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "shader",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/QuentinWittevrongel/mllighting.git",
+      "url": "https://github.com/QuentinWittevrongel/mllighting.git",
       "name": "mllighting",
       "description": "Tool to create lights from a drawing",
       "author": "QuentinWittevrongel",
-      "repo_url": "https://github.com/QuentinWittevrongel/mllighting",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "shader",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/Bismuth-Consultancy-BV/MLOPs.git",
+      "url": "https://github.com/Bismuth-Consultancy-BV/MLOPs.git",
       "name": "MLOPs",
       "description": "Machine Learning Toolset for Houdini",
       "author": "Bismuth-Consultancy-BV",
-      "repo_url": "https://github.com/Bismuth-Consultancy-BV/MLOPs",
       "package_file": "MLOPs.json",
       "package_key": "MLOPS",
       "tags": [
@@ -1149,23 +1083,22 @@
       ]
     },
     {
-      "clone_url": "https://github.com/marcmesafervfx/MMF_Hou_VEXSnippets.git",
+      "url": "https://github.com/marcmesafervfx/MMF_Hou_VEXSnippets.git",
       "name": "MMF_Hou_VEXSnippets",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/marcmesafervfx/MMF_Hou_VEXSnippets",
+      "description": "Explore this collection of VEX snippets I’ve put together to streamline coding, data manipulation and experimentation in Houdini. If improvements are needed, I’m happy to review and incorporate them.",
+      "author": "marcmesafervfx",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "learn"
       ]
     },
     {
-      "clone_url": "",
+      "url": "https://alexeyvanzhula.gumroad.com/",
       "name": "Modeler",
       "description": "Direct modeling toolset for SideFX Houdini (Commercial)",
       "author": "Alexey Vanzhula",
-      "repo_url": "https://alexeyvanzhula.gumroad.com/",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1175,11 +1108,10 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/toadstorm/MOPS.git",
+      "url": "https://github.com/toadstorm/MOPS.git",
       "name": "MOPS",
       "description": "Motion OPerators for Houdini, a motion graphics toolkit.",
       "author": "toadstorm",
-      "repo_url": "https://github.com/toadstorm/MOPS",
       "package_file": "MOPS.json",
       "package_key": "MOPS",
       "tags": [
@@ -1188,11 +1120,10 @@
       ]
     },
     {
-      "clone_url": "",
+      "url": "https://motionoperators.com/info/mopsplus/",
       "name": "MOPs+",
       "description": "Motion Design Toolkit for Houdini (Commercial)",
       "author": "toadstorm",
-      "repo_url": "https://motionoperators.com/info/mopsplus/",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1202,11 +1133,10 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/Boning1011/motion-cops.git",
+      "url": "https://github.com/Boning1011/motion-cops.git",
       "name": "motion-cops",
       "description": "Free Houdini toolkit that transforms Copernicus into a motion design powerhouse. Production-ready tools for animation, simulation, and real-time effects. One-click pixel sorting, solver workflows, and more.",
       "author": "Boning1011",
-      "repo_url": "https://github.com/Boning1011/motion-cops",
       "package_file": "MotionCOPs.json",
       "package_key": "MotionCOPs",
       "tags": [
@@ -1215,24 +1145,23 @@
       ]
     },
     {
-      "clone_url": "https://github.com/ShoheiOkazaki/Nagamochi.git",
+      "url": "https://github.com/ShoheiOkazaki/Nagamochi.git",
       "name": "Nagamochi",
       "description": "Houdini Tools",
       "author": "ShoheiOkazaki",
-      "repo_url": "https://github.com/ShoheiOkazaki/Nagamochi",
       "package_file": "Nagamochi.json",
       "package_key": "NAGAMOCHI",
+      "create_package": false,
       "tags": [
         "library",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/baku89/nops.git",
+      "url": "https://github.com/baku89/nops.git",
       "name": "nops",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/baku89/nops",
+      "description": "Digital Assets to supplement non-procedural features of Houdini",
+      "author": "baku89",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1240,23 +1169,21 @@
       ]
     },
     {
-      "clone_url": "https://github.com/nitzan-treg/ntLib.git",
+      "url": "https://github.com/nitzan-treg/ntLib.git",
       "name": "ntLib",
       "description": "Digital Assets for Houdini FX",
       "author": "nitzan-treg",
-      "repo_url": "https://github.com/nitzan-treg/ntLib",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "ntlib.json",
+      "package_key": "NT",
       "tags": [
         "library"
       ]
     },
     {
-      "clone_url": "",
+      "url": "https://odtools.notion.site/OD-Tools-2021-for-Houdini-e9f3b8ce266d4cad8d9fed7281958c18",
       "name": "OD Tools",
       "description": "Collection of production tools for SideFX Houdini (Commercial)",
       "author": "Origami Digital",
-      "repo_url": "https://odtools.notion.site/OD-Tools-2021-for-Houdini-e9f3b8ce266d4cad8d9fed7281958c18",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1266,36 +1193,35 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/NatronGitHub/openfx-misc.git",
+      "url": "https://github.com/NatronGitHub/openfx-misc.git",
       "name": "openfx-misc",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/NatronGitHub/openfx-misc",
+      "description": "Miscellaneous OFX / OpenFX / Open Effects plugins",
+      "author": "NatronGitHub",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "integration"
       ]
     },
     {
-      "clone_url": "https://github.com/fabriciochamon/Packman.git",
+      "url": "https://github.com/fabriciochamon/Packman.git",
       "name": "Packman",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/fabriciochamon/Packman",
+      "description": "A project based Houdini loader and package manager.",
+      "author": "fabriciochamon",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "pipeline",
         "utility"
       ]
     },
     {
-      "clone_url": "",
+      "url": "https://www.theoryaccelerated.com/paradigm",
       "name": "Paradigm Solver",
       "description": "GPU accelerated particle solver for SideFX Houdini (Commercial)",
       "author": "Theory Accelerated",
-      "repo_url": "https://www.theoryaccelerated.com/paradigm",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1305,60 +1231,58 @@
       "commercial": true
     },
     {
-      "clone_url": "https://github.com/Tronotrond/pbr_materialbuilder.git",
+      "url": "https://github.com/Tronotrond/pbr_materialbuilder.git",
       "name": "pbr_materialbuilder",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Tronotrond/pbr_materialbuilder",
+      "description": "Houdini HDA: Build material networks based on found PRB texture maps and sets",
+      "author": "Tronotrond",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "shader"
       ]
     },
     {
-      "clone_url": "https://github.com/wetadigital/physlight.git",
+      "url": "https://github.com/wetadigital/physlight.git",
       "name": "physlight",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/wetadigital/physlight",
+      "author": "wetadigital",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "shader"
       ]
     },
     {
-      "clone_url": "https://github.com/mhartdesigngit/puzzlegen.git",
+      "url": "https://github.com/mhartdesigngit/puzzlegen.git",
       "name": "puzzlegen",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/mhartdesigngit/puzzlegen",
+      "author": "mhartdesigngit",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "utility",
         "gamedev"
       ]
     },
     {
-      "clone_url": "https://github.com/qLab/qLib.git",
+      "url": "https://github.com/qLab/qLib.git",
       "name": "qLib",
       "description": "A procedural asset library for SideFX Houdini. https://www.facebook.com/qLibHoudini",
       "author": "qLab",
-      "repo_url": "https://github.com/qLab/qLib",
-      "package_file": null,
-      "package_key": "",
+      "package_file": "qLib_package.json",
+      "package_key": "QLIB",
       "tags": [
         "library"
       ]
     },
     {
-      "clone_url": "https://github.com/alexmajewski/quickflags.git",
+      "url": "https://github.com/alexmajewski/quickflags.git",
       "name": "quickflags",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/alexmajewski/quickflags",
+      "description": "Houdini tool for storing node flag states and reapplying them.",
+      "author": "alexmajewski",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1366,11 +1290,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/Maxon-Computer/Redshift-OSL-Shaders.git",
+      "url": "https://github.com/Maxon-Computer/Redshift-OSL-Shaders.git",
       "name": "Redshift-OSL-Shaders",
       "description": "Contains the official Open Shading Language (OSL) examples for Redshift.",
       "author": "Maxon-Computer",
-      "repo_url": "https://github.com/Maxon-Computer/Redshift-OSL-Shaders",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1378,11 +1301,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/handcraftedcc/SDFModeler.git",
+      "url": "https://github.com/handcraftedcc/SDFModeler.git",
       "name": "SDFModeler",
       "description": "SDF Modeling Toolset for Houdini",
       "author": "handcraftedcc",
-      "repo_url": "https://github.com/handcraftedcc/SDFModeler",
       "package_file": "SDFM.json",
       "package_key": "SDFM",
       "tags": [
@@ -1391,11 +1313,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/SiposAttila1995/sipiLib.git",
+      "url": "https://github.com/SiposAttila1995/sipiLib.git",
       "name": "sipiLib",
       "description": "",
       "author": "SiposAttila1995",
-      "repo_url": "https://github.com/SiposAttila1995/sipiLib",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1403,11 +1324,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/proceduralit/StableDiffusion_Houdini.git",
+      "url": "https://github.com/proceduralit/StableDiffusion_Houdini.git",
       "name": "StableDiffusion_Houdini",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/proceduralit/StableDiffusion_Houdini",
+      "description": "a Houdini tool that submits the render output as the init_image and with getting help from PDG, enables artists to easily define variations on the Stable Diffusion parameters",
+      "author": "proceduralit",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1416,11 +1336,10 @@
       ]
     },
     {
-      "clone_url": "https://github.com/stassius/StableHoudini.git",
+      "url": "https://github.com/stassius/StableHoudini.git",
       "name": "StableHoudini",
       "description": "Stable Diffusion Houdini Toolset",
       "author": "stassius",
-      "repo_url": "https://github.com/stassius/StableHoudini",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1429,37 +1348,36 @@
       ]
     },
     {
-      "clone_url": "https://github.com/jakericedesigns/SteerablePerlinNoise.git",
+      "url": "https://github.com/jakericedesigns/SteerablePerlinNoise.git",
       "name": "SteerablePerlinNoise",
       "description": "Implementations of \"Steerable Perlin Noise\" as presented at Siggraph 2025",
       "author": "jakericedesigns",
-      "repo_url": "https://github.com/jakericedesigns/SteerablePerlinNoise",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "fx",
         "learn"
       ]
     },
     {
-      "clone_url": "https://github.com/ibackstrom/Terrain_AI_Houdini.git",
+      "url": "https://github.com/ibackstrom/Terrain_AI_Houdini.git",
       "name": "Terrain_AI_Houdini",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ibackstrom/Terrain_AI_Houdini",
+      "author": "ibackstrom",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "environment",
         "ai"
       ]
     },
     {
-      "clone_url": "https://github.com/aaronsmithtv/Texture-Stamp.git",
+      "url": "https://github.com/aaronsmithtv/Texture-Stamp.git",
       "name": "Texture-Stamp",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/aaronsmithtv/Texture-Stamp",
+      "description": "🌠 Interactive texture stamping & projection tool for Houdini 20",
+      "author": "aaronsmithtv",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1467,48 +1385,47 @@
       ]
     },
     {
-      "clone_url": "https://github.com/ibrahimalrashd/The-Golden-Ratio-project.git",
+      "url": "https://github.com/ibrahimalrashd/The-Golden-Ratio-project.git",
       "name": "The-Golden-Ratio-project",
       "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ibrahimalrashd/The-Golden-Ratio-project",
+      "author": "ibrahimalrashd",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
-        "fx",
+        "hip",
         "learn"
       ]
     },
     {
-      "clone_url": "https://github.com/jtomori/vex_tutorial.git",
+      "url": "https://github.com/jtomori/vex_tutorial.git",
       "name": "vex_tutorial",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/jtomori/vex_tutorial",
+      "description": ":bookmark_tabs: A collection of code snippets and examples showing syntax and capabilities of VEX language inside SideFX Houdini",
+      "author": "jtomori",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "learn"
       ]
     },
     {
-      "clone_url": "https://github.com/jtomori/vft.git",
+      "url": "https://github.com/jtomori/vft.git",
       "name": "vft",
       "description": ":boom::snowflake::hammer: VFX Fractal Toolkit",
       "author": "jtomori",
-      "repo_url": "https://github.com/jtomori/vft",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/LucaScheller/VFX-LYNX.git",
+      "url": "https://github.com/LucaScheller/VFX-LYNX.git",
       "name": "VFX-LYNX",
       "description": "LYNX | Free & OpenSource VFX Pipeline Tools",
       "author": "LucaScheller",
-      "repo_url": "https://github.com/LucaScheller/VFX-LYNX",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1516,73 +1433,70 @@
       ]
     },
     {
-      "clone_url": "https://github.com/VFX-Tricks/VFX-Tricks-Toolbox.git",
+      "url": "https://github.com/VFX-Tricks/VFX-Tricks-Toolbox.git",
       "name": "VFX-Tricks-Toolbox",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/VFX-Tricks/VFX-Tricks-Toolbox",
+      "description": "Tools for Houdini, Unreal Engine and Deadline",
+      "author": "VFX-Tricks",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "library",
         "pipeline"
       ]
     },
     {
-      "clone_url": "https://github.com/jtomori/vfx_good_night_reading",
+      "url": "https://github.com/jtomori/vfx_good_night_reading",
       "name": "vfx_good_night_reading",
       "description": ":books: Curated collection of good reading about VFX and CG",
       "author": "jtomori",
-      "repo_url": "https://github.com/jtomori/vfx_good_night_reading",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "learn"
       ]
     },
     {
-      "clone_url": "https://github.com/Faitel/VirtuCameraHoudini.git",
+      "url": "https://github.com/Faitel/VirtuCameraHoudini.git",
       "name": "VirtuCameraHoudini",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/Faitel/VirtuCameraHoudini",
+      "description": "Capture Houdini camera transformations from iOS device by using VirtuCamera app",
+      "author": "Faitel",
       "package_file": null,
       "package_key": "",
+      "create_package": false,
       "tags": [
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/ZephirFXEC/VQVDB.git",
+      "url": "https://github.com/ZephirFXEC/VQVDB.git",
       "name": "VQVDB",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/ZephirFXEC/VQVDB",
-      "package_file": null,
-      "package_key": "",
+      "description": "OpenVDB Fog Volume Compression using VQ-VAE Neural Network",
+      "author": "ZephirFXEC",
+      "package_file": "vqvdb.json",
+      "package_key": "VQVDB_PATH",
       "tags": [
         "fx",
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/mushyfruit/vr-houdini-camera.git",
+      "url": "https://github.com/mushyfruit/vr-houdini-camera.git",
       "name": "vr-houdini-camera",
-      "description": "",
-      "author": "",
-      "repo_url": "https://github.com/mushyfruit/vr-houdini-camera",
-      "package_file": null,
-      "package_key": "",
+      "description": "VR Viewport Camera Utility for Houdini",
+      "author": "mushyfruit",
+      "package_file": "VR_Houdini_Camera.json",
+      "package_key": "VR_CAM",
       "tags": [
         "utility"
       ]
     },
     {
-      "clone_url": "https://github.com/CorvaeOboro/zenv.git",
+      "url": "https://github.com/CorvaeOboro/zenv.git",
       "name": "zenv",
       "description": "houdini hda tools focused on procedural modeling environments ",
       "author": "CorvaeOboro",
-      "repo_url": "https://github.com/CorvaeOboro/zenv",
       "package_file": "zenv.json",
       "package_key": "HOUDINI_PACKAGE_PATH",
       "tags": [

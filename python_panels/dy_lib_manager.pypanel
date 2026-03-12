@@ -44,6 +44,8 @@ ICON_DOWNLOAD = "BUTTONS_auto_save"
 ICON_REDOWNLOAD = "MISC_database"
 ICON_FAVORITE = "BUTTONS_favorites"
 ICON_NOT_FAVORITE = "BUTTONS_not_favorites"
+ICON_TAG = "BUTTONS_tag"
+ICON_LINK = "VIEW_visualization_global"
 
 # -----------------------------------------------------------------------
 # PATH HELPER
@@ -68,9 +70,9 @@ def get_remote_branches(repository_url):
     branches = [line.split("refs/heads/")[1].strip() for line in result.stdout.splitlines() if "refs/heads/" in line]
     return branches
 
-def get_remote_releases(clone_url):
+def get_remote_releases(url):
     try:
-        owner, repo = parse_owner_repo(clone_url)
+        owner, repo = parse_owner_repo(url)
         api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
         req = urllib.request.Request(api_url, headers={"Accept": "application/vnd.github.v3+json"})
         with urllib.request.urlopen(req, timeout=10) as response:
@@ -83,7 +85,7 @@ def get_remote_releases(clone_url):
             return releases
     except Exception as e:
         print(f"Error fetching releases: {e}")
-        return get_remote_tags(clone_url)
+        return get_remote_tags(url)
 
 def get_remote_tags(repository_url):
     result = subprocess.run(["git", "ls-remote", "--tags", repository_url], capture_output=True, text=True, **SUBPROCESS_FLAGS)
@@ -109,8 +111,8 @@ def git_checkout(directory, ref):
 # GITHUB API HELPER
 # -----------------------------------------------------------------------
 
-def parse_owner_repo(clone_url):
-    parts = clone_url.split("github.com/")
+def parse_owner_repo(url):
+    parts = url.split("github.com/")
     if len(parts) < 2:
         return None, None
     owner_repo = parts[1].replace(".git", "").strip("/")
@@ -120,19 +122,19 @@ def parse_owner_repo(clone_url):
     return None, None
 
 def get_repo_info_from_entry(lib_entry):
-    clone_url = lib_entry.get("clone_url", "")
-    fallback_name = Path(clone_url).stem if clone_url else "Unknown"
+    url = lib_entry.get("url", "")
+    fallback_name = Path(url).stem if url else "Unknown"
     return {
         "name": lib_entry.get("name") or fallback_name,
         "description": lib_entry.get("description") or "",
         "author": lib_entry.get("author") or "",
-        "url": lib_entry.get("repo_url") or clone_url.replace(".git", "")
+        "url": url.replace(".git", "").rstrip("/")
     }
 
-def get_repo_info(clone_url):
-    owner, repo = parse_owner_repo(clone_url)
-    fallback_name = Path(clone_url).stem if clone_url else "Unknown"
-    info = {"name": fallback_name, "description": "", "author": owner or "", "url": clone_url.replace(".git", "")}
+def get_repo_info(url):
+    owner, repo = parse_owner_repo(url)
+    fallback_name = Path(url).stem if url else "Unknown"
+    info = {"name": fallback_name, "description": "", "author": owner or "", "url": url.replace(".git", "").rstrip("/")}
     if not owner or not repo:
         return info
     try:
@@ -215,8 +217,8 @@ def hou_reload_packages(lib_name, package_path):
 # STATUS DETECTION
 # -----------------------------------------------------------------------
 
-def get_repo_name(clone_url):
-    return Path(clone_url).stem
+def get_repo_name(url):
+    return Path(url).stem
 
 def get_library_status(repo_name, packages_dir, install_root=None, create_package=True):
     if not create_package and install_root:
@@ -245,7 +247,7 @@ def resolve_unique_names(entries):
         name_counts[name] = name_counts.get(name, 0) + 1
     for entry in entries:
         if name_counts[entry["repo_name"]] > 1:
-            owner, _ = parse_owner_repo(entry["db"]["clone_url"])
+            owner, _ = parse_owner_repo(entry["db"]["url"])
             if owner:
                 entry["repo_name"] = f"{owner}-{entry['repo_name']}"
 
@@ -265,7 +267,7 @@ def _create_basic_package(lib_dir, package_key, houdini_packages_dir):
 # -----------------------------------------------------------------------
 
 def install_library(lib_entry, install_root, repo_name, ref, is_release=False):
-    clone_url = lib_entry["clone_url"]
+    url = lib_entry["url"]
     package_file = lib_entry.get("package_file")
     package_key = lib_entry.get("package_key") or repo_name.replace("-", "_")
 
@@ -278,10 +280,10 @@ def install_library(lib_entry, install_root, repo_name, ref, is_release=False):
 
     # Clone repository
     lib_dir_display = _fwd_path(lib_dir)
-    print(f"Cloning {clone_url} ({ref}) to {lib_dir_display}")
+    print(f"Cloning {url} ({ref}) to {lib_dir_display}")
     try:
         with hou.InterruptableOperation(f"Downloading {repo_name}", open_interrupt_dialog=True) as operation:
-            download_github_repository(clone_url, lib_dir, ref, is_release)
+            download_github_repository(url, lib_dir, ref, is_release)
             operation.updateProgress(1.0)
     except hou.OperationInterrupted:
         if os.path.isdir(lib_dir):
@@ -425,6 +427,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         self._all_lib_data = []
         self._lib_data = []
         self._favorites = set()
+        self._active_tags = set()
         self._last_install_path = ""
 
         # Main layout
@@ -496,7 +499,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         bottom_layout.addWidget(filter_icon_label)
 
         self.status_filter = QtWidgets.QComboBox()
-        self.status_filter.addItems(["All", "Favorites", "Installed", "Not Installed", "Enabled", "Disabled"])
+        self.status_filter.addItems(["All", "Favorites", "Installed", "Not Installed", "Enabled", "Disabled", "Commercial"])
         self.status_filter.setFixedWidth(140)
         self.status_filter.currentIndexChanged.connect(self.apply_filter)
         bottom_layout.addWidget(self.status_filter)
@@ -509,6 +512,17 @@ class LibManagerWidget(QtWidgets.QWidget):
         self.star_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
         self.star_btn.clicked.connect(self._on_star_clicked)
         bottom_layout.addWidget(self.star_btn)
+
+        self.tag_btn = QtWidgets.QToolButton()
+        self.tag_btn.setIcon(hou.qt.Icon(ICON_TAG))
+        self.tag_btn.setToolTip("Filter by Tag")
+        self.tag_btn.setAutoRaise(True)
+        self.tag_btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        self.tag_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
+        self.tag_menu = QtWidgets.QMenu(self.tag_btn)
+        self.tag_btn.setMenu(self.tag_menu)
+        self.tag_menu.aboutToShow.connect(self._build_tag_menu)
+        bottom_layout.addWidget(self.tag_btn)
 
         self.search_field = QtWidgets.QLineEdit()
         self.search_field.setPlaceholderText("Search libraries...")
@@ -582,14 +596,212 @@ class LibManagerWidget(QtWidgets.QWidget):
         for r in rows:
             if r >= len(self._lib_data):
                 continue
-            clone_url = self._lib_data[r]["db"].get("clone_url", "")
-            if clone_url in self._favorites:
-                self._favorites.discard(clone_url)
+            url = self._lib_data[r]["db"].get("url", "")
+            if not url:
+                continue
+            if url in self._favorites:
+                self._favorites.discard(url)
             else:
-                self._favorites.add(clone_url)
+                self._favorites.add(url)
         save_local_setting("favorites", list(self._favorites))
         if self.status_filter.currentText() == "Favorites":
             self.apply_filter()
+
+    # -----------------------------------------------------------------------
+    # TAGS
+    # -----------------------------------------------------------------------
+
+    def _collect_all_tags(self):
+        tags = set()
+        for entry in self._all_lib_data:
+            for tag in entry["db"].get("tags", []):
+                tags.add(tag)
+        return sorted(tags, key=str.casefold)
+
+    def _build_tag_menu(self):
+        self.tag_menu.clear()
+        all_tags = self._collect_all_tags()
+
+        if self._active_tags:
+            clear_action = self.tag_menu.addAction("Clear All Tags")
+            clear_action.triggered.connect(self._clear_tag_filter)
+            self.tag_menu.addSeparator()
+
+        for tag in all_tags:
+            action = self.tag_menu.addAction(tag)
+            action.setCheckable(True)
+            action.setChecked(tag in self._active_tags)
+            action.triggered.connect(lambda checked=False, t=tag: self._on_tag_toggled(t))
+
+    def _on_tag_toggled(self, tag):
+        if tag in self._active_tags:
+            self._active_tags.discard(tag)
+        else:
+            self._active_tags.add(tag)
+        self._update_tag_btn_style()
+        self.apply_filter()
+
+    def _clear_tag_filter(self):
+        self._active_tags.clear()
+        self._update_tag_btn_style()
+        self.apply_filter()
+
+    def _update_tag_btn_style(self):
+        if self._active_tags:
+            self.tag_btn.setStyleSheet(
+                "QToolButton { border: none; padding: 2px; background-color: rgba(255, 170, 0, 80); border-radius: 2px; }"
+                "QToolButton:hover { background-color: rgba(255, 170, 0, 120); }"
+            )
+            self.tag_btn.setToolTip("Tags: " + ", ".join(sorted(self._active_tags)))
+        else:
+            self.tag_btn.setStyleSheet(
+                "QToolButton { border: none; padding: 2px; }"
+                "QToolButton:hover { background-color: rgba(255, 255, 255, 30); }"
+            )
+            self.tag_btn.setToolTip("Filter by Tag")
+
+    def _edit_tags_dialog(self, rows):
+        if not rows:
+            return
+        entries = [self._lib_data[r] for r in rows if r < len(self._lib_data)]
+        if not entries:
+            return
+
+        all_tags = self._collect_all_tags()
+
+        # Find common tags across selected entries
+        if len(entries) == 1:
+            common_tags = set(entries[0]["db"].get("tags", []))
+        else:
+            common_tags = set(entries[0]["db"].get("tags", []))
+            for entry in entries[1:]:
+                common_tags &= set(entry["db"].get("tags", []))
+
+        dialog = QtWidgets.QDialog(self)
+        dialog.setWindowTitle("Edit Tags")
+        dialog.setProperty("houdiniStyle", True)
+        dialog.setStyleSheet(hou.ui.qtStyleSheet())
+        dialog.setMinimumWidth(280)
+        dialog.setMinimumHeight(300)
+
+        main_layout = QtWidgets.QVBoxLayout(dialog)
+        main_layout.setContentsMargins(12, 12, 12, 12)
+        main_layout.setSpacing(8)
+
+        # Header
+        if len(entries) == 1:
+            header_text = entries[0]["repo_info"]["name"]
+        else:
+            header_text = f"{len(entries)} libraries selected"
+        header_label = QtWidgets.QLabel(header_text)
+        header_font = header_label.font()
+        header_font.setBold(True)
+        header_label.setFont(header_font)
+        main_layout.addWidget(header_label)
+
+        # Separator
+        sep = QtWidgets.QFrame()
+        sep.setFrameShape(QtWidgets.QFrame.HLine)
+        sep.setFrameShadow(QtWidgets.QFrame.Sunken)
+        main_layout.addWidget(sep)
+
+        # Scrollable tag area
+        scroll = QtWidgets.QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        tag_container = QtWidgets.QWidget()
+        tag_layout = QtWidgets.QVBoxLayout(tag_container)
+        tag_layout.setContentsMargins(4, 4, 4, 4)
+        tag_layout.setSpacing(4)
+
+        tag_checks = {}
+        for tag in all_tags:
+            chk = QtWidgets.QCheckBox(tag)
+            chk.setChecked(tag in common_tags)
+            tag_layout.addWidget(chk)
+            tag_checks[tag] = chk
+
+        tag_layout.addStretch()
+        scroll.setWidget(tag_container)
+        main_layout.addWidget(scroll, 1)
+
+        # Separator
+        sep2 = QtWidgets.QFrame()
+        sep2.setFrameShape(QtWidgets.QFrame.HLine)
+        sep2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        main_layout.addWidget(sep2)
+
+        # New tag input
+        new_tag_layout = QtWidgets.QHBoxLayout()
+        new_tag_layout.setSpacing(6)
+        new_tag_field = QtWidgets.QLineEdit()
+        new_tag_field.setPlaceholderText("New tag...")
+        new_tag_layout.addWidget(new_tag_field)
+        add_btn = QtWidgets.QPushButton("Add")
+        add_btn.setFixedWidth(50)
+        new_tag_layout.addWidget(add_btn)
+        main_layout.addLayout(new_tag_layout)
+
+        def add_new_tag():
+            tag = new_tag_field.text().strip().lower().replace(" ", "_")
+            if tag and tag not in tag_checks:
+                chk = QtWidgets.QCheckBox(tag)
+                chk.setChecked(True)
+                tag_layout.insertWidget(tag_layout.count() - 1, chk)
+                tag_checks[tag] = chk
+                new_tag_field.clear()
+
+        add_btn.clicked.connect(add_new_tag)
+        new_tag_field.returnPressed.connect(add_new_tag)
+
+        # OK / Cancel
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.setSpacing(6)
+        btn_layout.addStretch()
+        ok_btn = QtWidgets.QPushButton("OK")
+        ok_btn.setFixedWidth(70)
+        cancel_btn = QtWidgets.QPushButton("Cancel")
+        cancel_btn.setFixedWidth(70)
+        btn_layout.addWidget(ok_btn)
+        btn_layout.addWidget(cancel_btn)
+        main_layout.addLayout(btn_layout)
+
+        ok_btn.clicked.connect(dialog.accept)
+        cancel_btn.clicked.connect(dialog.reject)
+
+        if dialog.exec_() != QtWidgets.QDialog.Accepted:
+            return
+
+        selected_tags = sorted([tag for tag, chk in tag_checks.items() if chk.isChecked()])
+        self._save_library_tags(entries, selected_tags)
+        self.apply_filter()
+
+    def _save_library_tags(self, entries, tags):
+        local_path = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), DB_FILENAME)
+        try:
+            data = {}
+            if os.path.isfile(local_path):
+                with open(local_path, "r") as f:
+                    data = json.load(f)
+
+            # Build lookup by url + name for commercial entries
+            db_libs = data.get("libraries", [])
+            for entry in entries:
+                url = entry["db"].get("url", "")
+                name = entry["db"].get("name", "")
+                for db_lib in db_libs:
+                    if url and db_lib.get("url") == url:
+                        db_lib["tags"] = tags
+                        break
+                    elif not url and db_lib.get("name") == name:
+                        db_lib["tags"] = tags
+                        break
+                entry["db"]["tags"] = tags
+
+            with open(local_path, "w") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            print(f"Error saving tags: {e}")
 
     # -----------------------------------------------------------------------
     # LIBRARY RELOCATION
@@ -740,6 +952,16 @@ class LibManagerWidget(QtWidgets.QWidget):
         local_path = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), DB_FILENAME)
         current_path = self.path_field.text().strip()
         current_favorites = list(self._favorites)
+
+        # Collect local tag overrides before redownloading
+        local_tags = {}
+        for entry in self._all_lib_data:
+            tags = entry["db"].get("tags", [])
+            if tags:
+                key = entry["db"].get("url") or entry["db"].get("name", "")
+                if key:
+                    local_tags[key] = tags
+
         try:
             if os.path.isfile(local_path):
                 os.remove(local_path)
@@ -750,6 +972,14 @@ class LibManagerWidget(QtWidgets.QWidget):
                     data["install_path"] = current_path
                 if current_favorites:
                     data["favorites"] = current_favorites
+
+                # Merge local tag overrides back into fresh data
+                if local_tags:
+                    for lib in data.get("libraries", []):
+                        key = lib.get("url") or lib.get("name", "")
+                        if key in local_tags:
+                            lib["tags"] = local_tags[key]
+
                 os.makedirs(os.path.dirname(local_path), exist_ok=True)
                 with open(local_path, "w") as f:
                     json.dump(data, f, indent=2)
@@ -786,14 +1016,15 @@ class LibManagerWidget(QtWidgets.QWidget):
         packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
 
         for lib_entry in libraries:
-            clone_url = lib_entry.get("clone_url", "")
-            repo_name = get_repo_name(clone_url)
+            is_commercial = lib_entry.get("commercial", False)
+            url = lib_entry.get("url", "")
+            repo_name = lib_entry.get("name", "") if is_commercial else get_repo_name(url)
             repo_info = get_repo_info_from_entry(lib_entry)
             entry = {
                 "db": lib_entry,
                 "repo_info": repo_info,
                 "repo_name": repo_name,
-                "status": "Not Installed",
+                "status": "Commercial" if is_commercial else "Not Installed",
                 "enabled": False,
                 "package_path": "",
             }
@@ -805,6 +1036,8 @@ class LibManagerWidget(QtWidgets.QWidget):
         # Check status with resolved names
         current_install_root = self.path_field.text()
         for entry in self._all_lib_data:
+            if entry["db"].get("commercial", False):
+                continue
             create_pkg = entry["db"].get("create_package", True)
             status, enabled, pkg_path = get_library_status(
                 entry["repo_name"], packages_dir,
@@ -834,7 +1067,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 
         # Apply status filter
         if status_filter == "Favorites":
-            filtered = [e for e in filtered if e["db"].get("clone_url", "") in self._favorites]
+            filtered = [e for e in filtered if e["db"].get("url", "") in self._favorites]
         elif status_filter == "Installed":
             filtered = [e for e in filtered if e["status"] in ("Installed", "Disabled")]
         elif status_filter == "Not Installed":
@@ -843,6 +1076,12 @@ class LibManagerWidget(QtWidgets.QWidget):
             filtered = [e for e in filtered if e["status"] == "Installed"]
         elif status_filter == "Disabled":
             filtered = [e for e in filtered if e["status"] == "Disabled"]
+        elif status_filter == "Commercial":
+            filtered = [e for e in filtered if e["status"] == "Commercial"]
+
+        # Apply tag filter (stackable with status filter)
+        if self._active_tags:
+            filtered = [e for e in filtered if self._active_tags & set(e["db"].get("tags", []))]
 
         # Apply text search filter
         if filter_text:
@@ -854,7 +1093,8 @@ class LibManagerWidget(QtWidgets.QWidget):
                     repo_info.get("description", ""),
                     repo_info.get("author", ""),
                     entry.get("repo_name", ""),
-                    entry["db"].get("clone_url", ""),
+                    entry["db"].get("url", ""),
+                    " ".join(entry["db"].get("tags", [])),
                 ]
                 searchable_text = " ".join(part for part in searchable_parts if part).casefold()
                 if filter_text in searchable_text:
@@ -869,6 +1109,8 @@ class LibManagerWidget(QtWidgets.QWidget):
         self.table.setRowCount(len(self._lib_data))
 
         for row, entry in enumerate(self._lib_data):
+            is_commercial = entry["db"].get("commercial", False)
+
             # Enable checkbox
             chk_widget = QtWidgets.QWidget()
             chk_layout = QtWidgets.QHBoxLayout(chk_widget)
@@ -877,8 +1119,9 @@ class LibManagerWidget(QtWidgets.QWidget):
             chk = QtWidgets.QCheckBox()
             chk.setChecked(entry["enabled"])
             create_pkg = entry["db"].get("create_package", True)
-            chk.setEnabled(entry["status"] != "Not Installed" and create_pkg)
-            chk.stateChanged.connect(lambda state, r=row: self.on_enable_toggled(r, state))
+            chk.setEnabled(entry["status"] not in ("Not Installed", "Commercial") and create_pkg)
+            if not is_commercial:
+                chk.stateChanged.connect(lambda state, r=row: self.on_enable_toggled(r, state))
             chk_layout.addWidget(chk)
             self.table.setCellWidget(row, COL_ENABLE, chk_widget)
 
@@ -897,7 +1140,15 @@ class LibManagerWidget(QtWidgets.QWidget):
             self.table.setItem(row, COL_AUTHOR, author_item)
 
             # Action
-            if entry["status"] == "Not Installed":
+            if is_commercial:
+                action_btn = QtWidgets.QToolButton()
+                action_btn.setIcon(hou.qt.Icon(ICON_LINK))
+                action_btn.setToolTip("Open Product Page")
+                action_btn.setAutoRaise(True)
+                url = entry["repo_info"].get("url", "")
+                action_btn.clicked.connect(lambda _=None, u=url: webbrowser.open(u))
+                self.table.setCellWidget(row, COL_ACTION, action_btn)
+            elif entry["status"] == "Not Installed":
                 action_btn = QtWidgets.QToolButton()
                 action_btn.setIcon(hou.qt.Icon(ICON_DOWNLOAD))
                 action_btn.setToolTip("Install")
@@ -983,11 +1234,11 @@ class LibManagerWidget(QtWidgets.QWidget):
     def _install_single(self, row):
         entry = self._lib_data[row]
         lib_entry = entry["db"]
-        clone_url = lib_entry["clone_url"]
+        url = lib_entry["url"]
         repo_name = entry["repo_name"]
 
         # Check releases availability first
-        releases = get_remote_releases(clone_url)
+        releases = get_remote_releases(url)
         is_release = False
 
         if releases:
@@ -1023,7 +1274,7 @@ class LibManagerWidget(QtWidgets.QWidget):
                 return
             selected = releases[item_index[0]][1]  # tag name
         else:
-            branches = get_remote_branches(clone_url)
+            branches = get_remote_branches(url)
             if not branches:
                 hou.ui.displayMessage("No branches found.", severity=hou.severityType.Error, title="Error")
                 return
@@ -1082,18 +1333,25 @@ class LibManagerWidget(QtWidgets.QWidget):
 
         if is_single:
             row, entry = entries[0]
+            is_commercial = entry["db"].get("commercial", False)
 
             # Open in Browser
             open_browser = menu.addAction("Open in Browser")
             open_browser.triggered.connect(lambda: webbrowser.open(entry["repo_info"]["url"]))
 
-            # Favorite toggle
-            is_fav = entry["db"].get("clone_url", "") in self._favorites
-            fav_label = "Remove from Favorites" if is_fav else "Add to Favorites"
-            fav_action = menu.addAction(fav_label)
-            fav_action.triggered.connect(lambda: self._toggle_favorite([row]))
+            if not is_commercial:
+                # Favorite toggle
+                is_fav = entry["db"].get("url", "") in self._favorites
+                fav_label = "Remove from Favorites" if is_fav else "Add to Favorites"
+                fav_action = menu.addAction(fav_label)
+                fav_action.triggered.connect(lambda: self._toggle_favorite([row]))
 
-            if entry["status"] != "Not Installed":
+            # Edit Tags
+            menu.addSeparator()
+            tags_action = menu.addAction("Edit Tags")
+            tags_action.triggered.connect(lambda: self._edit_tags_dialog([row]))
+
+            if not is_commercial and entry["status"] != "Not Installed":
                 # Open Directory
                 open_dir = menu.addAction("Open Directory")
                 open_dir.triggered.connect(lambda: self.open_directory(row))
@@ -1124,7 +1382,7 @@ class LibManagerWidget(QtWidgets.QWidget):
                 uninstall_action = menu.addAction("Uninstall")
                 uninstall_action.triggered.connect(lambda: self.on_uninstall([row]))
 
-            elif entry["status"] == "Not Installed":
+            elif not is_commercial and entry["status"] == "Not Installed":
                 menu.addSeparator()
                 install_action = menu.addAction("Install")
                 install_action.triggered.connect(lambda: self.on_install_clicked(row))
@@ -1134,9 +1392,13 @@ class LibManagerWidget(QtWidgets.QWidget):
             all_rows = [r for r, _ in entries]
             fav_action = menu.addAction("Toggle Favorites")
             fav_action.triggered.connect(lambda: self._toggle_favorite(all_rows))
+
+            # Edit Tags (multi)
+            tags_action = menu.addAction("Edit Tags")
+            tags_action.triggered.connect(lambda: self._edit_tags_dialog(all_rows))
             menu.addSeparator()
 
-            installed_rows = [r for r, e in entries if e["status"] != "Not Installed"]
+            installed_rows = [r for r, e in entries if e["status"] not in ("Not Installed", "Commercial")]
             not_installed_rows = [r for r, e in entries if e["status"] == "Not Installed"]
 
             if installed_rows:
@@ -1241,16 +1503,16 @@ class LibManagerWidget(QtWidgets.QWidget):
 
     def switch_version(self, row, is_release=False):
         entry = self._lib_data[row]
-        clone_url = entry["db"]["clone_url"]
+        url = entry["db"]["url"]
 
         if is_release:
-            items = get_remote_releases(clone_url)
+            items = get_remote_releases(url)
             if not items:
                 hou.ui.displayMessage("No releases found.", severity=hou.severityType.Warning, title="Switch Release")
                 return
             display_items = [name for name, _ in items]
         else:
-            items = get_remote_branches(clone_url)
+            items = get_remote_branches(url)
             if not items:
                 hou.ui.displayMessage("No branches found.", severity=hou.severityType.Warning, title="Switch Branch")
                 return

@@ -1069,6 +1069,7 @@ except ModuleNotFoundError:
 # CONSTANTS
 # -----------------------------------------------------------------------
 
+TITLE_LIB = "dy Library Manager"
 DB_FILENAME = "dy_lib_manager_db.json"
 DB_REMOTE_URL = f"https://raw.githubusercontent.com/cdordelly/dyLib/dev/{DB_FILENAME}"
 IS_WINDOWS = platform.system() == "Windows"
@@ -1476,7 +1477,7 @@ class LibManagerDialog(QtWidgets.QDialog):
         sh = hou.ui.qtStyleSheet()
         self.setStyleSheet(sh)
 
-        self.setWindowTitle("dy Library Manager")
+        self.setWindowTitle(TITLE_LIB)
         self.setMinimumSize(900, 400)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.WindowCloseButtonHint)
 
@@ -1555,7 +1556,7 @@ class LibManagerDialog(QtWidgets.QDialog):
         bottom_layout.addWidget(filter_icon_label)
 
         self.status_filter = QtWidgets.QComboBox()
-        self.status_filter.addItems(["All", "Favorites", "Installed", "Not Installed", "Enabled", "Disabled", "Commercial"])
+        self.status_filter.addItems(["All", "Favorites", "Installed", "Not Installed", "Enabled", "Disabled", "Commercial", "Standalone"])
         self.status_filter.setFixedWidth(140)
         self.status_filter.currentIndexChanged.connect(self.apply_filter)
         bottom_layout.addWidget(self.status_filter)
@@ -2042,7 +2043,7 @@ class LibManagerDialog(QtWidgets.QDialog):
             print(f"Database saved to: {_fwd_path(local_path)}")
             self.refresh_table()
         except Exception as e:
-            hou.ui.displayMessage(f"Failed to redownload database:\n{e}", severity=hou.severityType.Error, title="dy Library Manager")
+            hou.ui.displayMessage(f"Failed to redownload database:\n{e}", severity=hou.severityType.Error, title=TITLE_LIB)
 
     # -----------------------------------------------------------------------
     # TABLE POPULATION
@@ -2056,7 +2057,7 @@ class LibManagerDialog(QtWidgets.QDialog):
 
         db = load_database()
         if not db:
-            hou.ui.displayMessage("Failed to load the library database.", severity=hou.severityType.Error, title="dy Library Manager")
+            hou.ui.displayMessage("Failed to load the library database.", severity=hou.severityType.Error, title=TITLE_LIB)
             return
 
         # Load persisted install path
@@ -2104,6 +2105,42 @@ class LibManagerDialog(QtWidgets.QDialog):
             entry["enabled"] = enabled
             entry["package_path"] = pkg_path
 
+        # Discover standalone packages (not in DB)
+        known_names = {e["repo_name"] for e in self._all_lib_data}
+        commercial_names = {
+            e["repo_name"] for e in self._all_lib_data
+            if e["db"].get("commercial", False)
+        }
+        if os.path.isdir(packages_dir):
+            for fname in os.listdir(packages_dir):
+                if not fname.endswith(".json"):
+                    continue
+                pkg_name = fname[:-5]  # strip .json
+                if pkg_name in known_names or pkg_name in commercial_names:
+                    continue
+                pkg_path = os.path.join(packages_dir, fname)
+                try:
+                    with open(pkg_path, "r") as f:
+                        pkg_data = json.load(f)
+                except Exception:
+                    continue
+                enabled = pkg_data.get("enable", True)
+                entry = {
+                    "db": {"url": "", "tags": ["standalone"]},
+                    "repo_info": {
+                        "name": pkg_name,
+                        "description": "",
+                        "author": "",
+                        "url": "",
+                    },
+                    "repo_name": pkg_name,
+                    "status": "Installed" if enabled else "Disabled",
+                    "enabled": enabled,
+                    "package_path": pkg_path,
+                    "standalone": True,
+                }
+                self._all_lib_data.append(entry)
+
         self._all_lib_data.sort(
             key=lambda item: (item["repo_info"].get("name") or item["repo_name"]).casefold()
         )
@@ -2132,6 +2169,8 @@ class LibManagerDialog(QtWidgets.QDialog):
             filtered = [e for e in filtered if e["status"] == "Disabled"]
         elif status_filter == "Commercial":
             filtered = [e for e in filtered if e["status"] == "Commercial"]
+        elif status_filter == "Standalone":
+            filtered = [e for e in filtered if e.get("standalone", False)]
 
         # Apply tag filter (stackable with status filter)
         if self._active_tags:
@@ -2363,7 +2402,7 @@ class LibManagerDialog(QtWidgets.QDialog):
         install_root = self.path_field.text()
         success = install_library(lib_entry, install_root, repo_name, selected, is_release)
         if success:
-            hou.ui.displayMessage(f"{repo_name} installed successfully.", title="dy Library Manager")
+            hou.ui.displayMessage(f"{repo_name} installed successfully.", title=TITLE_LIB)
 
     # -----------------------------------------------------------------------
     # RIGHT-CLICK CONTEXT MENU
@@ -2388,58 +2427,70 @@ class LibManagerDialog(QtWidgets.QDialog):
         if is_single:
             row, entry = entries[0]
             is_commercial = entry["db"].get("commercial", False)
+            is_standalone = entry.get("standalone", False)
 
-            # Open in Browser
-            open_browser = menu.addAction("Open in Browser")
-            open_browser.triggered.connect(lambda: webbrowser.open(entry["repo_info"]["url"]))
-
-            if not is_commercial:
-                # Favorite toggle
-                is_fav = entry["db"].get("url", "") in self._favorites
-                fav_label = "Remove from Favorites" if is_fav else "Add to Favorites"
-                fav_action = menu.addAction(fav_label)
-                fav_action.triggered.connect(lambda: self._toggle_favorite([row]))
-
-            # Edit Tags
-            menu.addSeparator()
-            tags_action = menu.addAction("Edit Tags")
-            tags_action.triggered.connect(lambda: self._edit_tags_dialog([row]))
-
-            if not is_commercial and entry["status"] != "Not Installed":
-                # Open Directory
-                open_dir = menu.addAction("Open Directory")
-                open_dir.triggered.connect(lambda: self.open_directory(row))
+            if is_standalone:
+                # Standalone: enable/disable and edit tags only
+                if entry["status"] in ("Installed", "Disabled"):
+                    toggle_label = "Disable" if entry["enabled"] else "Enable"
+                    toggle_action = menu.addAction(toggle_label)
+                    toggle_action.triggered.connect(lambda: self._batch_enable([row], not entry["enabled"]))
 
                 menu.addSeparator()
+                tags_action = menu.addAction("Edit Tags")
+                tags_action.triggered.connect(lambda: self._edit_tags_dialog([row]))
+            else:
+                # Open in Browser
+                open_browser = menu.addAction("Open in Browser")
+                open_browser.triggered.connect(lambda: webbrowser.open(entry["repo_info"]["url"]))
 
-                # Library Info
-                info_action = menu.addAction("Library Info")
-                info_action.triggered.connect(lambda: self.show_library_info(row))
+                if not is_commercial:
+                    # Favorite toggle
+                    is_fav = entry["db"].get("url", "") in self._favorites
+                    fav_label = "Remove from Favorites" if is_fav else "Add to Favorites"
+                    fav_action = menu.addAction(fav_label)
+                    fav_action.triggered.connect(lambda: self._toggle_favorite([row]))
 
+                # Edit Tags
                 menu.addSeparator()
+                tags_action = menu.addAction("Edit Tags")
+                tags_action.triggered.connect(lambda: self._edit_tags_dialog([row]))
 
-                # Force Update
-                update_action = menu.addAction("Force Update")
-                update_action.triggered.connect(lambda: self.force_update(row))
+                if not is_commercial and entry["status"] != "Not Installed":
+                    # Open Directory
+                    open_dir = menu.addAction("Open Directory")
+                    open_dir.triggered.connect(lambda: self.open_directory(row))
 
-                # Switch Branch
-                switch_branch_action = menu.addAction("Switch Branch")
-                switch_branch_action.triggered.connect(lambda: self.switch_version(row, is_release=False))
+                    menu.addSeparator()
 
-                # Switch Release
-                switch_release_action = menu.addAction("Switch Release")
-                switch_release_action.triggered.connect(lambda: self.switch_version(row, is_release=True))
+                    # Library Info
+                    info_action = menu.addAction("Library Info")
+                    info_action.triggered.connect(lambda: self.show_library_info(row))
 
-                menu.addSeparator()
+                    menu.addSeparator()
 
-                # Uninstall
-                uninstall_action = menu.addAction("Uninstall")
-                uninstall_action.triggered.connect(lambda: self.on_uninstall([row]))
+                    # Force Update
+                    update_action = menu.addAction("Force Update")
+                    update_action.triggered.connect(lambda: self.force_update(row))
 
-            elif not is_commercial and entry["status"] == "Not Installed":
-                menu.addSeparator()
-                install_action = menu.addAction("Install")
-                install_action.triggered.connect(lambda: self.on_install_clicked(row))
+                    # Switch Branch
+                    switch_branch_action = menu.addAction("Switch Branch")
+                    switch_branch_action.triggered.connect(lambda: self.switch_version(row, is_release=False))
+
+                    # Switch Release
+                    switch_release_action = menu.addAction("Switch Release")
+                    switch_release_action.triggered.connect(lambda: self.switch_version(row, is_release=True))
+
+                    menu.addSeparator()
+
+                    # Uninstall
+                    uninstall_action = menu.addAction("Uninstall")
+                    uninstall_action.triggered.connect(lambda: self.on_uninstall([row]))
+
+                elif not is_commercial and entry["status"] == "Not Installed":
+                    menu.addSeparator()
+                    install_action = menu.addAction("Install")
+                    install_action.triggered.connect(lambda: self.on_install_clicked(row))
 
         else:
             # Multi-selection context menu
@@ -2454,6 +2505,8 @@ class LibManagerDialog(QtWidgets.QDialog):
 
             installed_rows = [r for r, e in entries if e["status"] not in ("Not Installed", "Commercial")]
             not_installed_rows = [r for r, e in entries if e["status"] == "Not Installed"]
+            # Exclude standalone from uninstall (they are not managed by DyLib)
+            uninstallable_rows = [r for r in installed_rows if not self._lib_data[r].get("standalone", False)]
 
             if installed_rows:
                 enable_action = menu.addAction("Enable Selected")
@@ -2462,10 +2515,11 @@ class LibManagerDialog(QtWidgets.QDialog):
                 disable_action = menu.addAction("Disable Selected")
                 disable_action.triggered.connect(lambda: self._batch_enable(installed_rows, False))
 
+            if uninstallable_rows:
                 menu.addSeparator()
 
                 uninstall_action = menu.addAction("Uninstall Selected")
-                uninstall_action.triggered.connect(lambda: self.on_uninstall(installed_rows))
+                uninstall_action.triggered.connect(lambda: self.on_uninstall(uninstallable_rows))
 
             if not_installed_rows:
                 if installed_rows:
@@ -2553,7 +2607,7 @@ class LibManagerDialog(QtWidgets.QDialog):
             return
         print(f"Updating {entry['repo_name']}...")
         git_pull(lib_dir)
-        hou.ui.displayMessage(f"{entry['repo_name']} updated.", title="dy Library Manager")
+        hou.ui.displayMessage(f"{entry['repo_name']} updated.", title=TITLE_LIB)
 
     def switch_version(self, row, is_release=False):
         entry = self._lib_data[row]
@@ -2599,7 +2653,7 @@ class LibManagerDialog(QtWidgets.QDialog):
 
         print(f"Switching {entry['repo_name']} to {selected}...")
         git_checkout(lib_dir, selected)
-        hou.ui.displayMessage(f"{entry['repo_name']} switched to {selected}.", title="dy Library Manager")
+        hou.ui.displayMessage(f"{entry['repo_name']} switched to {selected}.", title=TITLE_LIB)
 
     def on_uninstall(self, rows):
         if not rows:

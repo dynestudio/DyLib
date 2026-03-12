@@ -9,7 +9,12 @@
     "https://github.com/LucaScheller/VFX-LYNX.git",
     "https://github.com/toadstorm/MOPS.git",
     "https://github.com/handcraftedcc/DomLib.git",
-    "https://github.com/cdordelly/dyLib.git"
+    "https://github.com/cdordelly/dyLib.git",
+    "https://motionoperators.com/info/mopsplus/",
+    "https://www.theoryaccelerated.com/axiom",
+    "https://www.theoryaccelerated.com/paradigm",
+    "https://odtools.notion.site/OD-Tools-2021-for-Houdini-e9f3b8ce266d4cad8d9fed7281958c18",
+    "https://www.sidefx.com/learn/learning-library/content/"
   ],
   "libraries": [
     {
@@ -298,7 +303,7 @@
     {
       "url": "https://github.com/Tronotrond/FindCenterSpline.git",
       "name": "FindCenterSpline",
-      "description": "",
+      "description": "Find Center Spline HDA",
       "author": "Tronotrond",
       "package_file": null,
       "package_key": "",
@@ -321,7 +326,7 @@
     {
       "url": "https://github.com/QuadSpinner/Gaea2Houdini_beta.git",
       "name": "Gaea2Houdini_beta",
-      "description": "",
+      "description": "The Gaea 2.0 plugin for Houdini 20.0 and newer, developed by QuadSpinner.",
       "author": "QuadSpinner",
       "package_file": "Gaea2Houdini.json",
       "package_key": "GAEA2HOUDINI",
@@ -418,7 +423,7 @@
     {
       "url": "https://github.com/ajz3d/houclip.git",
       "name": "houclip",
-      "description": "",
+      "description": "Store And Fetch Operator or Code Snippets with Houclip",
       "author": "ajz3d",
       "package_file": "houclip.json",
       "package_key": "HOUCLIP",
@@ -504,7 +509,7 @@
     {
       "url": "https://github.com/CapybaraCrowporation/houdini-comfyui-bridge.git",
       "name": "houdini-comfyui-bridge",
-      "description": "",
+      "description": "This is a toolset that allows you to bring the best of ComfyUI directly into Houdini.",
       "author": "CapybaraCrowporation",
       "package_file": null,
       "package_key": "",
@@ -587,7 +592,7 @@
     {
       "url": "https://github.com/jakericedesigns/Houdini-Matrix-Library",
       "name": "Houdini-Matrix-Library",
-      "description": "",
+      "description": "Here's a library for large linear operations with VEX in Houdini.",
       "author": "jakericedesigns",
       "package_file": null,
       "package_key": "",
@@ -905,7 +910,7 @@
     {
       "url": "https://github.com/innogames/IG-VFX-Houdini-Tools.git",
       "name": "IG-VFX-Houdini-Tools",
-      "description": "",
+      "description": "Welcome to InnoGames' open-source repository of Houdini tools for mobile game production!",
       "author": "innogames",
       "package_file": "InnoGames_Package.json",
       "package_key": "INNOGAMES",
@@ -977,7 +982,7 @@
     {
       "url": "https://github.com/csdjk/LcLLib-for-Houdini.git",
       "name": "LcLLib-for-Houdini",
-      "description": "houdini library,some example and hda tools",
+      "description": "A collection of Houdini tools and scripts by Lucas Lejeune",
       "author": "csdjk",
       "package_file": "LcLLib.json",
       "package_key": "LcLLib",
@@ -1000,7 +1005,7 @@
     {
       "url": "https://github.com/luk4m4repo/luk4m4_Undini_framework.git",
       "name": "luk4m4_Undini_framework",
-      "description": "",
+      "description": "A practical toolkit for automating procedural world-building between Unreal Engine 5 and Houdini.",
       "author": "luk4m4repo",
       "package_file": null,
       "package_key": "",
@@ -1023,7 +1028,7 @@
     {
       "url": "https://github.com/stehrani3d/MaterialEggs.git",
       "name": "MaterialEggs",
-      "description": "",
+      "description": "MaterialX samples or libraries often consist of textures plugged into MtlX Standard Surface.",
       "author": "stehrani3d",
       "package_file": null,
       "package_key": "",
@@ -1246,7 +1251,7 @@
     {
       "url": "https://github.com/wetadigital/physlight.git",
       "name": "physlight",
-      "description": "",
+      "description": "This repository contains a collection of materials describing PhysLight. PhysLight is a philosophy as much as a method. This means that there is not one simple plugin to install to \"get\" PhysLight.",
       "author": "wetadigital",
       "package_file": null,
       "package_key": "",
@@ -1258,7 +1263,7 @@
     {
       "url": "https://github.com/mhartdesigngit/puzzlegen.git",
       "name": "puzzlegen",
-      "description": "",
+      "description": "Houdini HDA for procedural puzzle piece generation",
       "author": "mhartdesigngit",
       "package_file": null,
       "package_key": "",
@@ -1316,7 +1321,7 @@
     {
       "url": "https://github.com/SiposAttila1995/sipiLib.git",
       "name": "sipiLib",
-      "description": "",
+      "description": "Collection of free Houdini HDAs by Attila Sipos",
       "author": "SiposAttila1995",
       "package_file": null,
       "package_key": "",
@@ -1364,7 +1369,7 @@
     {
       "url": "https://github.com/ibackstrom/Terrain_AI_Houdini.git",
       "name": "Terrain_AI_Houdini",
-      "description": "",
+      "description": "Houdini ONNX model based on sattelite data. Output is 256x256 volue data for heighfield.",
       "author": "ibackstrom",
       "package_file": null,
       "package_key": "",
@@ -1388,7 +1393,7 @@
     {
       "url": "https://github.com/ibrahimalrashd/The-Golden-Ratio-project.git",
       "name": "The-Golden-Ratio-project",
-      "description": "",
+      "description": "Golden ratio spirals and logarithmic curves in Houdini using VEX",
       "author": "ibrahimalrashd",
       "package_file": null,
       "package_key": "",
@@ -1496,7 +1501,7 @@
     {
       "url": "https://github.com/CorvaeOboro/zenv.git",
       "name": "zenv",
-      "description": "houdini hda tools focused on procedural modeling environments ",
+      "description": "A Houdini environment management tool",
       "author": "CorvaeOboro",
       "package_file": "zenv.json",
       "package_key": "HOUDINI_PACKAGE_PATH",

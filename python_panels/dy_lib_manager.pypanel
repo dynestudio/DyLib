@@ -44,12 +44,12 @@ ICON_FOLDER = "BUTTONS_folder"
 ICON_DOWNLOAD = "BUTTONS_auto_save"
 ICON_REDOWNLOAD = "MISC_database"
 ICON_FAVORITE = "BUTTONS_favorites"
-ICON_NOT_FAVORITE = "BUTTONS_not_favorites"
 ICON_TAG = "BUTTONS_tag"
 ICON_LINK = "VIEW_visualization_global"
 
 HIGHLIGHT_COLOR = "rgba(255, 170, 0, 80)"
 HIGHLIGHT_COLOR_HOVER = "rgba(255, 170, 0, 120)"
+TOOLBTN_STYLE = "QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }"
 
 # -----------------------------------------------------------------------
 # PATH HELPER
@@ -134,25 +134,6 @@ def get_repo_info_from_entry(lib_entry):
         "author": lib_entry.get("author") or "",
         "url": url.replace(".git", "").rstrip("/")
     }
-
-def get_repo_info(url):
-    owner, repo = parse_owner_repo(url)
-    fallback_name = Path(url).stem if url else "Unknown"
-    info = {"name": fallback_name, "description": "", "author": owner or "", "url": url.replace(".git", "").rstrip("/")}
-    if not owner or not repo:
-        return info
-    try:
-        api_url = f"https://api.github.com/repos/{owner}/{repo}"
-        req = urllib.request.Request(api_url, headers={"Accept": "application/vnd.github.v3+json"})
-        with urllib.request.urlopen(req, timeout=10) as response:
-            data = json.loads(response.read().decode("utf-8"))
-            info["name"] = data.get("name", fallback_name)
-            info["description"] = data.get("description", "") or ""
-            info["author"] = data.get("owner", {}).get("login", owner)
-            info["url"] = data.get("html_url", info["url"])
-    except Exception as e:
-        print(f"GitHub API error for {owner}/{repo}: {e}")
-    return info
 
 # -----------------------------------------------------------------------
 # DATABASE LOADING
@@ -434,6 +415,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         sh = hou.ui.qtStyleSheet()
         self.setStyleSheet(sh)
 
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self._all_lib_data = []
         self._lib_data = []
@@ -461,7 +443,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         browse_btn.setIcon(hou.qt.Icon(ICON_FOLDER))
         browse_btn.setToolTip("Browse")
         browse_btn.setAutoRaise(True)
-        browse_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
+        browse_btn.setStyleSheet(TOOLBTN_STYLE)
         browse_btn.clicked.connect(self.browse_path)
         path_layout.addWidget(browse_btn)
 
@@ -520,7 +502,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         self.star_btn.setToolTip("Show Favorites")
         self.star_btn.setAutoRaise(True)
         self.star_btn.setCheckable(True)
-        self.star_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
+        self.star_btn.setStyleSheet(TOOLBTN_STYLE)
         self.star_btn.clicked.connect(self._on_star_clicked)
         bottom_layout.addWidget(self.star_btn)
         self._update_star_btn_style()
@@ -530,7 +512,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         self.tag_btn.setToolTip("Filter by Tag")
         self.tag_btn.setAutoRaise(True)
         self.tag_btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
-        self.tag_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
+        self.tag_btn.setStyleSheet(TOOLBTN_STYLE)
         self.tag_menu = QtWidgets.QMenu(self.tag_btn)
         self.tag_btn.setMenu(self.tag_menu)
         self.tag_menu.aboutToShow.connect(self._build_tag_menu)
@@ -551,7 +533,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         redownload_btn.setIcon(hou.qt.Icon(ICON_REDOWNLOAD))
         redownload_btn.setToolTip("Redownload Database")
         redownload_btn.setAutoRaise(True)
-        redownload_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
+        redownload_btn.setStyleSheet(TOOLBTN_STYLE)
         redownload_btn.clicked.connect(self.redownload_database)
         bottom_layout.addWidget(redownload_btn)
 
@@ -559,7 +541,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         refresh_btn.setIcon(hou.qt.Icon(ICON_REFRESH))
         refresh_btn.setToolTip("Refresh Database")
         refresh_btn.setAutoRaise(True)
-        refresh_btn.setStyleSheet("QToolButton { border: none; padding: 2px; } QToolButton:hover { background-color: rgba(255, 255, 255, 30); }")
+        refresh_btn.setStyleSheet(TOOLBTN_STYLE)
         refresh_btn.clicked.connect(self.refresh_table)
         bottom_layout.addWidget(refresh_btn)
 
@@ -624,10 +606,7 @@ class LibManagerWidget(QtWidgets.QWidget):
     # -----------------------------------------------------------------------
 
     def _collect_all_tags(self):
-        tags = set()
-        for entry in self._all_lib_data:
-            for tag in entry["db"].get("tags", []):
-                tags.add(tag)
+        tags = {tag for entry in self._all_lib_data for tag in entry["db"].get("tags", [])}
         return sorted(tags, key=str.casefold)
 
     def _build_tag_menu(self):
@@ -658,33 +637,24 @@ class LibManagerWidget(QtWidgets.QWidget):
         self._update_tag_btn_style()
         self.apply_filter()
 
-    def _update_star_btn_style(self):
-        is_fav = self.status_filter.currentText() == "Favorites"
-        if is_fav:
-            self.star_btn.setStyleSheet(
+    def _set_btn_highlight(self, btn, active):
+        if active:
+            btn.setStyleSheet(
                 f"QToolButton {{ border: none; padding: 2px; background-color: {HIGHLIGHT_COLOR}; border-radius: 2px; }}"
                 f"QToolButton:hover {{ background-color: {HIGHLIGHT_COLOR_HOVER}; }}"
             )
         else:
-            self.star_btn.setStyleSheet(
-                "QToolButton { border: none; padding: 2px; }"
-                "QToolButton:hover { background-color: rgba(255, 255, 255, 30); }"
-            )
+            btn.setStyleSheet(TOOLBTN_STYLE)
+
+    def _update_star_btn_style(self):
+        is_fav = self.status_filter.currentText() == "Favorites"
+        self._set_btn_highlight(self.star_btn, is_fav)
         self.star_btn.setChecked(is_fav)
 
     def _update_tag_btn_style(self):
-        if self._active_tags:
-            self.tag_btn.setStyleSheet(
-                f"QToolButton {{ border: none; padding: 2px; background-color: {HIGHLIGHT_COLOR}; border-radius: 2px; }}"
-                f"QToolButton:hover {{ background-color: {HIGHLIGHT_COLOR_HOVER}; }}"
-            )
-            self.tag_btn.setToolTip("Tags: " + ", ".join(sorted(self._active_tags)))
-        else:
-            self.tag_btn.setStyleSheet(
-                "QToolButton { border: none; padding: 2px; }"
-                "QToolButton:hover { background-color: rgba(255, 255, 255, 30); }"
-            )
-            self.tag_btn.setToolTip("Filter by Tag")
+        active = bool(self._active_tags)
+        self._set_btn_highlight(self.tag_btn, active)
+        self.tag_btn.setToolTip("Tags: " + ", ".join(sorted(self._active_tags)) if active else "Filter by Tag")
 
     def _edit_tags_dialog(self, rows):
         if not rows:
@@ -717,13 +687,6 @@ class LibManagerWidget(QtWidgets.QWidget):
         main_layout = QtWidgets.QVBoxLayout(dialog)
         main_layout.setContentsMargins(12, 12, 12, 12)
         main_layout.setSpacing(8)
-
-        # Header
-        header_label = QtWidgets.QLabel(f"Edit tags for: {header_text}")
-        header_font = header_label.font()
-        #header_font.setBold(True)
-        header_label.setFont(header_font)
-        #main_layout.addWidget(header_label)
 
         # Tag list with alternating row colors
         tag_list = QtWidgets.QListWidget()
@@ -1061,16 +1024,12 @@ class LibManagerWidget(QtWidgets.QWidget):
 
         # Discover standalone packages (not in DB)
         known_names = {e["repo_name"] for e in self._all_lib_data}
-        commercial_names = {
-            e["repo_name"] for e in self._all_lib_data
-            if e["db"].get("commercial", False)
-        }
         if os.path.isdir(packages_dir):
             for fname in os.listdir(packages_dir):
                 if not fname.endswith(".json"):
                     continue
                 pkg_name = fname[:-5]  # strip .json
-                if pkg_name in known_names or pkg_name in commercial_names:
+                if pkg_name in known_names:
                     continue
                 pkg_path = os.path.join(packages_dir, fname)
                 try:

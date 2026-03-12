@@ -230,7 +230,7 @@
     {
       "url": "https://github.com/cdordelly/dyLib.git",
       "name": "dyLib",
-      "description": "Houdini custom library from @cdordelly (ex Dyne Studio).",
+      "description": "Houdini custom library from @cdordelly (previously Dyne Studio).",
       "author": "cdordelly",
       "package_file": "dyLib - Copy this package.json",
       "package_key": "DYLIB",
@@ -839,10 +839,10 @@
       "author": "mchaloner",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "library"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/aaronsmithtv/hpaint.git",
@@ -873,10 +873,10 @@
       "author": "shaderology",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "shader"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/pixel-ninja/HuskStandaloneSubmitter.git",
@@ -885,10 +885,10 @@
       "author": "pixel-ninja",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "pipeline"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/HakeemAdam/Hywall.git",
@@ -921,10 +921,10 @@
       "author": "crystalboxes",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/parkerjon/jpVolumeLayers.git",
@@ -933,11 +933,11 @@
       "author": "parkerjon",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "fx",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/kdbra/kdbra-houdini-tools.git",
@@ -957,10 +957,10 @@
       "author": "kamilhepner",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "rigging"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/Faitel/KineFXBallRig.git",
@@ -1004,10 +1004,10 @@
       "author": "luk4m4repo",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "gamedev"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/lukevanlukevan/LV-Tools.git",
@@ -1027,10 +1027,10 @@
       "author": "stehrani3d",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "shader"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/Faitel/MaterialXEssentials.git",
@@ -1051,11 +1051,11 @@
       "author": "pixel-ninja",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "shader",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/QuentinWittevrongel/mllighting.git",
@@ -1064,11 +1064,11 @@
       "author": "QuentinWittevrongel",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "shader",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/Bismuth-Consultancy-BV/MLOPs.git",
@@ -1089,10 +1089,10 @@
       "author": "marcmesafervfx",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://alexeyvanzhula.gumroad.com/",
@@ -1151,11 +1151,12 @@
       "author": "ShoheiOkazaki",
       "package_file": "Nagamochi.json",
       "package_key": "NAGAMOCHI",
-      "create_package": false,
       "tags": [
         "library",
         "utility"
-      ]
+      ],
+      "lib_location": "common",
+      "create_package": false
     },
     {
       "url": "https://github.com/baku89/nops.git",
@@ -1199,10 +1200,10 @@
       "author": "NatronGitHub",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "integration"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/fabriciochamon/Packman.git",
@@ -1211,11 +1212,11 @@
       "author": "fabriciochamon",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "pipeline",
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://www.theoryaccelerated.com/paradigm",
@@ -1237,10 +1238,10 @@
       "author": "Tronotrond",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "shader"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/wetadigital/physlight.git",
@@ -1249,10 +1250,10 @@
       "author": "wetadigital",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "shader"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/mhartdesigngit/puzzlegen.git",
@@ -1261,11 +1262,11 @@
       "author": "mhartdesigngit",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "utility",
         "gamedev"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/qLab/qLib.git",
@@ -1354,11 +1355,11 @@
       "author": "jakericedesigns",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "fx",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/ibackstrom/Terrain_AI_Houdini.git",
@@ -1367,11 +1368,11 @@
       "author": "ibackstrom",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "environment",
         "ai"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/aaronsmithtv/Texture-Stamp.git",
@@ -1391,11 +1392,11 @@
       "author": "ibrahimalrashd",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "hip",
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/jtomori/vex_tutorial.git",
@@ -1404,10 +1405,10 @@
       "author": "jtomori",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/jtomori/vft.git",
@@ -1416,10 +1417,10 @@
       "author": "jtomori",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/LucaScheller/VFX-LYNX.git",
@@ -1439,11 +1440,11 @@
       "author": "VFX-Tricks",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "library",
         "pipeline"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/jtomori/vfx_good_night_reading",
@@ -1452,10 +1453,10 @@
       "author": "jtomori",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "learn"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/Faitel/VirtuCameraHoudini.git",
@@ -1464,10 +1465,10 @@
       "author": "Faitel",
       "package_file": null,
       "package_key": "",
-      "create_package": false,
       "tags": [
         "utility"
-      ]
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/ZephirFXEC/VQVDB.git",

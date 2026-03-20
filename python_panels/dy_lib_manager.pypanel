@@ -30,6 +30,7 @@ except ModuleNotFoundError:
 TITLE_LIB = "dy Library Manager"
 DB_FILENAME = "dy_lib_manager_db.json"
 DB_REMOTE_URL = f"https://raw.githubusercontent.com/cdordelly/dyLib/dev/{DB_FILENAME}"
+HELP_URL = "https://dub.sh/dy_lm_help"
 IS_WINDOWS = platform.system() == "Windows"
 SUBPROCESS_FLAGS = {"creationflags": subprocess.CREATE_NO_WINDOW} if IS_WINDOWS else {}
 SHOW_SHELF_TOOLS = True
@@ -51,6 +52,7 @@ ICON_LINK = "VIEW_visualization_global"
 ICON_INSTALL_JSON = "DESKTOP_installer"
 ICON_INSTALL_LIB = "DESKTOP_installer2"
 ICON_INSTALL_GITHUB = "BUTTONS_download"
+ICON_HELP = "BUTTONS_help"
 
 HIGHLIGHT_COLOR = "rgba(255, 170, 0, 80)"
 HIGHLIGHT_COLOR_HOVER = "rgba(255, 170, 0, 120)"
@@ -211,11 +213,12 @@ def add_path_variable(path_list, key):
 
 def hou_reload_packages(lib_name, package_path):
     print(f"Installing: {lib_name}")
-    spacer = "----------------"
-    print(f"{spacer} Packages reload START {spacer}")
-    load_msg = "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
-    load_msg += "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles.\n"
-    print(load_msg)
+    sep = "----------------"
+    print(f"{sep} Packages reload START {sep}")
+    print(
+        "Houdini's packages are reloading, wait until Houdini finish the reload process.\n\n"
+        "This will reload: Desktops, Digital Assets, Python modules, Python panels, Shelf tools, Viewer states, Viewer handles.\n"
+    )
     try:
         with hou.InterruptableOperation("Reloading Houdini Packages", open_interrupt_dialog=True) as operation:
             print(f"Loading package: {package_path}")
@@ -223,7 +226,7 @@ def hou_reload_packages(lib_name, package_path):
             operation.updateProgress(1.0)
     except Exception as e:
         print(f"An error occurred: {e}")
-    print(f"{spacer} Packages reload END {spacer}")
+    print(f"{sep} Packages reload END {sep}")
     print("The packages reload process is finished.")
 
 # -----------------------------------------------------------------------
@@ -486,6 +489,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         self.table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.table.customContextMenuRequested.connect(self.show_context_menu)
         self.table.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.table.setAutoScroll(False)
         self.table.setAlternatingRowColors(True)
         self.table.setStyleSheet(
             "QHeaderView::section { font-weight: normal; }"
@@ -520,7 +524,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         bottom_layout.addWidget(filter_icon_label)
 
         self.status_filter = QtWidgets.QComboBox()
-        self.status_filter.addItems(["All", "Favorites", "Installed", "Not Installed", "Enabled", "Disabled", "Commercial", "Standalone"])
+        self.status_filter.addItems(["All", "Favorites", "Installed", "Not Installed", "Enabled", "Disabled", "Commercial", "Gumroad", "Standalone"])
         self.status_filter.setFixedWidth(140)
         self.status_filter.currentIndexChanged.connect(self.apply_filter)
         bottom_layout.addWidget(self.status_filter)
@@ -600,8 +604,20 @@ class LibManagerWidget(QtWidgets.QWidget):
         refresh_btn.clicked.connect(self.refresh_table)
         bottom_layout.addWidget(refresh_btn)
 
+        help_btn = QtWidgets.QToolButton()
+        help_btn.setIcon(hou.qt.Icon(ICON_HELP))
+        help_btn.setToolTip("Help")
+        help_btn.setAutoRaise(True)
+        help_btn.setStyleSheet(TOOLBTN_STYLE)
+        help_btn.clicked.connect(lambda: webbrowser.open(HELP_URL))
+        bottom_layout.addWidget(help_btn)
+
         # ---- Load data ----
         self.refresh_table()
+
+    @property
+    def _packages_dir(self):
+        return os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
 
     def _on_search_changed(self, text):
         self._clear_action.setVisible(bool(text))
@@ -721,12 +737,9 @@ class LibManagerWidget(QtWidgets.QWidget):
         all_tags = self._collect_all_tags()
 
         # Find common tags across selected entries
-        if len(entries) == 1:
-            common_tags = set(entries[0]["db"].get("tags", []))
-        else:
-            common_tags = set(entries[0]["db"].get("tags", []))
-            for entry in entries[1:]:
-                common_tags &= set(entry["db"].get("tags", []))
+        common_tags = set(entries[0]["db"].get("tags", []))
+        for entry in entries[1:]:
+            common_tags &= set(entry["db"].get("tags", []))
 
         if len(entries) == 1:
             header_text = entries[0]["repo_info"]["name"]
@@ -891,7 +904,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 
     def _relocate_libraries(self, entries, old_root, new_root):
         os.makedirs(new_root, exist_ok=True)
-        packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        packages_dir = self._packages_dir
 
         moved = 0
         errors = []
@@ -1032,7 +1045,7 @@ class LibManagerWidget(QtWidgets.QWidget):
             return
 
         var = env_keys[var_index[0]]
-        houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        houdini_packages_dir = self._packages_dir
 
         # Make the path relative to the packages directory
         try:
@@ -1076,7 +1089,7 @@ class LibManagerWidget(QtWidgets.QWidget):
             return
 
         lib_path = hou.expandString(lib_dir)
-        houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        houdini_packages_dir = self._packages_dir
 
         # Create the JSON package structure
         data = {"enable": True, "env": [], "hpath": []}
@@ -1176,7 +1189,8 @@ class LibManagerWidget(QtWidgets.QWidget):
             title=repo_name,
             column_header=column_header,
             num_visible_rows=10,
-            clear_on_cancel=True
+            clear_on_cancel=True,
+            sort=False
         )
         if not item_index:
             return
@@ -1216,7 +1230,7 @@ class LibManagerWidget(QtWidgets.QWidget):
             )
             return
 
-        houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        houdini_packages_dir = self._packages_dir
 
         # Search for .json files in the cloned repo
         json_files = glob.glob(os.path.join(lib_dir, "**", "*.json"), recursive=True)
@@ -1360,7 +1374,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         self._favorites = set(db.get("favorites", []))
 
         libraries = db.get("libraries", [])
-        packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        packages_dir = self._packages_dir
 
         for lib_entry in libraries:
             is_commercial = lib_entry.get("commercial", False)
@@ -1437,8 +1451,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         status_filter = self.status_filter.currentText()
 
         # Sync star button with filter dropdown
-        if hasattr(self, "star_btn"):
-            self._update_star_btn_style()
+        self._update_star_btn_style()
 
         filtered = list(self._all_lib_data)
 
@@ -1455,6 +1468,8 @@ class LibManagerWidget(QtWidgets.QWidget):
             filtered = [e for e in filtered if e["status"] == "Disabled"]
         elif status_filter == "Commercial":
             filtered = [e for e in filtered if e["status"] == "Commercial"]
+        elif status_filter == "Gumroad":
+            filtered = [e for e in filtered if "gumroad" in e["db"].get("tags", []) or "gumroad.com" in e["db"].get("url", "")]
         elif status_filter == "Standalone":
             filtered = [e for e in filtered if e.get("standalone", False)]
 
@@ -1464,21 +1479,12 @@ class LibManagerWidget(QtWidgets.QWidget):
 
         # Apply text search filter
         if filter_text:
-            text_filtered = []
-            for entry in filtered:
-                repo_info = entry["repo_info"]
-                searchable_parts = [
-                    repo_info.get("name", ""),
-                    repo_info.get("description", ""),
-                    repo_info.get("author", ""),
-                    entry.get("repo_name", ""),
-                    entry["db"].get("url", ""),
-                    " ".join(entry["db"].get("tags", [])),
-                ]
-                searchable_text = " ".join(part for part in searchable_parts if part).casefold()
-                if filter_text in searchable_text:
-                    text_filtered.append(entry)
-            filtered = text_filtered
+            def _match(e):
+                ri = e["repo_info"]
+                parts = [ri.get("name", ""), ri.get("description", ""), ri.get("author", ""),
+                         e.get("repo_name", ""), e["db"].get("url", ""), " ".join(e["db"].get("tags", []))]
+                return filter_text in " ".join(p for p in parts if p).casefold()
+            filtered = [e for e in filtered if _match(e)]
 
         self._lib_data = filtered
         self.populate_table()
@@ -1555,7 +1561,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         self._batch_enable(rows_to_toggle, enabled)
 
     def _batch_enable(self, rows, enabled):
-        packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        packages_dir = self._packages_dir
         action_label = "Enabling" if enabled else "Disabling"
         try:
             with hou.InterruptableOperation(f"{action_label} packages", open_interrupt_dialog=True) as operation:
@@ -1959,7 +1965,7 @@ class LibManagerWidget(QtWidgets.QWidget):
             return
 
         install_root = self.path_field.text()
-        packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+        packages_dir = self._packages_dir
         for r in rows:
             if r < len(self._lib_data):
                 uninstall_library(self._lib_data[r]["repo_name"], install_root, packages_dir)

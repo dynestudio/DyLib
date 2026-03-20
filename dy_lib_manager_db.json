@@ -119,6 +119,18 @@
       "create_package": false
     },
     {
+      "url": "https://github.com/ivantitov-zd/AVL.git",
+      "name": "AVL",
+      "description": "Advanced function library written in VEX language for SideFX Houdini",
+      "author": "ivantitov-zd",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "library",
+        "utility"
+      ]
+    },
+    {
       "url": "https://github.com/wyhinton/AwesomeHoudini.git",
       "name": "AwesomeHoudini",
       "description": "A collection of awesome Free/Open Source things regarding the SideFx Houdini ecosystem.",
@@ -165,6 +177,19 @@
       "tags": [
         "library"
       ]
+    },
+    {
+      "url": "https://github.com/Esri/cityengine_for_houdini.git",
+      "name": "cityengine_for_houdini",
+      "description": "ArcGIS CityEngine for Houdini enables the execution of CityEngine CGA rules inside SideFX Houdini",
+      "author": "Esri",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "environment",
+        "integration"
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/jamesrobinsonvfx/colorpaletteramp.git",
@@ -315,6 +340,20 @@
       ]
     },
     {
+      "url": "https://lewisorton.gumroad.com/l/fiboglow",
+      "name": "Fibonacci Glow",
+      "description": "Houdini COP node that generates natural, beautiful glow using OpenCL (H20.5+)",
+      "author": "Lewis Orton",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "gumroad",
+        "shader",
+        "utility"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/Tronotrond/FindCenterSpline.git",
       "name": "FindCenterSpline",
       "description": "Find Center Spline HDA",
@@ -416,6 +455,18 @@
       ]
     },
     {
+      "url": "https://github.com/ivantitov-zd/Hammer.git",
+      "name": "Hammer",
+      "description": "QoL tool development kit for Houdini",
+      "author": "ivantitov-zd",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "library",
+        "utility"
+      ]
+    },
+    {
       "url": "https://github.com/PhilHaf/hipCollection.git",
       "name": "hipCollection",
       "description": "Houdini Files, Hdas, Effects",
@@ -497,6 +548,20 @@
       "tags": [
         "commercial",
         "learn"
+      ],
+      "commercial": true
+    },
+    {
+      "url": "https://matthewjukes.gumroad.com/l/dunesolver",
+      "name": "Houdini Dune Solver",
+      "description": "Houdini digital asset that simulates dune field morphology",
+      "author": "Matthew Jukes",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "gumroad",
+        "fx",
+        "environment"
       ],
       "commercial": true
     },
@@ -587,6 +652,19 @@
       "create_package": false
     },
     {
+      "url": "https://github.com/vvzen/Houdini-Geospatial-Tools.git",
+      "name": "Houdini-Geospatial-Tools",
+      "description": "Tools for geospatial exploration in Houdini (ipython notebooks + GeoJSON libraries)",
+      "author": "vvzen",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "environment",
+        "utility"
+      ],
+      "create_package": false
+    },
+    {
       "url": "https://github.com/gupon/Houdini-Gulib.git",
       "name": "Houdini-Gulib",
       "description": "personal vex library for houdini",
@@ -642,6 +720,19 @@
       "tags": [
         "library",
         "fx"
+      ],
+      "create_package": false
+    },
+    {
+      "url": "https://github.com/capoomgit/houdini-mcp.git",
+      "name": "houdini-mcp",
+      "description": "HoudiniMCP connects Houdini to Claude AI through the Model Context Protocol (MCP)",
+      "author": "capoomgit",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "integration",
+        "ai"
       ],
       "create_package": false
     },
@@ -963,6 +1054,20 @@
       ]
     },
     {
+      "url": "https://chakshuvfx.gumroad.com/l/ipop-standard-lib-package",
+      "name": "IPOPs Standard Library",
+      "description": "Image Plane Operators toolset for streamlining shaders and AOV development with nodes for Karma, MaterialX, Mantra and more",
+      "author": "ChakshuVFX",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "gumroad",
+        "shader",
+        "library"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/crystalboxes/isogrid-houdini-sop.git",
       "name": "isogrid-houdini-sop",
       "description": "voxel-based generative geometry",
@@ -986,6 +1091,18 @@
         "utility"
       ],
       "create_package": false
+    },
+    {
+      "url": "https://github.com/joshuazt/JZTREES.git",
+      "name": "JZTREES",
+      "description": "Houdini tree generator and FX tool",
+      "author": "joshuazt",
+      "package_file": "JZTREES.json",
+      "package_key": "JZTREES",
+      "tags": [
+        "environment",
+        "fx"
+      ]
     },
     {
       "url": "https://github.com/kdbra/kdbra-houdini-tools.git",
@@ -1119,6 +1236,18 @@
       "create_package": false
     },
     {
+      "url": "https://github.com/kvbanimation/MegaUSD.git",
+      "name": "MegaUSD",
+      "description": "A plugin for Houdini that converts 3D Megascan asset FBX files to USD files and adds them to the Solaris layout asset gallery",
+      "author": "kvbanimation",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "pipeline",
+        "integration"
+      ]
+    },
+    {
       "url": "https://github.com/QuentinWittevrongel/mllighting.git",
       "name": "mllighting",
       "description": "Tool to create lights from a drawing",
@@ -1232,6 +1361,17 @@
         "fx"
       ],
       "commercial": true
+    },
+    {
+      "url": "https://github.com/alexcubor/nature_tools.git",
+      "name": "nature_tools",
+      "description": "Houdini assets for creating procedural forest",
+      "author": "alexcubor",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "environment"
+      ]
     },
     {
       "url": "https://github.com/baku89/nops.git",
@@ -1418,6 +1558,18 @@
       "commercial": true
     },
     {
+      "url": "https://github.com/Pyrrhulla/River_Procedural_tool.git",
+      "name": "River_Procedural_tool",
+      "description": "Houdini procedural tool for creating rivers",
+      "author": "Pyrrhulla",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "environment"
+      ],
+      "create_package": false
+    },
+    {
       "url": "https://sinadr1n.gumroad.com/l/qpbgh",
       "name": "S1N Group",
       "description": "Hierarchy-driven SOP workflow with Outliner-style scene management, material assignments and USD/Solaris export for Houdini",
@@ -1582,6 +1734,19 @@
         "fx"
       ],
       "commercial": true
+    },
+    {
+      "url": "https://github.com/AgastyaPatel/USD_Megascan_Importer.git",
+      "name": "USD_Megascan_Importer",
+      "description": "Plugin tool for Houdini that converts Megascan assets into USD in Solaris and stores them in the Layout Asset Gallery",
+      "author": "AgastyaPatel",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "pipeline",
+        "integration"
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/jtomori/vex_tutorial.git",

@@ -53,6 +53,20 @@
       ]
     },
     {
+      "url": "https://adrienlambert.gumroad.com/l/NZtu",
+      "name": "AL-Tools",
+      "description": "Advanced scatter and terrain workflow tools for Houdini Indie with GPU-accelerated operations",
+      "author": "Adrien Lambert",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "environment"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/lecopivo/another-houdini-mcp.git",
       "name": "another-houdini-mcp",
       "description": "Yet Another Houdini MCP",
@@ -370,6 +384,21 @@
       "package_key": "",
       "tags": [
         "commercial",
+        "fx"
+      ],
+      "commercial": true
+    },
+    {
+      "url": "https://fxmode.gumroad.com/l/GrowInfinite",
+      "name": "GrowInfinite",
+      "description": "Growth animation toolkit for Houdini with 40+ HDAs for creating trees, plants, fractals and organic growth effects",
+      "author": "fxmode",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "environment",
         "fx"
       ],
       "commercial": true
@@ -1291,6 +1320,20 @@
       "commercial": true
     },
     {
+      "url": "https://lavrenovlad.gumroad.com/l/fkQSl",
+      "name": "Path Solver + OctaTree",
+      "description": "HDAs for solving points/objects along paths without intersecting, plus animated 3D quadtree-like systems",
+      "author": "lavrenovlad",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "gumroad",
+        "fx",
+        "utility"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/Tronotrond/pbr_materialbuilder.git",
       "name": "pbr_materialbuilder",
       "description": "Houdini HDA: Build material networks based on found PRB texture maps and sets",
@@ -1375,6 +1418,20 @@
       "commercial": true
     },
     {
+      "url": "https://sinadr1n.gumroad.com/l/qpbgh",
+      "name": "S1N Group",
+      "description": "Hierarchy-driven SOP workflow with Outliner-style scene management, material assignments and USD/Solaris export for Houdini",
+      "author": "sinadr1n",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "pipeline"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/handcraftedcc/SDFModeler.git",
       "name": "SDFModeler",
       "description": "SDF Modeling Toolset for Houdini",
@@ -1385,6 +1442,20 @@
         "library",
         "utility"
       ]
+    },
+    {
+      "url": "https://nwestfelt.gumroad.com/l/SimpleTreeToolsFX",
+      "name": "Simple Tree Tools",
+      "description": "Complete set of fully procedural tree and foliage modeling tools for Houdini FX with wind animation and game dev workflows",
+      "author": "Nils Westfelt",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "environment"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/SiposAttila1995/sipiLib.git",
@@ -1407,6 +1478,20 @@
       "tags": [
         "commercial",
         "fx"
+      ],
+      "commercial": true
+    },
+    {
+      "url": "https://alexeyvanzhula.gumroad.com/l/soft_boolean1",
+      "name": "Soft Boolean",
+      "description": "Advanced boolean operations addon for Houdini with unique soft-bevel transitions for seamless geometric integration",
+      "author": "Alexey Vanzhula",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "utility"
       ],
       "commercial": true
     },
@@ -1483,6 +1568,20 @@
         "learn"
       ],
       "create_package": false
+    },
+    {
+      "url": "https://bolastudio.gumroad.com/l/threadifynode",
+      "name": "Threadify Node",
+      "description": "HDA to generate realistic fiber/thread geometry from curves for fabric and cloth shots in Houdini",
+      "author": "Bola Studio",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "fx"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/jtomori/vex_tutorial.git",

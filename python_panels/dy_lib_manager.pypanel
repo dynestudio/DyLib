@@ -14,6 +14,7 @@ import glob
 import shutil
 import stat
 import urllib.request
+import ssl
 from datetime import datetime
 from pathlib import Path
 
@@ -31,6 +32,7 @@ DB_FILENAME = "dy_lib_manager_db.json"
 DB_REMOTE_URL = f"https://raw.githubusercontent.com/cdordelly/dyLib/dev/{DB_FILENAME}"
 IS_WINDOWS = platform.system() == "Windows"
 SUBPROCESS_FLAGS = {"creationflags": subprocess.CREATE_NO_WINDOW} if IS_WINDOWS else {}
+SHOW_SHELF_TOOLS = True
 
 # -----------------------------------------------------------------------
 # ICONS
@@ -46,6 +48,9 @@ ICON_REDOWNLOAD = "MISC_database"
 ICON_FAVORITE = "BUTTONS_favorites"
 ICON_TAG = "BUTTONS_tag"
 ICON_LINK = "VIEW_visualization_global"
+ICON_INSTALL_JSON = "DESKTOP_installer"
+ICON_INSTALL_LIB = "DESKTOP_installer2"
+ICON_INSTALL_GITHUB = "BUTTONS_download"
 
 HIGHLIGHT_COLOR = "rgba(255, 170, 0, 80)"
 HIGHLIGHT_COLOR_HOVER = "rgba(255, 170, 0, 120)"
@@ -79,7 +84,7 @@ def get_remote_releases(url):
         owner, repo = parse_owner_repo(url)
         api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
         req = urllib.request.Request(api_url, headers={"Accept": "application/vnd.github.v3+json"})
-        with urllib.request.urlopen(req, timeout=10) as response:
+        with _urlopen_with_ssl_fallback(req, timeout=10) as response:
             releases_data = json.loads(response.read().decode("utf-8"))
             releases = []
             for release in releases_data:
@@ -139,15 +144,38 @@ def get_repo_info_from_entry(lib_entry):
 # DATABASE LOADING
 # -----------------------------------------------------------------------
 
+def _urlopen_with_ssl_fallback(url, timeout=15):
+    try:
+        return urllib.request.urlopen(url, timeout=timeout)
+    except urllib.error.URLError as e:
+        if "CERTIFICATE_VERIFY_FAILED" in str(e) or "SSL" in str(e):
+            print(f"SSL verification failed, retrying without verification...")
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            return urllib.request.urlopen(url, timeout=timeout, context=ctx)
+        raise
+
 def load_database():
     local_path = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), DB_FILENAME)
     if os.path.isfile(local_path):
-        with open(local_path, "r") as f:
-            return json.load(f)
+        try:
+            with open(local_path, "r") as f:
+                data = json.load(f)
+            if isinstance(data, dict) and "libraries" in data:
+                return data
+            print(f"Local database is invalid or incomplete, re-downloading...")
+            os.remove(local_path)
+        except Exception as e:
+            print(f"Local database could not be read ({e}), re-downloading...")
+            try:
+                os.remove(local_path)
+            except Exception:
+                pass
     # Download from remote
     try:
         print(f"Downloading library database from: {DB_REMOTE_URL}")
-        with urllib.request.urlopen(DB_REMOTE_URL, timeout=15) as response:
+        with _urlopen_with_ssl_fallback(DB_REMOTE_URL, timeout=15) as response:
             data = json.loads(response.read().decode("utf-8"))
             os.makedirs(os.path.dirname(local_path), exist_ok=True)
             with open(local_path, "w") as f:
@@ -528,6 +556,33 @@ class LibManagerWidget(QtWidgets.QWidget):
         bottom_layout.addWidget(self.search_field)
 
         bottom_layout.addStretch()
+
+        if SHOW_SHELF_TOOLS:
+            lib_json_btn = QtWidgets.QToolButton()
+            lib_json_btn.setIcon(hou.qt.Icon(ICON_INSTALL_JSON))
+            lib_json_btn.setToolTip("Library from JSON")
+            lib_json_btn.setAutoRaise(True)
+            lib_json_btn.setStyleSheet(TOOLBTN_STYLE)
+            lib_json_btn.clicked.connect(self._tool_library_from_json)
+            bottom_layout.addWidget(lib_json_btn)
+
+            install_lib_btn = QtWidgets.QToolButton()
+            install_lib_btn.setIcon(hou.qt.Icon(ICON_INSTALL_LIB))
+            install_lib_btn.setToolTip("Install Library")
+            install_lib_btn.setAutoRaise(True)
+            install_lib_btn.setStyleSheet(TOOLBTN_STYLE)
+            install_lib_btn.clicked.connect(self._tool_install_library)
+            bottom_layout.addWidget(install_lib_btn)
+
+            lib_github_btn = QtWidgets.QToolButton()
+            lib_github_btn.setIcon(hou.qt.Icon(ICON_INSTALL_GITHUB))
+            lib_github_btn.setToolTip("Library from GitHub")
+            lib_github_btn.setAutoRaise(True)
+            lib_github_btn.setStyleSheet(TOOLBTN_STYLE)
+            lib_github_btn.clicked.connect(self._tool_library_from_github)
+            bottom_layout.addWidget(lib_github_btn)
+
+            bottom_layout.addSpacing(16)
 
         redownload_btn = QtWidgets.QToolButton()
         redownload_btn.setIcon(hou.qt.Icon(ICON_REDOWNLOAD))
@@ -919,8 +974,326 @@ class LibManagerWidget(QtWidgets.QWidget):
             print(f"Error updating package {_fwd_path(pkg_path)}: {e}")
 
     # -----------------------------------------------------------------------
-    # DATABASE
+    # SHELF TOOLS
     # -----------------------------------------------------------------------
+
+    def _tool_library_from_json(self):
+        # Pick a .json package file
+        package_file_path = hou.ui.selectFile(
+            start_directory=None,
+            title="Select JSON Package File",
+            file_type=hou.fileType.Any,
+            pattern="*.json",
+            chooser_mode=hou.fileChooserMode.Read
+        )
+        if not package_file_path:
+            return
+
+        package_file_path = hou.expandString(package_file_path)
+
+        # Read the package file
+        try:
+            with open(package_file_path, "r") as f:
+                data = json.load(f)
+        except Exception as e:
+            hou.ui.displayMessage(
+                f"The .json file could not be loaded:\n{e}",
+                severity=hou.severityType.Error, title=TITLE_LIB
+            )
+            return
+
+        package_dir = os.path.dirname(package_file_path)
+
+        # Get the keys from the "env" list
+        env_keys = []
+        for env_dict in data.get("env", []):
+            for key in env_dict.keys():
+                env_keys.append(key)
+
+        if not env_keys:
+            hou.ui.displayMessage(
+                "No environment variables found in the package file.",
+                severity=hou.severityType.Error, title=TITLE_LIB
+            )
+            return
+
+        # Let user select the variable that defines the library path
+        var_index = hou.ui.selectFromList(
+            env_keys,
+            default_choices=(),
+            exclusive=True,
+            message="Select the variable that defines the library path:",
+            title=TITLE_LIB,
+            column_header="Variables",
+            num_visible_rows=10,
+            clear_on_cancel=True
+        )
+        if not var_index:
+            return
+
+        var = env_keys[var_index[0]]
+        houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+
+        # Make the path relative to the packages directory
+        try:
+            rel = os.path.relpath(package_dir, houdini_packages_dir)
+            relative_path = "$HOUDINI_PACKAGE_PATH/" + rel.replace("\\", "/")
+            data["env"][var_index[0]][var] = relative_path
+            print(f"Library Path: {relative_path}")
+        except Exception:
+            data["env"][var_index[0]][var] = package_dir
+            print(f"Library Path: {package_dir}")
+
+        # Save to packages dir
+        os.makedirs(houdini_packages_dir, exist_ok=True)
+        dest_path = os.path.normpath(os.path.join(houdini_packages_dir, var + ".json"))
+        with open(dest_path, "w") as f:
+            json.dump(data, f, indent=4)
+
+        hou_reload_packages(var, dest_path)
+        self.refresh_table()
+
+    def _tool_install_library(self):
+        # Ask for library name
+        result = hou.ui.readInput(
+            message="Library Name:",
+            buttons=("OK",),
+            severity=hou.severityType.Message,
+            title=TITLE_LIB
+        )
+        lib_name = result[1].strip()
+        if not lib_name:
+            return
+
+        # Ask for library directory
+        lib_dir = hou.ui.selectFile(
+            start_directory=None,
+            title="Select Library Directory",
+            file_type=hou.fileType.Directory,
+            chooser_mode=hou.fileChooserMode.Read
+        )
+        if not lib_dir:
+            return
+
+        lib_path = hou.expandString(lib_dir)
+        houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+
+        # Create the JSON package structure
+        data = {"enable": True, "env": [], "hpath": []}
+        try:
+            rel = os.path.relpath(lib_path, houdini_packages_dir)
+            relative_path = "$HOUDINI_PACKAGE_PATH/" + rel.replace("\\", "/")
+            add_env_variable(data["env"], lib_name, relative_path)
+            print(f"Library Path: {relative_path}")
+        except Exception:
+            add_env_variable(data["env"], lib_name, lib_path)
+            print(f"Library Path: {lib_path}")
+        add_path_variable(data["hpath"], lib_name)
+
+        # Save to packages dir
+        os.makedirs(houdini_packages_dir, exist_ok=True)
+        dest_path = os.path.normpath(os.path.join(houdini_packages_dir, lib_name + ".json"))
+        with open(dest_path, "w") as f:
+            json.dump(data, f, indent=4)
+
+        hou_reload_packages(lib_name, dest_path)
+        self.refresh_table()
+
+    def _tool_library_from_github(self):
+        # Check if Git is installed
+        if not is_git_installed():
+            hou.ui.displayMessage(
+                "Git is not installed.\nPlease install Git from https://git-scm.com/downloads",
+                severity=hou.severityType.Error, title=TITLE_LIB
+            )
+            webbrowser.open("https://git-scm.com/downloads")
+            return
+
+        # Ask for repository URL
+        result = hou.ui.readInput(
+            message="Repository Clone URL:",
+            buttons=("OK",),
+            severity=hou.severityType.Message,
+            title=TITLE_LIB
+        )
+        repo_url = result[1].strip()
+        if not repo_url:
+            return
+
+        # Validate URL
+        repo_extension = Path(repo_url).suffix
+        if repo_extension != ".git":
+            hou.ui.displayMessage(
+                "You need to use a valid .git clone URL.",
+                severity=hou.severityType.Error, title=TITLE_LIB
+            )
+            return
+
+        repo_name = Path(repo_url).stem
+
+        # Select download type: branch or release
+        download_type = hou.ui.displayMessage(
+            "What would you like to download?",
+            buttons=("Clone Branch", "Release"),
+            severity=hou.severityType.Message,
+            default_choice=0,
+            close_choice=-1,
+            title=repo_name
+        )
+
+        is_release = download_type != 0
+        items = get_remote_branches(repo_url) if not is_release else get_remote_releases(repo_url)
+        column_header = "Branches" if not is_release else "Releases"
+
+        if not items and is_release:
+            print("No releases found, switching to branches.")
+            items = get_remote_branches(repo_url)
+            is_release = False
+            column_header = "Branches"
+
+        if not items:
+            hou.ui.displayMessage(
+                f"No {'branches' if not is_release else 'releases'} found for {repo_name}.",
+                severity=hou.severityType.Error, title=TITLE_LIB
+            )
+            return
+
+        # Set default selection (prefer master/main)
+        default_choice = 0
+        if not is_release:
+            if "master" in items:
+                default_choice = items.index("master")
+            elif "main" in items:
+                default_choice = items.index("main")
+
+        display_items = items if not is_release else [name for name, _ in items]
+
+        item_index = hou.ui.selectFromList(
+            display_items,
+            default_choices=(default_choice,),
+            exclusive=True,
+            message=f"Select the {'branch' if not is_release else 'release'} to download:",
+            title=repo_name,
+            column_header=column_header,
+            num_visible_rows=10,
+            clear_on_cancel=True
+        )
+        if not item_index:
+            return
+
+        selected_item = items[item_index[0]]
+        if is_release:
+            selected_item = items[item_index[0]][1]
+
+        # Ask for destination directory
+        lib_dir = hou.ui.selectFile(
+            start_directory=None,
+            title="Select Destination Directory",
+            file_type=hou.fileType.Directory,
+            chooser_mode=hou.fileChooserMode.Read
+        )
+        if not lib_dir:
+            return
+
+        lib_dir = os.path.join(hou.expandString(lib_dir), repo_name)
+
+        # Clone repository
+        print(f"Cloning {repo_url} ({selected_item}) to {_fwd_path(lib_dir)}")
+        try:
+            with hou.InterruptableOperation(f"Downloading {repo_name}", open_interrupt_dialog=True) as operation:
+                download_github_repository(repo_url, lib_dir, selected_item, is_release=is_release)
+                operation.updateProgress(1.0)
+        except hou.OperationInterrupted:
+            if os.path.isdir(lib_dir):
+                shutil.rmtree(lib_dir, onerror=_remove_readonly)
+            print(f"Download cancelled: {repo_name}")
+            return
+
+        if not os.path.isdir(lib_dir):
+            hou.ui.displayMessage(
+                f"Clone failed: directory not found.",
+                severity=hou.severityType.Error, title=TITLE_LIB
+            )
+            return
+
+        houdini_packages_dir = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), "packages")
+
+        # Search for .json files in the cloned repo
+        json_files = glob.glob(os.path.join(lib_dir, "**", "*.json"), recursive=True)
+        data = None
+
+        if json_files:
+            json_files_names = [Path(f).name for f in json_files]
+            selection = hou.ui.selectFromList(
+                json_files_names,
+                default_choices=(),
+                exclusive=True,
+                message="Select the .json file that will be used as installation package:",
+                title=repo_name,
+                column_header="Candidates",
+                num_visible_rows=10,
+                clear_on_cancel=True
+            )
+
+            if selection:
+                src_path = os.path.normpath(json_files[selection[0]])
+                try:
+                    with open(src_path, "r") as f:
+                        data = json.load(f)
+                except Exception:
+                    print("Selected .json could not be parsed, creating basic package.")
+                    data = None
+
+                if data and "env" in data:
+                    package_dir = os.path.dirname(src_path)
+                    env_keys = []
+                    for env_dict in data.get("env", []):
+                        for key in env_dict.keys():
+                            env_keys.append(key)
+
+                    if env_keys:
+                        var_index = hou.ui.selectFromList(
+                            env_keys,
+                            default_choices=(),
+                            exclusive=True,
+                            message="Select the variable that defines the library path:",
+                            title=TITLE_LIB,
+                            column_header="Variables",
+                            num_visible_rows=10,
+                            clear_on_cancel=True
+                        )
+                        if var_index:
+                            var = env_keys[var_index[0]]
+                            try:
+                                rel = os.path.relpath(package_dir, houdini_packages_dir)
+                                relative_path = "$HOUDINI_PACKAGE_PATH/" + rel.replace("\\", "/")
+                                data["env"][var_index[0]][var] = relative_path
+                                print(f"Library Path: {relative_path}")
+                            except Exception:
+                                data["env"][var_index[0]][var] = package_dir
+                                print(f"Library Path: {package_dir}")
+                        else:
+                            data = None
+                    else:
+                        data = None
+
+        # Fallback: create basic package
+        if data is None:
+            package_key = repo_name.replace("-", "_")
+            data = _create_basic_package(lib_dir, package_key, houdini_packages_dir)
+
+        # Ensure "enable" is the first key
+        if "enable" not in data:
+            data = {"enable": True, **data}
+
+        # Save to packages dir
+        os.makedirs(houdini_packages_dir, exist_ok=True)
+        dest_path = os.path.normpath(os.path.join(houdini_packages_dir, repo_name + ".json"))
+        with open(dest_path, "w") as f:
+            json.dump(data, f, indent=4)
+
+        hou_reload_packages(repo_name, dest_path)
+        self.refresh_table()
 
     def redownload_database(self):
         local_path = os.path.join(hou.getenv("HOUDINI_USER_PREF_DIR"), DB_FILENAME)
@@ -940,7 +1313,7 @@ class LibManagerWidget(QtWidgets.QWidget):
             if os.path.isfile(local_path):
                 os.remove(local_path)
             print(f"Redownloading database from: {DB_REMOTE_URL}")
-            with urllib.request.urlopen(DB_REMOTE_URL, timeout=15) as response:
+            with _urlopen_with_ssl_fallback(DB_REMOTE_URL, timeout=15) as response:
                 data = json.loads(response.read().decode("utf-8"))
                 if current_path:
                     data["install_path"] = current_path

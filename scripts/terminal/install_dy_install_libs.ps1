@@ -8,7 +8,7 @@ $Installed   = @()
 $Skipped     = @()
 
 Write-Host ""
-Write-Host "  dy Library Manager - Shelf Installer" -ForegroundColor Cyan
+Write-Host "  dy Install Libs - Shelf Installer" -ForegroundColor Cyan
 Write-Host "  ======================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -89,5 +89,5 @@ if ($Skipped.Count -gt 0) {
     Write-Host "  Failed for $($Skipped.Count) version(s): $($Skipped -join ', ')" -ForegroundColor Red
 }
 Write-Host ""
-Write-Host "  Restart Houdini and look for the 'Dy Install Libs' shelf tab." -ForegroundColor Cyan
+Write-Host "  Restart Houdini and look for the 'dy Install Libs' shelf tab." -ForegroundColor Cyan
 Write-Host ""

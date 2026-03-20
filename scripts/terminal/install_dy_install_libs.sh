@@ -16,7 +16,7 @@ GRAY='\033[0;37m'
 NC='\033[0m'
 
 echo ""
-echo -e "  ${CYAN}dy Library Manager - Shelf Installer${NC}"
+echo -e "  ${CYAN}dy Install Libs - Shelf Installer${NC}"
 echo -e "  ${CYAN}======================================${NC}"
 echo ""
 
@@ -123,5 +123,5 @@ if [[ ${#FAILED[@]} -gt 0 ]]; then
 fi
 
 echo ""
-echo -e "  ${CYAN}Restart Houdini and look for the 'Dy Install Libs' shelf tab.${NC}"
+echo -e "  ${CYAN}Restart Houdini and look for the 'dy Install Libs' shelf tab.${NC}"
 echo ""

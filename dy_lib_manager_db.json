@@ -348,6 +348,20 @@
       "create_package": false
     },
     {
+      "url": "https://greyscalegorilla.com/houdini",
+      "name": "Greyscalegorilla+",
+      "description": "Premium library of 6000+ 3D materials, models, and HDRIs for Houdini",
+      "author": "Greyscalegorilla",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "shader",
+        "library"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://kwac.gumroad.com/l/groombear?layout=profile",
       "name": "GroomBear",
       "description": "Grooming toolset for SideFX Houdini (Commercial)",
@@ -980,6 +994,19 @@
       ]
     },
     {
+      "url": "https://samk9632.gumroad.com/l/KTTforHoudini",
+      "name": "KTT",
+      "description": "Kruger Terrain Tools — GPU-accelerated terrain generation toolset for Houdini 20.5+",
+      "author": "samk9632",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "environment"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/csdjk/LcLLib-for-Houdini.git",
       "name": "LcLLib-for-Houdini",
       "description": "A collection of Houdini tools and scripts by Lucas Lejeune",
@@ -1164,6 +1191,20 @@
       "create_package": false
     },
     {
+      "url": "https://www.natsura.com/",
+      "name": "Natsura",
+      "description": "Plant simulation and procedural foliage creation tools for Houdini",
+      "author": "Natsura",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "environment",
+        "fx"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/baku89/nops.git",
       "name": "nops",
       "description": "Digital Assets to supplement non-procedural features of Houdini",
@@ -1209,6 +1250,19 @@
         "integration"
       ],
       "create_package": false
+    },
+    {
+      "url": "https://orbolt.com/",
+      "name": "Orbolt",
+      "description": "Smart 3D asset store powered by Houdini with customizable digital assets",
+      "author": "SideFX",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "library"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/fabriciochamon/Packman.git",
@@ -1307,6 +1361,20 @@
       ]
     },
     {
+      "url": "https://renderman.pixar.com/houdini-asset-usd-builder",
+      "name": "RenderMan Asset USD Builder",
+      "description": "Houdini toolset for building USD assets with Pixar's RenderMan",
+      "author": "Carlo Jongen / Pixar",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "shader",
+        "pipeline"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/handcraftedcc/SDFModeler.git",
       "name": "SDFModeler",
       "description": "SDF Modeling Toolset for Houdini",
@@ -1328,6 +1396,19 @@
       "tags": [
         "library"
       ]
+    },
+    {
+      "url": "https://www.doublejumpacademy.com/tools/skadoosh",
+      "name": "Skadoosh",
+      "description": "Collection of custom pyro helper tools for everyday pyro operations",
+      "author": "DoubleJump Academy",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "fx"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/proceduralit/StableDiffusion_Houdini.git",

@@ -437,6 +437,73 @@ COL_AUTHOR = 3
 COL_ACTION = 4
 COLUMN_LABELS = ["", "Library", "Description", "Author", ""]
 
+class _CenteredIconDelegate(QtWidgets.QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        icon = index.data(QtCore.Qt.DecorationRole)
+        if icon and not icon.isNull():
+            # Draw default background (selection, alternating rows)
+            opt = QtWidgets.QStyleOptionViewItem(option)
+            self.initStyleOption(opt, index)
+            opt.icon = QtGui.QIcon()
+            opt.text = ""
+            style = opt.widget.style() if opt.widget else QtWidgets.QApplication.style()
+            style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, opt, painter, opt.widget)
+            # Draw subtle rounded background behind icon
+            icon_size = opt.decorationSize
+            ix = option.rect.x() + (option.rect.width() - icon_size.width()) // 2
+            iy = option.rect.y() + (option.rect.height() - icon_size.height()) // 2
+            bg_rect = QtCore.QRect(ix - 4, iy - 4, icon_size.width() + 8, icon_size.height() + 8)
+            painter.save()
+            painter.setRenderHint(QtGui.QPainter.Antialiasing)
+            painter.setBrush(QtGui.QColor(255, 255, 255, 20))
+            painter.setPen(QtCore.Qt.NoPen)
+            painter.drawRoundedRect(bg_rect, 4, 4)
+            painter.restore()
+            # Draw icon centered
+            icon.paint(painter, ix, iy, icon_size.width(), icon_size.height())
+        else:
+            super().paint(painter, option, index)
+
+class _Table(QtWidgets.QTableWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.viewport().setMouseTracking(True)
+        self.verticalScrollBar().installEventFilter(self)
+        self.horizontalScrollBar().installEventFilter(self)
+
+    def viewportEvent(self, event):
+        # Block hover events on the viewport — prevents QAbstractItemView
+        # from clearing/changing its hover-index when the cursor moves onto
+        # a setCellWidget child, the scrollbar, or outside the table.
+        if event.type() in (QtCore.QEvent.HoverLeave,
+                            QtCore.QEvent.HoverEnter,
+                            QtCore.QEvent.HoverMove):
+            return True
+        return super().viewportEvent(event)
+
+    def eventFilter(self, obj, event):
+        # Forward scrollbar MouseMove events to the viewport so the hover
+        # position stays current while the cursor is over a scrollbar.
+        if obj in (self.verticalScrollBar(), self.horizontalScrollBar()):
+            if event.type() == QtCore.QEvent.MouseMove:
+                global_pos = obj.mapToGlobal(event.pos())
+                local_pos  = self.viewport().mapFromGlobal(global_pos)
+                try:
+                    new_event = QtGui.QMouseEvent(
+                        event.type(),
+                        QtCore.QPointF(local_pos),
+                        QtCore.QPointF(global_pos),
+                        event.button(), event.buttons(), event.modifiers()
+                    )
+                except TypeError:
+                    new_event = QtGui.QMouseEvent(
+                        event.type(), local_pos,
+                        event.button(), event.buttons(), event.modifiers()
+                    )
+                QtWidgets.QApplication.sendEvent(self.viewport(), new_event)
+                return True
+        return super().eventFilter(obj, event)
+
 class LibManagerWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(LibManagerWidget, self).__init__(parent)
@@ -479,7 +546,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         path_layout.addWidget(browse_btn)
 
         # ---- Table ----
-        self.table = QtWidgets.QTableWidget()
+        self.table = _Table()
         self.table.setColumnCount(len(COLUMN_LABELS))
         self.table.setHorizontalHeaderLabels(COLUMN_LABELS)
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -494,13 +561,12 @@ class LibManagerWidget(QtWidgets.QWidget):
         self.table.setStyleSheet(
             "QHeaderView::section { font-weight: normal; }"
             "QTableWidget::item:selected { font-weight: normal; }"
-            "QToolButton { border: none; padding: 2px; }"
-            "QToolButton:hover { background-color: rgba(255, 255, 255, 30); }"
         )
 
         header = self.table.horizontalHeader()
         header.setHighlightSections(False)
-        header.setSectionResizeMode(COL_ENABLE, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(COL_ENABLE, QtWidgets.QHeaderView.Fixed)
+        header.resizeSection(COL_ENABLE, 30)
         header.setSectionResizeMode(COL_NAME, QtWidgets.QHeaderView.ResizeToContents)
         header.setSectionResizeMode(COL_DESCRIPTION, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(COL_AUTHOR, QtWidgets.QHeaderView.ResizeToContents)
@@ -511,6 +577,9 @@ class LibManagerWidget(QtWidgets.QWidget):
                 header_font = header_item.font()
                 header_font.setBold(False)
                 header_item.setFont(header_font)
+
+        self.table.setItemDelegateForColumn(COL_ACTION, _CenteredIconDelegate(self.table))
+        self.table.cellClicked.connect(self._on_cell_clicked)
 
         main_layout.addWidget(self.table)
 
@@ -588,21 +657,17 @@ class LibManagerWidget(QtWidgets.QWidget):
 
             bottom_layout.addSpacing(16)
 
-        redownload_btn = QtWidgets.QToolButton()
-        redownload_btn.setIcon(hou.qt.Icon(ICON_REDOWNLOAD))
-        redownload_btn.setToolTip("Redownload Database")
-        redownload_btn.setAutoRaise(True)
-        redownload_btn.setStyleSheet(TOOLBTN_STYLE)
-        redownload_btn.clicked.connect(self.redownload_database)
-        bottom_layout.addWidget(redownload_btn)
-
-        refresh_btn = QtWidgets.QToolButton()
-        refresh_btn.setIcon(hou.qt.Icon(ICON_REFRESH))
-        refresh_btn.setToolTip("Refresh Database")
-        refresh_btn.setAutoRaise(True)
-        refresh_btn.setStyleSheet(TOOLBTN_STYLE)
-        refresh_btn.clicked.connect(self.refresh_table)
-        bottom_layout.addWidget(refresh_btn)
+        db_btn = QtWidgets.QToolButton()
+        db_btn.setIcon(hou.qt.Icon(ICON_REDOWNLOAD))
+        db_btn.setToolTip("Database")
+        db_btn.setAutoRaise(True)
+        db_btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        db_btn.setStyleSheet(TOOLBTN_STYLE)
+        db_menu = QtWidgets.QMenu(db_btn)
+        db_menu.addAction(hou.qt.Icon(ICON_REDOWNLOAD), "Redownload Database", self.redownload_database)
+        db_menu.addAction(hou.qt.Icon(ICON_REFRESH), "Refresh Database", self.refresh_table)
+        db_btn.setMenu(db_menu)
+        bottom_layout.addWidget(db_btn)
 
         help_btn = QtWidgets.QToolButton()
         help_btn.setIcon(hou.qt.Icon(ICON_HELP))
@@ -614,6 +679,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 
         # ---- Load data ----
         self.refresh_table()
+        self.search_field.setFocus()
 
     @property
     def _packages_dir(self):
@@ -622,6 +688,18 @@ class LibManagerWidget(QtWidgets.QWidget):
     def _on_search_changed(self, text):
         self._clear_action.setVisible(bool(text))
         self.apply_filter()
+
+    def _on_cell_clicked(self, row, column):
+        if column != COL_ACTION or row >= len(self._lib_data):
+            return
+        entry = self._lib_data[row]
+        is_commercial = entry["db"].get("commercial", False)
+        if is_commercial:
+            url = entry["repo_info"].get("url", "")
+            if url:
+                webbrowser.open(url)
+        elif entry["status"] == "Not Installed":
+            self.on_install_clicked(row)
 
     # -----------------------------------------------------------------------
     # PATH BROWSING
@@ -712,7 +790,6 @@ class LibManagerWidget(QtWidgets.QWidget):
         if active:
             btn.setStyleSheet(
                 f"QToolButton {{ border: none; padding: 2px; background-color: {HIGHLIGHT_COLOR}; border-radius: 2px; }}"
-                f"QToolButton:hover {{ background-color: {HIGHLIGHT_COLOR_HOVER}; }}"
             )
         else:
             btn.setStyleSheet(TOOLBTN_STYLE)
@@ -865,10 +942,11 @@ class LibManagerWidget(QtWidgets.QWidget):
         # Find installed libraries at old location
         installed = []
         for entry in self._all_lib_data:
-            if entry["status"] != "Not Installed":
-                lib_dir = os.path.join(old_expanded, entry["repo_name"])
-                if os.path.isdir(lib_dir):
-                    installed.append(entry)
+            if entry["db"].get("commercial", False):
+                continue
+            lib_dir = os.path.join(old_expanded, entry["repo_name"])
+            if os.path.isdir(lib_dir):
+                installed.append(entry)
 
         if not installed:
             return
@@ -1260,6 +1338,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 
                 if data and "env" in data:
                     package_dir = os.path.dirname(src_path)
+                    # Use lib_location subfolder if the package file is at repo root
                     env_keys = []
                     for env_dict in data.get("env", []):
                         for key in env_dict.keys():
@@ -1501,7 +1580,9 @@ class LibManagerWidget(QtWidgets.QWidget):
             chk_layout = QtWidgets.QHBoxLayout(chk_widget)
             chk_layout.setAlignment(QtCore.Qt.AlignCenter)
             chk_layout.setContentsMargins(0, 0, 0, 0)
+            chk_layout.setSpacing(0)
             chk = QtWidgets.QCheckBox()
+            chk.setFixedWidth(18)
             chk.setChecked(entry["enabled"])
             create_pkg = entry["db"].get("create_package", True)
             chk.setEnabled(entry["status"] not in ("Not Installed", "Commercial") and create_pkg)
@@ -1524,25 +1605,21 @@ class LibManagerWidget(QtWidgets.QWidget):
             author_item = QtWidgets.QTableWidgetItem(entry["repo_info"]["author"])
             self.table.setItem(row, COL_AUTHOR, author_item)
 
-            # Action
+            # Action (icon items instead of setCellWidget to avoid selection jump)
             if is_commercial:
-                action_btn = QtWidgets.QToolButton()
-                action_btn.setIcon(hou.qt.Icon(ICON_LINK))
-                action_btn.setToolTip("Open Product Page")
-                action_btn.setAutoRaise(True)
-                url = entry["repo_info"].get("url", "")
-                action_btn.clicked.connect(lambda _=None, u=url: webbrowser.open(u))
-                self.table.setCellWidget(row, COL_ACTION, action_btn)
+                action_item = QtWidgets.QTableWidgetItem()
+                action_item.setIcon(hou.qt.Icon(ICON_LINK))
+                action_item.setToolTip("Open Product Page")
+                action_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.table.setItem(row, COL_ACTION, action_item)
             elif entry["status"] == "Not Installed":
-                action_btn = QtWidgets.QToolButton()
-                action_btn.setIcon(hou.qt.Icon(ICON_DOWNLOAD))
-                action_btn.setToolTip("Install")
-                action_btn.setAutoRaise(True)
-                action_btn.clicked.connect(lambda _=None, r=row: self.on_install_clicked(r))
-                self.table.setCellWidget(row, COL_ACTION, action_btn)
+                action_item = QtWidgets.QTableWidgetItem()
+                action_item.setIcon(hou.qt.Icon(ICON_DOWNLOAD))
+                action_item.setToolTip("Install")
+                action_item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.table.setItem(row, COL_ACTION, action_item)
             else:
-                dash_item = QtWidgets.QTableWidgetItem("")
-                self.table.setItem(row, COL_ACTION, dash_item)
+                self.table.setItem(row, COL_ACTION, QtWidgets.QTableWidgetItem(""))
 
     # -----------------------------------------------------------------------
     # ENABLE / DISABLE TOGGLE
@@ -1974,7 +2051,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 def onCreateInterface():
     return LibManagerWidget()
 ]]></script>
-    <includeInPaneTabMenu menu_position="0" create_separator="false"/>
+    <includeInPaneTabMenu menu_position="0" create_separator="true"/>
     <includeInToolbarMenu menu_position="201" create_separator="false"/>
     <help><![CDATA[]]></help>
   </interface>

@@ -1045,7 +1045,7 @@ def migrate_preferences():
 migrate_preferences()]]></script>
   </tool>
 
-  <tool name="dy_lib_manager" label="dy Library Manager" icon="hicon:/SVGIcons.index?SHELF_asset_library.svg">
+  <tool name="dy_lib_manager" label="Library Manager" icon="hicon:/SVGIcons.index?SHELF_asset_library.svg">
     <script scriptType="python"><![CDATA[# dy Library Manager
 import hou
 import os

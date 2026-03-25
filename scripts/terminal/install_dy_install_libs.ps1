@@ -1,5 +1,6 @@
 # dy Library Manager - Shelf Installer
-# Usage: irm https://raw.githubusercontent.com/cdordelly/dyLib/dev/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/cdordelly/dyLib/dev/scripts/terminal/install_dy_install_libs.ps1 | iex
+#        (or: Invoke-WebRequest ... | Invoke-Expression)
 
 $ShelfUrl    = "https://raw.githubusercontent.com/cdordelly/dyLib/dev/toolbar/dy_install_libs.shelf"
 $ShelfName   = "dy_install_libs.shelf"
@@ -18,7 +19,7 @@ Write-Host ""
 
 Write-Host "  Downloading $ShelfName..." -ForegroundColor Gray
 try {
-    $ShelfContent = Invoke-RestMethod -Uri $ShelfUrl -UseBasicParsing
+    $ShelfContent = (Invoke-WebRequest -Uri $ShelfUrl -UseBasicParsing).Content
 } catch {
     Write-Host "  ERROR: Failed to download shelf file." -ForegroundColor Red
     Write-Host "  $_" -ForegroundColor Red

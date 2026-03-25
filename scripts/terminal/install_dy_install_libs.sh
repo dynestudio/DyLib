@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # dy Library Manager - Shelf Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/cdordelly/dyLib/dev/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/cdordelly/dyLib/dev/scripts/terminal/install_dy_install_libs.sh | bash
 
 SHELF_URL="https://raw.githubusercontent.com/cdordelly/dyLib/dev/toolbar/dy_install_libs.shelf"
 SHELF_NAME="dy_install_libs.shelf"

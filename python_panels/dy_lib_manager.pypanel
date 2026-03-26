@@ -250,7 +250,7 @@ def get_library_status(repo_name, packages_dir, install_root=None, create_packag
     try:
         with open(package_path, "r") as f:
             data = json.load(f)
-        enabled = data.get("enable", True)
+        enabled = bool(data.get("enable", True))
         status = "Installed" if enabled else "Disabled"
         return status, enabled, package_path
     except Exception:
@@ -263,7 +263,7 @@ def resolve_unique_names(entries):
         name_counts[name] = name_counts.get(name, 0) + 1
     for entry in entries:
         if name_counts[entry["repo_name"]] > 1:
-            owner, _ = parse_owner_repo(entry["db"]["url"])
+            owner, _ = parse_owner_repo(entry["db"].get("url", ""))
             if owner:
                 entry["repo_name"] = f"{owner}-{entry['repo_name']}"
 
@@ -1503,7 +1503,7 @@ class LibManagerWidget(QtWidgets.QWidget):
                         pkg_data = json.load(f)
                 except Exception:
                     continue
-                enabled = pkg_data.get("enable", True)
+                enabled = bool(pkg_data.get("enable", True))
                 entry = {
                     "db": {"url": "", "tags": ["standalone"]},
                     "repo_info": {
@@ -1583,7 +1583,7 @@ class LibManagerWidget(QtWidgets.QWidget):
             chk_layout.setSpacing(0)
             chk = QtWidgets.QCheckBox()
             chk.setFixedWidth(18)
-            chk.setChecked(entry["enabled"])
+            chk.setChecked(bool(entry["enabled"]))
             create_pkg = entry["db"].get("create_package", True)
             chk.setEnabled(entry["status"] not in ("Not Installed", "Commercial") and create_pkg)
             if not is_commercial:
@@ -1900,8 +1900,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 
     def show_library_info(self, row):
         entry = self._lib_data[row]
-        expanded_root = hou.expandString(self.path_field.text())
-        lib_dir = os.path.join(expanded_root, entry["repo_name"])
+        lib_dir = self._resolve_lib_dir(entry)
         if not os.path.isdir(lib_dir):
             hou.ui.displayMessage(f"Directory not found:\n{lib_dir}", severity=hou.severityType.Error, title="Library Info")
             return
@@ -1945,10 +1944,39 @@ class LibManagerWidget(QtWidgets.QWidget):
             severity=hou.severityType.Message
         )
 
+    def _resolve_lib_dir(self, entry):
+        # 1. Try package_key env var (set by Houdini when the package is loaded)
+        package_key = entry["db"].get("package_key", "")
+        if package_key:
+            try:
+                resolved = hou.expandString(f"${package_key}")
+                if resolved and not resolved.startswith("$") and os.path.isdir(resolved):
+                    return resolved
+            except Exception:
+                pass
+        # 2. Try reading the package JSON and expanding each env var
+        pkg_path = entry.get("package_path", "")
+        if pkg_path and os.path.isfile(pkg_path):
+            try:
+                with open(pkg_path, "r") as f:
+                    pkg_data = json.load(f)
+                for env_dict in pkg_data.get("env", []):
+                    for key in env_dict:
+                        try:
+                            resolved = hou.expandString(f"${key}")
+                            if resolved and not resolved.startswith("$") and os.path.isdir(resolved):
+                                return resolved
+                        except Exception:
+                            continue
+            except Exception:
+                pass
+        # 3. Fallback: install_root + repo_name
+        expanded_root = hou.expandString(self.path_field.text())
+        return os.path.join(expanded_root, entry["repo_name"])
+
     def open_directory(self, row):
         entry = self._lib_data[row]
-        expanded_root = hou.expandString(self.path_field.text())
-        lib_dir = os.path.join(expanded_root, entry["repo_name"])
+        lib_dir = self._resolve_lib_dir(entry)
         if os.path.isdir(lib_dir):
             if IS_WINDOWS:
                 os.startfile(lib_dir)
@@ -1969,8 +1997,7 @@ class LibManagerWidget(QtWidgets.QWidget):
 
     def force_update(self, row):
         entry = self._lib_data[row]
-        expanded_root = hou.expandString(self.path_field.text())
-        lib_dir = os.path.join(expanded_root, entry["repo_name"])
+        lib_dir = self._resolve_lib_dir(entry)
         if not os.path.isdir(lib_dir):
             hou.ui.displayMessage(f"Install directory not found:\n{lib_dir}", severity=hou.severityType.Error, title="Update Error")
             return
@@ -2014,8 +2041,7 @@ class LibManagerWidget(QtWidgets.QWidget):
         if is_release:
             selected = items[item_index[0]][1]
 
-        expanded_root = hou.expandString(self.path_field.text())
-        lib_dir = os.path.join(expanded_root, entry["repo_name"])
+        lib_dir = self._resolve_lib_dir(entry)
         if not os.path.isdir(lib_dir):
             hou.ui.displayMessage(f"Install directory not found:\n{lib_dir}", severity=hou.severityType.Error, title="Switch Error")
             return

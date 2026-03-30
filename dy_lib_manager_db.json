@@ -156,6 +156,19 @@
       "commercial": true
     },
     {
+      "url": "https://www.axisfx.design/tools",
+      "name": "Axis Tools",
+      "description": "Curated Houdini toolset with drag & drop textures/nodes, network highlight rings, and lighting tools supporting Mantra, Octane, Arnold & Redshift",
+      "author": "Ewan Davidson",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "utility"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/ynput/ayon-houdini.git",
       "name": "ayon-houdini",
       "description": "Houdini addon for AYON",
@@ -177,6 +190,20 @@
       "tags": [
         "library"
       ]
+    },
+    {
+      "url": "https://whatifound.gumroad.com/l/RBDbundle",
+      "name": "BoomBox and BustDuster Bundle",
+      "description": "Bundle of BoomBox (RBD fracture and art direction HDA) and BustDuster (automated dust and debris for RBD sims) for Houdini",
+      "author": "Jason Harmon",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "fx"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/Esri/cityengine_for_houdini.git",
@@ -329,6 +356,19 @@
       ]
     },
     {
+      "url": "https://www.patreon.com/posts/ez-hda-pack-2-0-70721213",
+      "name": "EZ HDA Pack",
+      "description": "Collection of workflow-enhancing HDAs for Houdini including destruction, optimization, and modeling tools",
+      "author": "Parker Coleman",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "library"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/Fe-Elf/FeELib-for-Houdini.git",
       "name": "FeELib-for-Houdini",
       "description": "精灵超可爱",
@@ -373,6 +413,18 @@
       "package_file": null,
       "package_key": "",
       "tags": [
+        "fx"
+      ]
+    },
+    {
+      "url": "https://github.com/dannylaursen/FLOPs",
+      "name": "FLOPs",
+      "description": "Open source set of KineFX-based HDAs for generating and animating high quality flora and flowers in Houdini",
+      "author": "dannylaursen",
+      "package_file": "FLOPs.json",
+      "package_key": "FLOPs",
+      "tags": [
+        "environment",
         "fx"
       ]
     },
@@ -1153,6 +1205,19 @@
       "commercial": true
     },
     {
+      "url": "https://www.patreon.com/posts/lazypanda-105287707",
+      "name": "LazyPanda",
+      "description": "Houdini toolkit of digital assets and scene files for streamlined procedural workflows",
+      "author": "BRUCHHAGEVFX",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "library"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/csdjk/LcLLib-for-Houdini.git",
       "name": "LcLLib-for-Houdini",
       "description": "A collection of Houdini tools and scripts by Lucas Lejeune",
@@ -1174,6 +1239,20 @@
         "utility",
         "shader"
       ]
+    },
+    {
+      "url": "https://lebrov.com/tools/lmi-tools-repository",
+      "name": "LMI Tools",
+      "description": "Suite of Houdini HDAs for Octane and Solaris workflows covering IO, optimisation, set-dressing, camera, and render network pipeline",
+      "author": "Andrey Lebrov",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "shader",
+        "pipeline"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/luk4m4repo/luk4m4_Undini_framework.git",
@@ -1747,6 +1826,20 @@
         "integration"
       ],
       "create_package": false
+    },
+    {
+      "url": "https://shirmanor.gumroad.com/l/vex_manager_v1",
+      "name": "VEX Manager",
+      "description": "User-friendly Houdini tool for managing, editing and organizing VEX code snippets and notes with version control and find & replace",
+      "author": "Shir Manor",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "utility"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/jtomori/vex_tutorial.git",

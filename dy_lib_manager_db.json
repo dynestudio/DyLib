@@ -288,6 +288,20 @@
       ]
     },
     {
+      "url": "https://keatonwilliamson.com/detail/domain-warp",
+      "name": "Domain Warp",
+      "description": "Houdini HDA for domain warping — using noise to distort noise for more organic, non-uniform procedural results in SOPs",
+      "author": "Keaton Williamson",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "utility",
+        "fx"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/handcraftedcc/DomLib.git",
       "name": "DomLib",
       "description": "Compilation of Houdini Tools and Utilities created by yours truly!",
@@ -517,6 +531,18 @@
         "library",
         "utility"
       ]
+    },
+    {
+      "url": "https://github.com/keatonwilliamson/hda.git",
+      "name": "hda",
+      "description": "Houdini HDA Library",
+      "author": "keatonwilliamson",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "utility"
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/PhilHaf/hipCollection.git",
@@ -1815,6 +1841,20 @@
       "commercial": true
     },
     {
+      "url": "https://keatonwilliamson.com/detail/turbulence",
+      "name": "Turbulence",
+      "description": "Houdini HDA for procedural turbulence effects using noise-based distortion techniques in SOPs",
+      "author": "Keaton Williamson",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "utility",
+        "fx"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/AgastyaPatel/USD_Megascan_Importer.git",
       "name": "USD_Megascan_Importer",
       "description": "Plugin tool for Houdini that converts Megascan assets into USD in Solaris and stores them in the Layout Asset Gallery",
@@ -1842,6 +1882,20 @@
       "commercial": true
     },
     {
+      "url": "https://keatonwilliamson.com/detail/vex-noise",
+      "name": "VEX Noise Generator",
+      "description": "Houdini HDA for procedural noise generation using VEX, providing a unified interface for working with various noise types in SOPs",
+      "author": "Keaton Williamson",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "utility",
+        "fx"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/jtomori/vex_tutorial.git",
       "name": "vex_tutorial",
       "description": ":bookmark_tabs: A collection of code snippets and examples showing syntax and capabilities of VEX language inside SideFX Houdini",
@@ -1864,6 +1918,42 @@
         "utility"
       ],
       "create_package": false
+    },
+    {
+      "url": "https://thevfxmentor.com/quicktips/COP",
+      "name": "VFX Mentor Quick Tips: COP",
+      "description": "Quick tips and tutorials for Houdini's Copernicus (COP) GPU-accelerated 2D/3D image processing network, covering procedural texturing, OpenCL, feedback solvers, and SOP integration",
+      "author": "TheVFXMentor",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "learn"
+      ],
+      "commercial": true
+    },
+    {
+      "url": "https://thevfxmentor.com/quicktips/LOP/",
+      "name": "VFX Mentor Quick Tips: LOP",
+      "description": "Quick tips and tutorials for Houdini's LOPs (Solaris) context, covering USD workflows, camera frustum culling, material assignments, and lighting pipeline techniques",
+      "author": "TheVFXMentor",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "learn"
+      ],
+      "commercial": true
+    },
+    {
+      "url": "https://thevfxmentor.com/quicktips/SOP/",
+      "name": "VFX Mentor Quick Tips: SOP",
+      "description": "Quick tips and tutorials for Houdini's SOP (Surface Operators) context with VEX scripting, geometry manipulation, noise functions, and lighting calculations",
+      "author": "TheVFXMentor",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "learn"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/LucaScheller/VFX-LYNX.git",

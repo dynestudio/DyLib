@@ -1158,6 +1158,21 @@
       "create_package": false
     },
     {
+      "url": "https://jltools.gumroad.com/l/duluvg",
+      "name": "JL Tools",
+      "description": "Collection of 100+ tools and 19 HDAs for Houdini 21 artists, covering node navigation, comment management, rendering utilities, directory handling, and general workflow improvements",
+      "author": "JL Tools",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "library",
+        "utility"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/parkerjon/jpVolumeLayers.git",
       "name": "jpVolumeLayers",
       "description": "Volume shader layering tools for Side Effects Houdini",

@@ -1418,6 +1418,21 @@
       "commercial": true
     },
     {
+      "url": "https://momme.gumroad.com/",
+      "name": "Momme CFX Tools",
+      "description": "Collection of CFX-focused Houdini HDAs by a CFX Lead, including a skin deformer (XPBD-based), wrap deformer, corrective blendshape, PCA dejitter, geo seal, and ARAP deformer",
+      "author": "Momme",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "fx",
+        "rigging"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/toadstorm/MOPS.git",
       "name": "MOPS",
       "description": "Motion OPerators for Houdini, a motion graphics toolkit.",

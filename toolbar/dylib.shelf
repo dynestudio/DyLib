@@ -212,6 +212,7 @@ dylib.batch_usd_render(False, False)]]></script>
     <memberTool name="dy_rslight_instances_attrs"/>
     <memberTool name="dy_usd_batch_render"/>
     <memberTool name="dy_variable_create"/>
+    <memberTool name="viewport_snapshot"/>
   </toolshelf>
 
   <tool name="dy_variable_create" label="Create Variable" icon="hicon:/SVGIcons.index?BUTTONS_label.svg">
@@ -220,5 +221,15 @@ dylib.batch_usd_render(False, False)]]></script>
 dylib.variable_create()]]></script>
   </tool>
 
+  <tool name="viewport_snapshot" label="Viewport Snapshot" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import hou
 
+viewer = hou.ui.paneTabOfType(hou.paneTabType.SceneViewer)
+if viewer:
+    settings = viewer.flipbookSettings().stash()
+    settings.outputToMPlay(False)  # <- corregido
+    settings.frameRange((hou.frame(), hou.frame()))
+    settings.output("$HIP/render/viewport/flipbook_snap_5_.png")
+    viewer.flipbook(viewer.curViewport(), settings)]]></script>
+  </tool>
 </shelfDocument>

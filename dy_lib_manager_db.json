@@ -230,6 +230,20 @@
       ]
     },
     {
+      "url": "https://amfluidfx.gumroad.com/l/condensation_droplet",
+      "name": "Condensation Droplet",
+      "description": "Procedural condensation droplet simulation toolset for Houdini",
+      "author": "AM Fluid FX",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "fx"
+      ],
+      "commercial": true
+    },
+    {
       "url": "https://github.com/Illogicstudios/COP_hdri_editor.git",
       "name": "COP_hdri_editor",
       "description": "HDRI editor in Copernicus (houdini)",
@@ -441,6 +455,19 @@
         "environment",
         "fx"
       ]
+    },
+    {
+      "url": "https://github.com/healkeiser/fxhoudinimcp.git",
+      "name": "fxhoudinimcp",
+      "description": "Comprehensive MCP server for SideFX Houdini, providing AI assistants with 188 tools to control scene building, simulation, rendering and more",
+      "author": "healkeiser",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "integration",
+        "ai"
+      ],
+      "create_package": false
     },
     {
       "url": "https://github.com/QuadSpinner/Gaea2Houdini_beta.git",
@@ -806,6 +833,19 @@
       "name": "houdini-mcp",
       "description": "HoudiniMCP connects Houdini to Claude AI through the Model Context Protocol (MCP)",
       "author": "capoomgit",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "integration",
+        "ai"
+      ],
+      "create_package": false
+    },
+    {
+      "url": "https://github.com/rheadsh/houdini-mcp.git",
+      "name": "houdini-mcp",
+      "description": "MCP server that gives Claude direct control of an active Houdini session through 123 tools across 14 categories, including node creation, geometry manipulation, rendering, and USD workflows",
+      "author": "rheadsh",
       "package_file": null,
       "package_key": "",
       "tags": [
@@ -1319,6 +1359,19 @@
       ]
     },
     {
+      "url": "https://github.com/stevedatelier/material-intelligence.git",
+      "name": "material-intelligence",
+      "description": "Reconstructs yarn and knitted materials at the fiber level in Houdini and simulates their physical responses, exploring material-based sensory language for AI and robotics",
+      "author": "stevedatelier",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "shader",
+        "fx"
+      ],
+      "create_package": false
+    },
+    {
       "url": "https://github.com/stehrani3d/MaterialEggs.git",
       "name": "MaterialEggs",
       "description": "MaterialX samples or libraries often consist of textures plugged into MtlX Standard Surface.",
@@ -1509,6 +1562,17 @@
       ]
     },
     {
+      "url": "https://github.com/nicolasheluani/NH_TOOLS.git",
+      "name": "NH_TOOLS",
+      "description": "Collection of Houdini tools including OTLs and toolbar configurations",
+      "author": "nicolasheluani",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "library"
+      ]
+    },
+    {
       "url": "https://github.com/baku89/nops.git",
       "name": "nops",
       "description": "Digital Assets to supplement non-procedural features of Houdini",
@@ -1619,6 +1683,20 @@
         "shader"
       ],
       "create_package": false
+    },
+    {
+      "url": "https://insidethemindspace.gumroad.com/l/PCOPS",
+      "name": "PCOPs",
+      "description": "GPU-accelerated particle simulation tools for Houdini built on Copernicus (COPs), enabling simulation of millions of particles",
+      "author": "Inside The Mind",
+      "package_file": null,
+      "package_key": "",
+      "tags": [
+        "commercial",
+        "gumroad",
+        "fx"
+      ],
+      "commercial": true
     },
     {
       "url": "https://github.com/wetadigital/physlight.git",
